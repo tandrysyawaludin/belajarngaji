@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fff1f7;
+  --foreground: #2c1a3f;
+  --pink: #ff7eb6;
+  --pink-soft: #ffd6e7;
+  --mint: #b8f1d2;
+  --sky: #c5e0ff;
+  --lemon: #fff4a3;
+  --lavender: #e2d4ff;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --font-sans: var(--font-quicksand), ui-sans-serif, system-ui, sans-serif;
+  --font-arabic:
+    var(--font-amiri), var(--font-noto-arabic), "Scheherazade New",
+    "Noto Naskh Arabic", "Amiri", serif;
+}
+
+html,
+body {
+  background:
+    radial-gradient(circle at 10% 10%, #ffe4f0 0%, transparent 40%),
+    radial-gradient(circle at 90% 0%, #d8ecff 0%, transparent 45%),
+    radial-gradient(circle at 80% 90%, #fff5b8 0%, transparent 50%),
+    var(--background);
+  background-attachment: fixed;
+  color: var(--foreground);
+}
+
+.arabic {
+  font-family: var(--font-arabic);
+  direction: rtl;
+  line-height: 2.4;
+  font-size: clamp(1.7rem, 1.2rem + 1.5vw, 2.6rem);
+}
+
+/* Cute polka-dot wash overlay for cards */
+.dotted {
+  background-image: radial-gradient(rgba(255, 255, 255, 0.45) 1.5px, transparent 1.5px);
+  background-size: 14px 14px;
+}
+
+@keyframes wobble {
+  0%, 100% { transform: rotate(-2deg); }
+  50% { transform: rotate(2deg); }
+}
+.wobble { animation: wobble 2.4s ease-in-out infinite; transform-origin: center bottom; }
+
+@keyframes pop-in {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { transform: scale(1.15); opacity: 1; }
+  100% { transform: scale(1); }
+}
+.pop-in { animation: pop-in 350ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20%, 60% { transform: translateX(-10px); }
+  40%, 80% { transform: translateX(10px); }
+}
+.shake { animation: shake 480ms ease-in-out; }
+
+@keyframes bomb-burst {
+  0% { transform: scale(0.5); opacity: 0; }
+  30% { transform: scale(1.4); opacity: 1; }
+  70% { transform: scale(1.6); opacity: 0.9; }
+  100% { transform: scale(2.4); opacity: 0; }
+}
+.bomb-burst { animation: bomb-burst 800ms ease-out forwards; }
+
+@keyframes float-up {
+  0% { transform: translateY(0); opacity: 1; }
+  100% { transform: translateY(-30px); opacity: 0; }
+}
+.float-up { animation: float-up 700ms ease-out forwards; }

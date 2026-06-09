@@ -1,0 +1,59 @@
+export const strings = {
+  siteTitle: "Belajar Ngaji",
+  siteTagline: "Belajar Al-Qur'an Sambil Bermain",
+  siteDescription:
+    "Aplikasi belajar Al-Qur'an untuk anak-anak dengan tema lucu dan permainan seru.",
+
+  navHome: "Beranda",
+  navSurah: "Daftar Surah",
+  navQuiz: "Kuis Arti",
+  navMatch: "Cocokkan",
+  navGuess: "Tebak Surah",
+  navConnect: "Sambung Ayat",
+
+  homeHello: "Assalamu'alaikum, sahabat kecil!",
+  homeIntro:
+    "Yuk belajar Al-Qur'an bersama teman-teman lucu. Pilih kegiatan di bawah ini.",
+
+  cardSurahTitle: "Baca Surah",
+  cardSurahDesc: "Lihat tulisan Arab dan artinya dalam bahasa Indonesia.",
+  cardQuizTitle: "Kuis Arti Surah",
+  cardQuizDesc: "Tebak arti nama surah, dapatkan bintang dan kejutan!",
+  cardMatchTitle: "Cocokkan Surah",
+  cardMatchDesc: "Pasangkan nama surah dengan artinya. Seru sekali!",
+  cardGuessTitle: "Tebak Jumlah Ayat",
+  cardGuessDesc: "Tebak berapa jumlah ayat dari sebuah surah.",
+  cardConnectTitle: "Sambung Ayat",
+  cardConnectDesc: "Lanjutkan ayat berikutnya. Latih hafalan juz 30!",
+
+  loadingLabel: "Sedang memuat ayat...",
+  errorLabel: "Maaf, ada gangguan. Coba lagi ya.",
+  retry: "Coba Lagi",
+
+  startButton: "Mulai",
+  nextButton: "Lanjut",
+  finishButton: "Selesai",
+  playAgain: "Main Lagi",
+
+  surahNumberLabel: "Surah ke",
+  versesLabel: "ayat",
+  revelationLabel: "Diturunkan di",
+  meaningLabel: "Artinya",
+  listenLabel: "Dengarkan Murottal",
+  backToList: "Kembali ke Daftar Surah",
+
+  quizPrompt: "Apa arti dari surah",
+  matchPrompt: "Pasangkan surah dengan artinya",
+  guessVersesPrompt: "Berapa jumlah ayat dari surah",
+  guessNamePrompt: "Surah apa yang artinya",
+  connectPrompt: "Pilih ayat yang melanjutkan!",
+  scoreLabel: "Skor",
+  correct: "Hebat! Jawaban benar!",
+  wrong: "Yah, salah. Coba lagi ya!",
+  perfectScore: "Mantap! Nilai sempurna!",
+  goodJob: "Bagus sekali!",
+  keepTrying: "Tetap semangat ya!",
+
+  footerNote:
+    "Dibuat dengan cinta untuk anak-anak yang sedang belajar Al-Qur'an.",
+} as const;
