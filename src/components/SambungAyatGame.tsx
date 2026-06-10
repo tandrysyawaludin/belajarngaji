@@ -1,10 +1,11 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { JUZ30_CHAPTERS, JUZ30_NUMBERS, type Juz30Verse } from "@/data/juz30";
 import { getSurah, type Surah } from "@/data/surahs";
 import { strings } from "@/lib/strings";
 import { sampleUnique, shuffle, pick } from "@/lib/random";
+import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { FeedbackOverlay, type FeedbackKind, fireConfetti } from "./Feedback";
 import { Mascot } from "./Mascot";
 
@@ -89,6 +90,7 @@ export function SambungAyatGame({ scope }: { scope: Surah[] }) {
   const [score, setScore] = useState(0);
   const [chosen, setChosen] = useState<string | null>(null);
   const [feedback, setFeedback] = useState<FeedbackKind>(null);
+  const [answers, setAnswers] = useState<HistoryAnswer[]>([]);
 
   const finished = index >= session.length;
   const current = session[index];
@@ -99,6 +101,15 @@ export function SambungAyatGame({ scope }: { scope: Surah[] }) {
     setChosen(option.arabic);
     setFeedback(correct ? "correct" : "wrong");
     if (correct) setScore((s) => s + 1);
+    setAnswers((a) => [
+      ...a,
+      {
+        prompt: `${current.surah.name} ayat ${current.current.verse} → lanjutannya?`,
+        yourAnswer: option.arabic,
+        correctAnswer: current.answer.arabic,
+        correct,
+      },
+    ]);
   };
 
   const handleNext = () => {
@@ -113,10 +124,19 @@ export function SambungAyatGame({ scope }: { scope: Surah[] }) {
     setScore(0);
     setChosen(null);
     setFeedback(null);
+    setAnswers([]);
   };
 
   if (finished) {
-    return <ResultCard score={score} total={session.length} onRestart={restart} />;
+    return (
+      <ResultCard
+        score={score}
+        total={session.length}
+        answers={answers}
+        scope={scope}
+        onRestart={restart}
+      />
+    );
   }
 
   if (!current) return null;
@@ -216,10 +236,14 @@ export function SambungAyatGame({ scope }: { scope: Surah[] }) {
 function ResultCard({
   score,
   total,
+  answers,
+  scope,
   onRestart,
 }: {
   score: number;
   total: number;
+  answers: HistoryAnswer[];
+  scope: Surah[];
   onRestart: () => void;
 }) {
   const pct = (score / total) * 100;
@@ -229,6 +253,19 @@ function ResultCard({
     if (pct >= 70) return strings.goodJob;
     return strings.keepTrying;
   }, [pct]);
+
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    addEntry({
+      gameId: "sambung",
+      score,
+      total,
+      answers,
+      scopeNumbers: scope.map((s) => s.number),
+    });
+  }, [score, total, answers, scope]);
 
   useEffect(() => {
     if (pct === 100) fireConfetti();

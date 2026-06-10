@@ -14,10 +14,8 @@ export interface ScopePickerProps {
   availableNumbers?: number[];
   /** Explanation shown when the picker is whitelist-restricted. */
   restrictedNote?: string;
-  /** Hide the cancel button (e.g. first-time picker). */
-  hideCancel?: boolean;
   onConfirm: (selectedNumbers: number[]) => void;
-  onCancel?: () => void;
+  onCancel: () => void;
 }
 
 const SHORT_LIMIT = 20;
@@ -27,7 +25,6 @@ export function SurahScopePicker({
   minimum,
   availableNumbers,
   restrictedNote,
-  hideCancel = false,
   onConfirm,
   onCancel,
 }: ScopePickerProps) {
@@ -95,16 +92,14 @@ export function SurahScopePicker({
                 {restrictedNote ?? strings.scopePickerSubtitle}
               </p>
             </div>
-            {!hideCancel && (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-white/80 text-lg font-bold text-pink-700 shadow-sm transition hover:bg-white"
-                aria-label={strings.scopeCancel}
-              >
-                ✕
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={onCancel}
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-xl font-extrabold text-pink-700 shadow-md ring-2 ring-pink-200 transition hover:bg-pink-50 active:scale-95"
+              aria-label={strings.scopeCancel}
+            >
+              ✕
+            </button>
           </div>
         </header>
 
@@ -172,15 +167,13 @@ export function SurahScopePicker({
             )}
           </p>
           <div className="flex gap-2">
-            {!hideCancel && (
-              <button
-                type="button"
-                onClick={onCancel}
-                className="rounded-full bg-white px-5 py-2 text-sm font-bold text-pink-700 ring-2 ring-pink-200 transition hover:bg-pink-100"
-              >
-                {strings.scopeCancel}
-              </button>
-            )}
+            <button
+              type="button"
+              onClick={onCancel}
+              className="rounded-full bg-white px-5 py-2 text-sm font-bold text-pink-700 ring-2 ring-pink-200 transition hover:bg-pink-100"
+            >
+              {strings.scopeCancel}
+            </button>
             <button
               type="button"
               disabled={!canConfirm}

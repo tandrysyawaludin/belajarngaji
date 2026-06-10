@@ -38,6 +38,13 @@ const cards = [
     bg: "from-orange-300 to-rose-400",
     emoji: "🔗",
   },
+  {
+    href: "/riwayat",
+    title: strings.cardHistoryTitle,
+    desc: strings.cardHistoryDesc,
+    bg: "from-rose-300 to-pink-400",
+    emoji: "📊",
+  },
 ] as const;
 
 export default function Home() {

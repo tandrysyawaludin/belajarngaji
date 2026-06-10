@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { SURAHS, type Surah } from "@/data/surahs";
 import { strings } from "@/lib/strings";
 import { sampleUnique, shuffle } from "@/lib/random";
+import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { FeedbackOverlay, type FeedbackKind } from "./Feedback";
 import { Mascot } from "./Mascot";
 
@@ -61,6 +62,7 @@ export function QuizGame({ scope }: { scope: Surah[] }) {
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState<FeedbackKind>(null);
   const [answer, setAnswer] = useState<AnswerState>({ phase: "answering" });
+  const [answers, setAnswers] = useState<HistoryAnswer[]>([]);
 
   const current = session[index];
   const finished = index >= session.length;
@@ -71,6 +73,15 @@ export function QuizGame({ scope }: { scope: Surah[] }) {
     setAnswer({ phase: "revealed", chosen: option, correct });
     setFeedback(correct ? "correct" : "wrong");
     if (correct) setScore((s) => s + 1);
+    setAnswers((a) => [
+      ...a,
+      {
+        prompt: `${strings.quizPrompt} ${current.surah.name}?`,
+        yourAnswer: option,
+        correctAnswer: current.correct,
+        correct,
+      },
+    ]);
   };
 
   const handleNext = () => {
@@ -85,10 +96,19 @@ export function QuizGame({ scope }: { scope: Surah[] }) {
     setScore(0);
     setAnswer({ phase: "answering" });
     setFeedback(null);
+    setAnswers([]);
   };
 
   if (finished) {
-    return <Result score={score} total={session.length} onRestart={restart} />;
+    return (
+      <Result
+        score={score}
+        total={session.length}
+        answers={answers}
+        scope={scope}
+        onRestart={restart}
+      />
+    );
   }
 
   return (
@@ -188,10 +208,14 @@ function ScoreBar({
 function Result({
   score,
   total,
+  answers,
+  scope,
   onRestart,
 }: {
   score: number;
   total: number;
+  answers: HistoryAnswer[];
+  scope: Surah[];
   onRestart: () => void;
 }) {
   const pct = (score / total) * 100;
@@ -201,6 +225,20 @@ function Result({
     return strings.keepTrying;
   }, [pct]);
   const mood = pct >= 70 ? "excited" : pct >= 40 ? "happy" : "sad";
+
+  // Persist this session into history exactly once per Result mount.
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    addEntry({
+      gameId: "kuis",
+      score,
+      total,
+      answers,
+      scopeNumbers: scope.map((s) => s.number),
+    });
+  }, [score, total, answers, scope]);
 
   useEffect(() => {
     if (pct === 100) {

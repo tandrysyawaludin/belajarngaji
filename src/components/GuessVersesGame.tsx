@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { type Surah } from "@/data/surahs";
 import { strings } from "@/lib/strings";
 import { sampleUnique, shuffle } from "@/lib/random";
+import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { FeedbackOverlay, type FeedbackKind } from "./Feedback";
 import { Mascot } from "./Mascot";
 
@@ -48,6 +49,7 @@ export function GuessVersesGame({ scope }: { scope: Surah[] }) {
   const [score, setScore] = useState(0);
   const [chosen, setChosen] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<FeedbackKind>(null);
+  const [answers, setAnswers] = useState<HistoryAnswer[]>([]);
 
   const finished = index >= session.length;
   const current = session[index];
@@ -58,6 +60,15 @@ export function GuessVersesGame({ scope }: { scope: Surah[] }) {
     setChosen(option);
     setFeedback(correct ? "correct" : "wrong");
     if (correct) setScore((s) => s + 1);
+    setAnswers((a) => [
+      ...a,
+      {
+        prompt: `Berapa ayat dalam ${current.surah.name}?`,
+        yourAnswer: `${option} ayat`,
+        correctAnswer: `${current.surah.verses} ayat`,
+        correct,
+      },
+    ]);
   };
 
   const handleNext = () => {
@@ -72,10 +83,19 @@ export function GuessVersesGame({ scope }: { scope: Surah[] }) {
     setScore(0);
     setChosen(null);
     setFeedback(null);
+    setAnswers([]);
   };
 
   if (finished) {
-    return <ResultCard score={score} total={session.length} onRestart={restart} />;
+    return (
+      <ResultCard
+        score={score}
+        total={session.length}
+        answers={answers}
+        scope={scope}
+        onRestart={restart}
+      />
+    );
   }
 
   return (
@@ -155,10 +175,14 @@ export function GuessVersesGame({ scope }: { scope: Surah[] }) {
 function ResultCard({
   score,
   total,
+  answers,
+  scope,
   onRestart,
 }: {
   score: number;
   total: number;
+  answers: HistoryAnswer[];
+  scope: Surah[];
   onRestart: () => void;
 }) {
   const pct = (score / total) * 100;
@@ -169,6 +193,19 @@ function ResultCard({
       : pct >= 70
         ? strings.goodJob
         : strings.keepTrying;
+
+  const savedRef = useRef(false);
+  useEffect(() => {
+    if (savedRef.current) return;
+    savedRef.current = true;
+    addEntry({
+      gameId: "tebak-ayat",
+      score,
+      total,
+      answers,
+      scopeNumbers: scope.map((s) => s.number),
+    });
+  }, [score, total, answers, scope]);
 
   useEffect(() => {
     if (pct === 100) {

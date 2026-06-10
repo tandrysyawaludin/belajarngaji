@@ -10,6 +10,7 @@ export const strings = {
   navMatch: "Cocokkan",
   navGuess: "Tebak Surah",
   navConnect: "Sambung Ayat",
+  navHistory: "Riwayat",
 
   homeHello: "Assalamu'alaikum, sahabat kecil!",
   homeIntro:
@@ -25,6 +26,8 @@ export const strings = {
   cardGuessDesc: "Tebak berapa jumlah ayat dari sebuah surah.",
   cardConnectTitle: "Sambung Ayat",
   cardConnectDesc: "Lanjutkan ayat berikutnya. Latih hafalan juz 30!",
+  cardHistoryTitle: "Riwayat Skor",
+  cardHistoryDesc: "Lihat catatan bermain & jawaban benar/salah-mu.",
 
   loadingLabel: "Sedang memuat ayat...",
   errorLabel: "Maaf, ada gangguan. Coba lagi ya.",
@@ -73,4 +76,18 @@ export const strings = {
   scopeChange: "Ganti Pilihan",
   scopeRestricted:
     "Game ini hanya menggunakan surah dari juz 30 yang sudah disiapkan.",
+
+  historyTitle: "Riwayat Skor",
+  historySubtitle:
+    "Catatan bermain tersimpan di browser kamu. Klik untuk lihat detail tiap soal.",
+  historyEmpty: "Belum ada riwayat. Yuk main satu game dulu!",
+  historyEmptyHint: "Setiap game yang selesai akan dicatat di sini.",
+  historyDetailToggle: "Lihat Detail",
+  historyDetailHide: "Sembunyikan",
+  historyYourAnswer: "Jawabanmu",
+  historyCorrectAnswer: "Jawaban benar",
+  historyClearAll: "Hapus Semua Riwayat",
+  historyClearConfirm:
+    "Yakin mau hapus semua riwayat? Catatan akan hilang selamanya.",
+  historyScopeNote: "Cakupan {n} surah",
 } as const;

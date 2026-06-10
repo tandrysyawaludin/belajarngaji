@@ -1,9 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import { type Surah } from "@/data/surahs";
 import { strings } from "@/lib/strings";
 import { sampleUnique, shuffle } from "@/lib/random";
+import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { FeedbackOverlay, type FeedbackKind, fireConfetti } from "./Feedback";
 import { Mascot } from "./Mascot";
 
@@ -44,12 +45,24 @@ export function MatchingGame({ scope }: { scope: Surah[] }) {
   );
   const [feedback, setFeedback] = useState<FeedbackKind>(null);
   const [streak, setStreak] = useState(0);
+  const [attempts, setAttempts] = useState<HistoryAnswer[]>([]);
+  const savedRoundRef = useRef<Round | null>(null);
 
   const complete = matched.size === round.names.length;
 
   useEffect(() => {
-    if (complete) fireConfetti();
-  }, [complete]);
+    if (!complete) return;
+    fireConfetti();
+    if (savedRoundRef.current === round) return;
+    savedRoundRef.current = round;
+    addEntry({
+      gameId: "cocokkan",
+      score: round.names.length,
+      total: round.names.length,
+      answers: attempts,
+      scopeNumbers: scope.map((s) => s.number),
+    });
+  }, [complete, round, attempts, scope]);
 
   const handleNamePick = (number: number) => {
     if (matched.has(number) || wrongPair) return;
@@ -58,7 +71,19 @@ export function MatchingGame({ scope }: { scope: Surah[] }) {
 
   const handleMeaningPick = (meaningSurah: Surah) => {
     if (selectedName === null || matched.has(meaningSurah.number) || wrongPair) return;
-    if (meaningSurah.number === selectedName) {
+    const nameSurah = round.names.find((s) => s.number === selectedName);
+    if (!nameSurah) return;
+    const correct = meaningSurah.number === selectedName;
+    setAttempts((a) => [
+      ...a,
+      {
+        prompt: `Pasangkan: ${nameSurah.name}`,
+        yourAnswer: meaningSurah.meaning,
+        correctAnswer: nameSurah.meaning,
+        correct,
+      },
+    ]);
+    if (correct) {
       setMatched((prev) => new Set(prev).add(meaningSurah.number));
       setSelectedName(null);
       setStreak((s) => s + 1);
@@ -81,6 +106,8 @@ export function MatchingGame({ scope }: { scope: Surah[] }) {
     setWrongPair(null);
     setFeedback(null);
     setStreak(0);
+    setAttempts([]);
+    savedRoundRef.current = null;
   };
 
   const palette = useMemo(

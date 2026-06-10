@@ -49,7 +49,11 @@ export function ScopedGame({
   // Track an in-memory override so confirming the picker doesn't race the
   // localStorage write/read round-trip.
   const [override, setOverride] = useState<number[] | null>(null);
-  const [pickerOverride, setPickerOverride] = useState<boolean>(false);
+  // Tri-state picker visibility:
+  //   null  = "auto" — open if scope isn't ready yet (first visit)
+  //   true  = explicitly opened by kid via the Ganti Pilihan button
+  //   false = explicitly dismissed by the close button
+  const [pickerVisible, setPickerVisible] = useState<boolean | null>(null);
 
   const filtered = useMemo<number[]>(() => {
     const source = override ?? stored ?? [];
@@ -57,9 +61,8 @@ export function ScopedGame({
   }, [override, stored, allowedSet]);
 
   const ready = filtered.length >= minimum;
-  // The picker opens automatically when there's no usable scope yet, or when
-  // the kid explicitly asks to change it.
-  const pickerOpen = !ready || pickerOverride;
+  const pickerOpen =
+    pickerVisible === true || (pickerVisible === null && !ready);
 
   const activeScope = useMemo<Surah[]>(
     () =>
@@ -73,11 +76,11 @@ export function ScopedGame({
     const cleaned = allowedSet ? numbers.filter((n) => allowedSet.has(n)) : numbers;
     writeScope(gameId, cleaned);
     setOverride(cleaned);
-    setPickerOverride(false);
+    setPickerVisible(false);
   };
 
   const handleCancel = () => {
-    if (ready) setPickerOverride(false);
+    setPickerVisible(false);
   };
 
   const initial = filtered.length
@@ -94,14 +97,14 @@ export function ScopedGame({
         <>
           <ScopeBadge
             scope={activeScope}
-            onChange={() => setPickerOverride(true)}
+            onChange={() => setPickerVisible(true)}
           />
           {/* `key` on the wrapper forces the game to remount when the
               kid changes scope, giving a fresh session with no stale state. */}
           <div key={scopeKey}>{children(activeScope)}</div>
         </>
       ) : (
-        <ScopePlaceholder />
+        <ScopePlaceholder onPick={() => setPickerVisible(true)} />
       )}
       {pickerOpen && (
         <SurahScopePicker
@@ -109,7 +112,6 @@ export function ScopedGame({
           minimum={minimum}
           availableNumbers={availableNumbers}
           restrictedNote={restrictedNote}
-          hideCancel={!ready}
           onConfirm={handleConfirm}
           onCancel={handleCancel}
         />
@@ -118,12 +120,19 @@ export function ScopedGame({
   );
 }
 
-function ScopePlaceholder() {
+function ScopePlaceholder({ onPick }: { onPick: () => void }) {
   return (
-    <div className="rounded-3xl bg-white/90 p-8 text-center shadow ring-2 ring-pink-100">
+    <div className="flex flex-col items-center gap-4 rounded-3xl bg-white/90 p-8 text-center shadow ring-2 ring-pink-100">
       <p className="text-base font-bold text-pink-500">
-        🎯 Pilih surah dulu di kotak di atas yuk!
+        🎯 Pilih surah dulu yuk untuk mulai bermain!
       </p>
+      <button
+        type="button"
+        onClick={onPick}
+        className="rounded-full bg-pink-500 px-6 py-3 text-base font-extrabold text-white shadow-md transition hover:bg-pink-600 active:scale-95"
+      >
+        🎯 {strings.scopePickerTitle}
+      </button>
     </div>
   );
 }

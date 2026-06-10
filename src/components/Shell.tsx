@@ -9,6 +9,7 @@ const nav = [
   { href: "/cocokkan", label: strings.navMatch, color: "bg-emerald-200 text-emerald-900 hover:bg-emerald-300" },
   { href: "/tebak-ayat", label: strings.navGuess, color: "bg-violet-200 text-violet-900 hover:bg-violet-300" },
   { href: "/sambung", label: strings.navConnect, color: "bg-orange-200 text-orange-900 hover:bg-orange-300" },
+  { href: "/riwayat", label: strings.navHistory, color: "bg-rose-200 text-rose-900 hover:bg-rose-300" },
 ] as const;
 
 export function Shell({ children }: { children: React.ReactNode }) {
