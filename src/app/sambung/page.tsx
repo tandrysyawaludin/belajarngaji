@@ -1,4 +1,4 @@
-import { SambungAyatGame } from "@/components/SambungAyatGame";
+import { ScopedSambungAyatGame } from "@/components/ScopedSambungAyatGame";
 import { strings } from "@/lib/strings";
 
 export const metadata = {
@@ -19,7 +19,7 @@ export default function SambungPage() {
           30 sambil bermain!
         </p>
       </section>
-      <SambungAyatGame />
+      <ScopedSambungAyatGame />
     </div>
   );
 }

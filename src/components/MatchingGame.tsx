@@ -1,27 +1,29 @@
 "use client";
 
 import { useEffect, useMemo, useState } from "react";
-import { SURAHS, type Surah } from "@/data/surahs";
+import { type Surah } from "@/data/surahs";
 import { strings } from "@/lib/strings";
 import { sampleUnique, shuffle } from "@/lib/random";
 import { FeedbackOverlay, type FeedbackKind, fireConfetti } from "./Feedback";
 import { Mascot } from "./Mascot";
 
-const PAIRS_PER_ROUND = 5;
+const MAX_PAIRS_PER_ROUND = 5;
 
 interface Round {
   names: Surah[];
   shuffledMeanings: Surah[];
 }
 
-function buildRound(): Round {
+function buildRound(scope: Surah[]): Round {
   // Several surahs share the same meaning (e.g. "Hari Kiamat", "Terbelah").
-  // Deduplicate by meaning so each round has unambiguous matches.
+  // Deduplicate within the kid's scope so each round has unambiguous matches.
   const byMeaning = new Map<string, Surah>();
-  for (const s of SURAHS) {
+  for (const s of scope) {
     if (!byMeaning.has(s.meaning)) byMeaning.set(s.meaning, s);
   }
-  const names = sampleUnique(Array.from(byMeaning.values()), PAIRS_PER_ROUND);
+  const pool = Array.from(byMeaning.values());
+  const count = Math.min(MAX_PAIRS_PER_ROUND, pool.length);
+  const names = sampleUnique(pool, count);
   return { names, shuffledMeanings: shuffle(names) };
 }
 
@@ -33,8 +35,8 @@ const NAME_COLORS = [
   "bg-violet-100 text-violet-900 ring-violet-200 hover:bg-violet-200",
 ];
 
-export function MatchingGame() {
-  const [round, setRound] = useState<Round>(() => buildRound());
+export function MatchingGame({ scope }: { scope: Surah[] }) {
+  const [round, setRound] = useState<Round>(() => buildRound(scope));
   const [matched, setMatched] = useState<Set<number>>(new Set());
   const [selectedName, setSelectedName] = useState<number | null>(null);
   const [wrongPair, setWrongPair] = useState<{ name: number; meaning: number } | null>(
@@ -73,7 +75,7 @@ export function MatchingGame() {
   };
 
   const newRound = () => {
-    setRound(buildRound());
+    setRound(buildRound(scope));
     setMatched(new Set());
     setSelectedName(null);
     setWrongPair(null);

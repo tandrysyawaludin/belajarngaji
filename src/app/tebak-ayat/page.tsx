@@ -1,4 +1,4 @@
-import { GuessVersesGame } from "@/components/GuessVersesGame";
+import { ScopedGuessVersesGame } from "@/components/ScopedGuessVersesGame";
 import { strings } from "@/lib/strings";
 
 export const metadata = {
@@ -17,7 +17,7 @@ export default function GuessPage() {
           Tebak berapa jumlah ayat dari surah. Coba dari yang pendek dulu ya!
         </p>
       </section>
-      <GuessVersesGame />
+      <ScopedGuessVersesGame />
     </div>
   );
 }

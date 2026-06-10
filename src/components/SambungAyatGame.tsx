@@ -11,23 +11,6 @@ import { Mascot } from "./Mascot";
 const TOTAL = 8;
 const OPTIONS = 4;
 
-// Pool of (chapter, currentVerseIndex) positions where a "next verse" exists.
-// Only chapters with ≥ 2 verses can yield a sambung-ayat question.
-const POSITIONS = JUZ30_NUMBERS.flatMap((chapter) => {
-  const verses = JUZ30_CHAPTERS[chapter];
-  if (!verses || verses.length < 2) return [];
-  // Skip verse 1 → 2 of every surah that starts with Basmalah text repeats?
-  // The fawazahmed0 Indopak edition includes Basmalah only in Al-Fatihah, so
-  // every juz-30 chapter starts fresh. Use indices 0..length-2.
-  return verses.slice(0, -1).map((_, i) => ({ chapter, index: i }));
-});
-
-// Flat pool of every verse in juz 30, used to draw plausible distractors.
-const ALL_VERSES: Array<{ chapter: number; verse: Juz30Verse }> = JUZ30_NUMBERS.flatMap(
-  (chapter) =>
-    (JUZ30_CHAPTERS[chapter] ?? []).map((verse) => ({ chapter, verse })),
-);
-
 interface Question {
   surah: Surah;
   current: Juz30Verse;
@@ -35,42 +18,73 @@ interface Question {
   options: Juz30Verse[];
 }
 
-function buildQuestion(): Question | null {
-  const pos = pick(POSITIONS);
+function buildQuestion(
+  positions: Array<{ chapter: number; index: number }>,
+  distractorPool: Array<{ chapter: number; verse: Juz30Verse }>,
+): Question | null {
+  if (!positions.length) return null;
+  const pos = pick(positions);
   const verses = JUZ30_CHAPTERS[pos.chapter];
   const surah = getSurah(pos.chapter);
   if (!surah || !verses) return null;
   const current = verses[pos.index];
   const answer = verses[pos.index + 1];
 
-  // Draw 3 distractors. Prefer verses from other surahs (so kids who memorize
-  // a surah well don't trivially win) but skip any whose text matches the
-  // answer (Arabic — guards against rare duplicates).
-  const candidates = ALL_VERSES.filter(
-    (v) =>
-      v.verse.arabic !== answer.arabic &&
-      v.verse.arabic !== current.arabic &&
-      !(v.chapter === pos.chapter && v.verse.verse === answer.verse),
-  );
+  // Draw 3 distractors from the scope, skipping the answer/current verse and
+  // any rare duplicate Arabic text. Falling back to the full juz-30 pool keeps
+  // the game playable when the kid picked only one short surah.
+  const filterFn = (v: { chapter: number; verse: Juz30Verse }) =>
+    v.verse.arabic !== answer.arabic &&
+    v.verse.arabic !== current.arabic &&
+    !(v.chapter === pos.chapter && v.verse.verse === answer.verse);
+  let candidates = distractorPool.filter(filterFn);
+  if (candidates.length < OPTIONS - 1) {
+    const wholeJuz30 = JUZ30_NUMBERS.flatMap((c) =>
+      (JUZ30_CHAPTERS[c] ?? []).map((verse) => ({ chapter: c, verse })),
+    );
+    candidates = wholeJuz30.filter(filterFn);
+  }
   const distractors = sampleUnique(candidates, OPTIONS - 1).map((v) => v.verse);
   const options = shuffle([answer, ...distractors]);
 
   return { surah, current, answer, options };
 }
 
-function buildSession(): Question[] {
+interface Pools {
+  positions: Array<{ chapter: number; index: number }>;
+  distractors: Array<{ chapter: number; verse: Juz30Verse }>;
+}
+
+function buildPools(scope: Surah[]): Pools {
+  const scopeNumbers = new Set(scope.map((s) => s.number));
+  const positions = JUZ30_NUMBERS.filter((c) => scopeNumbers.has(c)).flatMap(
+    (chapter) => {
+      const verses = JUZ30_CHAPTERS[chapter];
+      if (!verses || verses.length < 2) return [];
+      return verses.slice(0, -1).map((_, i) => ({ chapter, index: i }));
+    },
+  );
+  const distractors = JUZ30_NUMBERS.filter((c) => scopeNumbers.has(c)).flatMap(
+    (chapter) =>
+      (JUZ30_CHAPTERS[chapter] ?? []).map((verse) => ({ chapter, verse })),
+  );
+  return { positions, distractors };
+}
+
+function buildSession(scope: Surah[]): Question[] {
+  const pools = buildPools(scope);
   const out: Question[] = [];
   let attempts = 0;
   while (out.length < TOTAL && attempts < TOTAL * 4) {
     attempts += 1;
-    const q = buildQuestion();
+    const q = buildQuestion(pools.positions, pools.distractors);
     if (q) out.push(q);
   }
   return out;
 }
 
-export function SambungAyatGame() {
-  const [session, setSession] = useState<Question[]>(() => buildSession());
+export function SambungAyatGame({ scope }: { scope: Surah[] }) {
+  const [session, setSession] = useState<Question[]>(() => buildSession(scope));
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [chosen, setChosen] = useState<string | null>(null);
@@ -94,7 +108,7 @@ export function SambungAyatGame() {
   };
 
   const restart = () => {
-    setSession(buildSession());
+    setSession(buildSession(scope));
     setIndex(0);
     setScore(0);
     setChosen(null);

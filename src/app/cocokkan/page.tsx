@@ -1,4 +1,4 @@
-import { MatchingGame } from "@/components/MatchingGame";
+import { ScopedMatchingGame } from "@/components/ScopedMatchingGame";
 import { strings } from "@/lib/strings";
 
 export const metadata = {
@@ -17,7 +17,7 @@ export default function MatchingPage() {
           Pilih nama surah di kiri, lalu pilih arti yang cocok di kanan!
         </p>
       </section>
-      <MatchingGame />
+      <ScopedMatchingGame />
     </div>
   );
 }

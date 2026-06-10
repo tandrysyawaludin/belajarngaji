@@ -56,4 +56,21 @@ export const strings = {
 
   footerNote:
     "Dibuat dengan cinta untuk anak-anak yang sedang belajar Al-Qur'an.",
+
+  scopePickerTitle: "Pilih Surah",
+  scopePickerSubtitle:
+    "Pilih surah yang sudah dipelajari. Soal hanya keluar dari surah yang dicentang.",
+  scopeSearchPlaceholder: "Cari surah (nama atau nomor)...",
+  scopePresetAll: "Pilih Semua",
+  scopePresetNone: "Hapus Semua",
+  scopePresetJuz30: "Juz 30",
+  scopePresetShort: "Surah Pendek",
+  scopePresetHafalan: "Hafalan Awal",
+  scopeCount: "dipilih",
+  scopeMinHint: "Minimal pilih {n} surah",
+  scopeStart: "Mulai Bermain",
+  scopeCancel: "Batal",
+  scopeChange: "Ganti Pilihan",
+  scopeRestricted:
+    "Game ini hanya menggunakan surah dari juz 30 yang sudah disiapkan.",
 } as const;

@@ -16,10 +16,12 @@ interface Question {
   correct: string;
 }
 
-function buildQuestion(used: Set<number>): Question {
-  const pool = SURAHS.filter((s) => !used.has(s.number));
-  const choices = pool.length ? pool : SURAHS;
+function buildQuestion(scope: Surah[], used: Set<number>): Question {
+  const pool = scope.filter((s) => !used.has(s.number));
+  const choices = pool.length ? pool : scope;
   const surah = choices[Math.floor(Math.random() * choices.length)];
+  // Distractors are drawn from ALL surahs so the kid actually has to know the
+  // meaning of the surah in scope rather than recognize it by elimination.
   const distractors = sampleUnique(
     SURAHS.filter((s) => s.meaning !== surah.meaning).map((s) => s.meaning),
     OPTIONS_PER_QUESTION - 1,
@@ -35,11 +37,14 @@ function buildQuestion(used: Set<number>): Question {
   };
 }
 
-function buildSession(): Question[] {
+function buildSession(scope: Surah[]): Question[] {
+  // Cap question count at scope size so the kid is never asked the same surah
+  // twice in a single session.
+  const target = Math.min(TOTAL_QUESTIONS, Math.max(1, scope.length));
   const used = new Set<number>();
   const questions: Question[] = [];
-  for (let i = 0; i < TOTAL_QUESTIONS; i++) {
-    const q = buildQuestion(used);
+  for (let i = 0; i < target; i++) {
+    const q = buildQuestion(scope, used);
     used.add(q.surah.number);
     questions.push(q);
   }
@@ -50,8 +55,8 @@ type AnswerState =
   | { phase: "answering" }
   | { phase: "revealed"; chosen: string; correct: boolean };
 
-export function QuizGame() {
-  const [session, setSession] = useState<Question[]>(() => buildSession());
+export function QuizGame({ scope }: { scope: Surah[] }) {
+  const [session, setSession] = useState<Question[]>(() => buildSession(scope));
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [feedback, setFeedback] = useState<FeedbackKind>(null);
@@ -75,7 +80,7 @@ export function QuizGame() {
   };
 
   const restart = () => {
-    setSession(buildSession());
+    setSession(buildSession(scope));
     setIndex(0);
     setScore(0);
     setAnswer({ phase: "answering" });

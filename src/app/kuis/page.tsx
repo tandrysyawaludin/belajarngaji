@@ -1,4 +1,4 @@
-import { QuizGame } from "@/components/QuizGame";
+import { ScopedQuizGame } from "@/components/ScopedQuizGame";
 import { strings } from "@/lib/strings";
 
 export const metadata = {
@@ -17,7 +17,7 @@ export default function QuizPage() {
           Pilih arti yang benar. Kalau betul ada confetti, kalau salah ada bom!
         </p>
       </section>
-      <QuizGame />
+      <ScopedQuizGame />
     </div>
   );
 }

@@ -1,17 +1,14 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { SURAHS, type Surah } from "@/data/surahs";
+import { type Surah } from "@/data/surahs";
 import { strings } from "@/lib/strings";
 import { sampleUnique, shuffle } from "@/lib/random";
 import { FeedbackOverlay, type FeedbackKind } from "./Feedback";
 import { Mascot } from "./Mascot";
 
-const TOTAL = 8;
+const MAX_QUESTIONS = 8;
 const OPTIONS = 4;
-
-// Keep the verse counts small enough for kids to reason about — short surahs only.
-const SHORT_SURAHS = SURAHS.filter((s) => s.verses <= 40);
 
 interface Question {
   surah: Surah;
@@ -37,15 +34,16 @@ function buildOptions(correct: number): number[] {
   return shuffle(Array.from(pool));
 }
 
-function buildSession(): Question[] {
-  return sampleUnique(SHORT_SURAHS, TOTAL).map((surah) => ({
+function buildSession(scope: Surah[]): Question[] {
+  const count = Math.min(MAX_QUESTIONS, Math.max(1, scope.length));
+  return sampleUnique(scope, count).map((surah) => ({
     surah,
     options: buildOptions(surah.verses),
   }));
 }
 
-export function GuessVersesGame() {
-  const [session, setSession] = useState<Question[]>(() => buildSession());
+export function GuessVersesGame({ scope }: { scope: Surah[] }) {
+  const [session, setSession] = useState<Question[]>(() => buildSession(scope));
   const [index, setIndex] = useState(0);
   const [score, setScore] = useState(0);
   const [chosen, setChosen] = useState<number | null>(null);
@@ -69,7 +67,7 @@ export function GuessVersesGame() {
   };
 
   const restart = () => {
-    setSession(buildSession());
+    setSession(buildSession(scope));
     setIndex(0);
     setScore(0);
     setChosen(null);
