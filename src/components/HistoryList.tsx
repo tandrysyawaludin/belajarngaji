@@ -11,7 +11,7 @@ import {
   subscribeHistory,
   type HistoryEntry,
 } from "@/lib/history";
-import { Mascot } from "./Mascot";
+import { ThemedMascot } from "./ThemedMascot";
 
 // Surahs the kid hasn't actually played yet aren't really meaningful in the
 // summary view — we'll dedupe and just show counts/colors per game.
@@ -94,7 +94,7 @@ export function HistoryList() {
   if (entries.length === 0) {
     return (
       <article className="flex flex-col items-center gap-4 rounded-3xl bg-white/90 p-10 text-center shadow ring-2 ring-pink-100">
-        <Mascot size={120} mood="happy" />
+        <ThemedMascot size={120} mood="happy" />
         <p className="text-lg font-extrabold text-pink-700">
           {strings.historyEmpty}
         </p>

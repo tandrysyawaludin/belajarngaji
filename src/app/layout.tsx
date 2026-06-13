@@ -1,7 +1,10 @@
 import type { Metadata, Viewport } from "next";
 import { Quicksand, Amiri, Noto_Naskh_Arabic } from "next/font/google";
+import { Analytics } from "@vercel/analytics/next";
 import "./globals.css";
 import { Shell } from "@/components/Shell";
+import { ThemeProvider } from "@/components/ThemeProvider";
+import { THEME_BOOTSTRAP_SCRIPT } from "@/lib/theme";
 import { strings } from "@/lib/strings";
 
 const quicksand = Quicksand({
@@ -48,9 +51,18 @@ export default function RootLayout({
     <html
       lang="id"
       className={`${quicksand.variable} ${amiri.variable} ${notoArabic.variable} h-full`}
+      suppressHydrationWarning
     >
+      <head>
+        {/* Sync-set the data-theme attribute *before* paint so the kid never
+            sees a flash of the wrong palette on first render. */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
+      </head>
       <body className="min-h-full font-sans antialiased">
-        <Shell>{children}</Shell>
+        <ThemeProvider>
+          <Shell>{children}</Shell>
+        </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );

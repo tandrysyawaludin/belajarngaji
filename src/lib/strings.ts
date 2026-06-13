@@ -11,6 +11,8 @@ export const strings = {
   navGuess: "Tebak Surah",
   navConnect: "Sambung Ayat",
   navHistory: "Riwayat",
+  navTheme: "Tema",
+  navIqra: "Iqra",
 
   homeHello: "Assalamu'alaikum, sahabat kecil!",
   homeIntro:
@@ -28,6 +30,8 @@ export const strings = {
   cardConnectDesc: "Lanjutkan ayat berikutnya. Latih hafalan juz 30!",
   cardHistoryTitle: "Riwayat Skor",
   cardHistoryDesc: "Lihat catatan bermain & jawaban benar/salah-mu.",
+  cardIqraTitle: "Iqra",
+  cardIqraDesc: "Latihan membaca huruf hijaiyah dari Jilid 1 sampai 6.",
 
   loadingLabel: "Sedang memuat ayat...",
   errorLabel: "Maaf, ada gangguan. Coba lagi ya.",
@@ -90,4 +94,21 @@ export const strings = {
   historyClearConfirm:
     "Yakin mau hapus semua riwayat? Catatan akan hilang selamanya.",
   historyScopeNote: "Cakupan {n} surah",
+
+  themePickerTitle: "Pilih Tema Karakter",
+  themePickerSubtitle:
+    "Pilih sahabat lucu untuk menemanimu belajar hari ini. Klik karakter favoritmu!",
+  themePickerSkip: "Lewati",
+  themePickerFooter:
+    "Kamu bisa ganti tema kapan saja lewat tombol 🎨 Tema di atas.",
+  themeActiveBadge: "Dipakai",
+  themeChangeButton: "Ganti Tema",
+
+  iqraTitle: "Belajar Iqra",
+  iqraSubtitle: "Pilih jilid, lalu latihan membaca halaman demi halaman.",
+  iqraJilid: "Jilid",
+  iqraComingSoon: "Segera hadir",
+  iqraPage: "Halaman",
+  iqraBackToIqra: "Kembali ke Iqra",
+  iqraBackToJilid: "Kembali ke Jilid",
 } as const;

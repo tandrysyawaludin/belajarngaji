@@ -6,7 +6,7 @@ import { strings } from "@/lib/strings";
 import { sampleUnique, shuffle } from "@/lib/random";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { FeedbackOverlay, type FeedbackKind, fireConfetti } from "./Feedback";
-import { Mascot } from "./Mascot";
+import { ThemedMascot } from "./ThemedMascot";
 
 const MAX_PAIRS_PER_ROUND = 5;
 
@@ -195,7 +195,7 @@ export function MatchingGame({ scope }: { scope: Surah[] }) {
 
       {complete && (
         <div className="flex flex-col items-center gap-3 rounded-3xl bg-gradient-to-br from-emerald-100 via-yellow-100 to-pink-100 p-6 text-center shadow-lg ring-4 ring-white/60 pop-in">
-          <Mascot size={120} mood="excited" className="wobble" />
+          <ThemedMascot size={120} mood="excited" className="wobble" />
           <h2 className="text-2xl font-extrabold text-emerald-700">
             🎉 {strings.perfectScore}
           </h2>

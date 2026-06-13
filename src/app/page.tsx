@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { strings } from "@/lib/strings";
-import { Mascot } from "@/components/Mascot";
+import { ThemedMascot } from "@/components/ThemedMascot";
 
 const cards = [
   {
@@ -16,6 +16,13 @@ const cards = [
     desc: strings.cardQuizDesc,
     bg: "from-yellow-300 to-orange-400",
     emoji: "⭐",
+  },
+  {
+    href: "/iqra",
+    title: strings.cardIqraTitle,
+    desc: strings.cardIqraDesc,
+    bg: "from-lime-300 to-green-400",
+    emoji: "🕌",
   },
   {
     href: "/cocokkan",
@@ -54,7 +61,7 @@ export default function Home() {
         <div className="dotted absolute inset-0 opacity-50" aria-hidden="true" />
         <div className="relative flex flex-col items-center gap-4 sm:flex-row">
           <div className="wobble">
-            <Mascot size={140} mood="excited" />
+            <ThemedMascot size={140} mood="excited" />
           </div>
           <div className="text-center sm:text-left">
             <p className="text-base font-bold text-pink-500">

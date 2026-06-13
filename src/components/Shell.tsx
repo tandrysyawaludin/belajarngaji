@@ -1,10 +1,12 @@
 import Link from "next/link";
 import { strings } from "@/lib/strings";
-import { Mascot } from "./Mascot";
+import { ThemedMascot } from "./ThemedMascot";
+import { ThemeBadge } from "./ThemeBadge";
 
 const nav = [
   { href: "/", label: strings.navHome, color: "bg-pink-200 text-pink-900 hover:bg-pink-300" },
   { href: "/surah", label: strings.navSurah, color: "bg-sky-200 text-sky-900 hover:bg-sky-300" },
+  { href: "/iqra", label: strings.navIqra, color: "bg-lime-200 text-lime-900 hover:bg-lime-300" },
   { href: "/kuis", label: strings.navQuiz, color: "bg-yellow-200 text-yellow-900 hover:bg-yellow-300" },
   { href: "/cocokkan", label: strings.navMatch, color: "bg-emerald-200 text-emerald-900 hover:bg-emerald-300" },
   { href: "/tebak-ayat", label: strings.navGuess, color: "bg-violet-200 text-violet-900 hover:bg-violet-300" },
@@ -15,11 +17,14 @@ const nav = [
 export function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col gap-5 px-4 py-6">
-      <header className="rounded-[2rem] bg-white/85 p-4 shadow-lg ring-4 ring-pink-100 backdrop-blur">
+      <header
+        className="rounded-[2rem] bg-white/85 p-4 shadow-lg ring-4 backdrop-blur"
+        style={{ borderColor: "var(--theme-primary-soft)" }}
+      >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-3">
             <span className="wobble">
-              <Mascot size={56} mood="happy" />
+              <ThemedMascot size={56} mood="happy" />
             </span>
             <span>
               <span className="block text-2xl font-extrabold leading-tight text-pink-600">
@@ -30,6 +35,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </span>
             </span>
           </Link>
+          <ThemeBadge />
         </div>
         <nav className="mt-3 flex flex-wrap gap-2">
           {nav.map((item) => (

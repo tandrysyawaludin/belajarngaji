@@ -3,7 +3,7 @@ import { notFound } from "next/navigation";
 import { getSurah, SURAHS } from "@/data/surahs";
 import { fetchSurahWithTranslation, recitationUrl } from "@/lib/quran";
 import { strings } from "@/lib/strings";
-import { Mascot } from "@/components/Mascot";
+import { ThemedMascot } from "@/components/ThemedMascot";
 import { SurahAudio } from "@/components/SurahAudio";
 
 export async function generateStaticParams() {
@@ -54,7 +54,7 @@ export default async function SurahPage({
       <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-pink-200 via-pink-100 to-yellow-100 p-6 shadow-lg ring-4 ring-white/60">
         <div className="dotted absolute inset-0 opacity-40" aria-hidden="true" />
         <div className="relative flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
-          <Mascot size={96} mood="happy" className="wobble" />
+          <ThemedMascot size={96} mood="happy" className="wobble" />
           <div className="flex-1 text-center sm:text-left">
             <p className="text-xs font-bold uppercase tracking-wider text-pink-500">
               {strings.surahNumberLabel} {surah.number}

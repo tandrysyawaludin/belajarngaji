@@ -1,14 +1,81 @@
 @import "tailwindcss";
 
 :root {
+  /* Defaults — match the "Kitty" theme so SSR matches the post-paint look. */
   --background: #fff1f7;
   --foreground: #2c1a3f;
-  --pink: #ff7eb6;
-  --pink-soft: #ffd6e7;
-  --mint: #b8f1d2;
-  --sky: #c5e0ff;
-  --lemon: #fff4a3;
-  --lavender: #e2d4ff;
+  --theme-primary: #ff7eb6;
+  --theme-primary-deep: #db2777;
+  --theme-primary-soft: #ffd6e7;
+  --theme-accent: #ff5e9c;
+  --theme-bg-1: #ffe4f0;
+  --theme-bg-2: #d8ecff;
+  --theme-bg-3: #fff5b8;
+  --theme-bg-base: #fff1f7;
+}
+
+/* Per-theme palette overrides. The values are mirrored from
+   src/lib/themes.ts so changing them in one place requires updating the
+   other — kept in sync via the test smoke runs. */
+html[data-theme="kitty"] {
+  --theme-primary: #ff7eb6;
+  --theme-primary-deep: #db2777;
+  --theme-primary-soft: #ffd6e7;
+  --theme-accent: #ff5e9c;
+  --theme-bg-1: #ffe4f0;
+  --theme-bg-2: #d8ecff;
+  --theme-bg-3: #fff5b8;
+  --theme-bg-base: #fff1f7;
+}
+html[data-theme="melody"] {
+  --theme-primary: #f9728c;
+  --theme-primary-deep: #be185d;
+  --theme-primary-soft: #ffd9e1;
+  --theme-accent: #ef4f7b;
+  --theme-bg-1: #ffe4ec;
+  --theme-bg-2: #ffd2dc;
+  --theme-bg-3: #fff1d6;
+  --theme-bg-base: #fff0f4;
+}
+html[data-theme="kuromi"] {
+  --theme-primary: #8b5cf6;
+  --theme-primary-deep: #6d28d9;
+  --theme-primary-soft: #e9defc;
+  --theme-accent: #ec4899;
+  --theme-bg-1: #e9defc;
+  --theme-bg-2: #fde4f3;
+  --theme-bg-3: #dfd0ff;
+  --theme-bg-base: #f4eefe;
+}
+html[data-theme="cinnamon"] {
+  --theme-primary: #38bdf8;
+  --theme-primary-deep: #0284c7;
+  --theme-primary-soft: #d1efff;
+  --theme-accent: #7dd3fc;
+  --theme-bg-1: #dcefff;
+  --theme-bg-2: #fef9c3;
+  --theme-bg-3: #ffffff;
+  --theme-bg-base: #eff8ff;
+}
+html[data-theme="pompom"] {
+  --theme-primary: #f59e0b;
+  --theme-primary-deep: #b45309;
+  --theme-primary-soft: #fef3c7;
+  --theme-accent: #fbbf24;
+  --theme-bg-1: #fff3a3;
+  --theme-bg-2: #ffe8c2;
+  --theme-bg-3: #ffe4d6;
+  --theme-bg-base: #fff8e1;
+}
+html[data-theme="keroppi"] {
+  --theme-primary: #10b981;
+  --theme-primary-deep: #047857;
+  --theme-primary-soft: #d1fae5;
+  --theme-accent: #34d399;
+  --theme-bg-1: #d1fae5;
+  --theme-bg-2: #fde68a;
+  --theme-bg-3: #dcfce7;
+  --theme-bg-base: #ecfdf5;
 }
 
 @theme inline {
@@ -23,12 +90,13 @@
 html,
 body {
   background:
-    radial-gradient(circle at 10% 10%, #ffe4f0 0%, transparent 40%),
-    radial-gradient(circle at 90% 0%, #d8ecff 0%, transparent 45%),
-    radial-gradient(circle at 80% 90%, #fff5b8 0%, transparent 50%),
-    var(--background);
+    radial-gradient(circle at 10% 10%, var(--theme-bg-1) 0%, transparent 40%),
+    radial-gradient(circle at 90% 0%, var(--theme-bg-2) 0%, transparent 45%),
+    radial-gradient(circle at 80% 90%, var(--theme-bg-3) 0%, transparent 50%),
+    var(--theme-bg-base);
   background-attachment: fixed;
   color: var(--foreground);
+  transition: background-color 350ms ease;
 }
 
 .arabic {

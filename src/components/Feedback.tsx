@@ -2,7 +2,7 @@
 
 import confetti from "canvas-confetti";
 import { useEffect } from "react";
-import { Mascot } from "./Mascot";
+import { ThemedMascot } from "./ThemedMascot";
 import { strings } from "@/lib/strings";
 
 const HAPPY_COLORS = ["#ff7eb6", "#ffd166", "#9bd0ff", "#b8f1d2", "#e2d4ff"];
@@ -53,7 +53,7 @@ export function FeedbackOverlay({
       <div className="pop-in flex flex-col items-center gap-2 rounded-3xl bg-white/95 px-6 py-5 shadow-2xl ring-4 ring-pink-200">
         {kind === "correct" ? (
           <>
-            <Mascot size={88} mood="excited" />
+            <ThemedMascot size={88} mood="excited" />
             <p className="text-xl font-extrabold text-pink-600">
               {strings.correct}
             </p>

@@ -6,7 +6,7 @@ import { strings } from "@/lib/strings";
 import { sampleUnique, shuffle } from "@/lib/random";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { FeedbackOverlay, type FeedbackKind } from "./Feedback";
-import { Mascot } from "./Mascot";
+import { ThemedMascot } from "./ThemedMascot";
 
 const TOTAL_QUESTIONS = 10;
 const OPTIONS_PER_QUESTION = 4;
@@ -248,7 +248,7 @@ function Result({
 
   return (
     <article className="flex flex-col items-center gap-4 rounded-3xl bg-gradient-to-br from-pink-100 via-yellow-100 to-emerald-100 p-8 text-center shadow-lg ring-4 ring-white/60">
-      <Mascot size={140} mood={mood} className="wobble" />
+      <ThemedMascot size={140} mood={mood} className="wobble" />
       <h2 className="text-3xl font-extrabold text-pink-700">{message}</h2>
       <p className="text-xl font-bold text-pink-900">
         {strings.scoreLabel}:{" "}
