@@ -1,0 +1,3 @@
+{"type":"server-started","port":55818,"host":"127.0.0.1","url_host":"localhost","url":"http://localhost:55818","screen_dir":"/Users/tandry.soedijanto/Playground/belajarngaji/.superpowers/brainstorm/63853-1782484110/content","state_dir":"/Users/tandry.soedijanto/Playground/belajarngaji/.superpowers/brainstorm/63853-1782484110/state"}
+fs.watch error: EMFILE: too many open files, watch
+{"type":"server-stopped","reason":"owner process exited"}
