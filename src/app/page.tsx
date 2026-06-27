@@ -46,6 +46,13 @@ const cards = [
     emoji: "🔗",
   },
   {
+    href: "/ular-tangga",
+    title: strings.cardSnakeLadderTitle,
+    desc: strings.cardSnakeLadderDesc,
+    bg: "from-lime-300 to-emerald-400",
+    emoji: "🎲",
+  },
+  {
     href: "/riwayat",
     title: strings.cardHistoryTitle,
     desc: strings.cardHistoryDesc,

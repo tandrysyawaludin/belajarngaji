@@ -1,0 +1,60 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" role="img" aria-labelledby="title desc">
+  <title id="title">Belajar Ngaji</title>
+  <desc id="desc">Belajar Ngaji social preview with open Islamic book logo</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1200" y2="630" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#064e3b" />
+      <stop offset="0.55" stop-color="#047857" />
+      <stop offset="1" stop-color="#f59e0b" />
+    </linearGradient>
+    <radialGradient id="halo" cx="72%" cy="45%" r="45%">
+      <stop offset="0" stop-color="#fef3c7" stop-opacity="0.45" />
+      <stop offset="1" stop-color="#fef3c7" stop-opacity="0" />
+    </radialGradient>
+    <linearGradient id="book" x1="685" y1="210" x2="1015" y2="460" gradientUnits="userSpaceOnUse">
+      <stop offset="0" stop-color="#ffffff" />
+      <stop offset="1" stop-color="#ecfdf5" />
+    </linearGradient>
+  </defs>
+
+  <rect width="1200" height="630" fill="url(#bg)" />
+  <rect width="1200" height="630" fill="url(#halo)" />
+
+  <g opacity="0.14" stroke="#ffffff" stroke-width="2" fill="none">
+    <circle cx="90" cy="90" r="44" />
+    <circle cx="1110" cy="540" r="54" />
+    <path d="M 102 520 C 190 450 270 455 360 530" />
+    <path d="M 800 92 C 910 42 1005 68 1102 130" />
+  </g>
+
+  <g transform="translate(92 118)">
+    <text x="0" y="0" fill="#fef3c7" font-family="Arial, Helvetica, sans-serif" font-size="34" font-weight="800" letter-spacing="3">
+      BELAJAR AL-QUR'AN SAMBIL BERMAIN
+    </text>
+    <text x="0" y="112" fill="#ffffff" font-family="Arial, Helvetica, sans-serif" font-size="96" font-weight="900">
+      Belajar Ngaji
+    </text>
+    <text x="0" y="184" fill="#d1fae5" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700">
+      Iqra, surah, audio murottal,
+    </text>
+    <text x="0" y="238" fill="#d1fae5" font-family="Arial, Helvetica, sans-serif" font-size="42" font-weight="700">
+      dan game edukasi Al-Qur'an untuk anak.
+    </text>
+    <rect x="0" y="300" width="390" height="64" rx="32" fill="#facc15" />
+    <text x="34" y="343" fill="#064e3b" font-family="Arial, Helvetica, sans-serif" font-size="30" font-weight="900">
+      belajarngaji.my.id
+    </text>
+  </g>
+
+  <g transform="translate(650 150)">
+    <rect x="0" y="0" width="410" height="360" rx="72" fill="#ecfdf5" opacity="0.2" />
+    <path d="M 74 128 C 132 108 178 126 205 164 C 232 126 278 108 336 128 L 336 292 C 278 274 232 292 205 330 C 178 292 132 274 74 292 Z" fill="url(#book)" stroke="#fef3c7" stroke-width="16" stroke-linejoin="round" />
+    <path d="M 205 164 L 205 330" stroke="#facc15" stroke-width="12" stroke-linecap="round" />
+    <path d="M 112 170 C 142 162 170 170 188 190" stroke="#10b981" stroke-width="10" stroke-linecap="round" fill="none" />
+    <path d="M 112 220 C 142 212 170 220 188 240" stroke="#10b981" stroke-width="10" stroke-linecap="round" fill="none" />
+    <path d="M 298 170 C 268 162 240 170 222 190" stroke="#10b981" stroke-width="10" stroke-linecap="round" fill="none" />
+    <path d="M 298 220 C 268 212 240 220 222 240" stroke="#10b981" stroke-width="10" stroke-linecap="round" fill="none" />
+    <path d="M 282 50 A 54 54 0 1 0 334 118 A 36 36 0 1 1 282 50 Z" fill="#facc15" />
+    <path d="M 342 54 L 351 76 L 375 78 L 356 92 L 362 116 L 342 103 L 322 116 L 328 92 L 309 78 L 333 76 Z" fill="#f59e0b" />
+  </g>
+</svg>

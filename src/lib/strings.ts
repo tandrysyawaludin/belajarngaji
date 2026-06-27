@@ -2,7 +2,7 @@ export const strings = {
   siteTitle: "Belajar Ngaji",
   siteTagline: "Belajar Al-Qur'an Sambil Bermain",
   siteDescription:
-    "Aplikasi belajar Al-Qur'an untuk anak-anak dengan tema lucu dan permainan seru.",
+    "Belajar ngaji online untuk anak-anak dengan Iqra, bacaan surah, audio murottal, dan game edukasi Al-Qur'an interaktif.",
 
   navHome: "Beranda",
   navSurah: "Daftar Surah",
@@ -10,6 +10,7 @@ export const strings = {
   navMatch: "Cocokkan",
   navGuess: "Tebak Surah",
   navConnect: "Sambung Ayat",
+  navSnakeLadder: "Ular Tangga",
   navHistory: "Riwayat",
   navTheme: "Tema",
   navIqra: "Iqra",
@@ -28,6 +29,9 @@ export const strings = {
   cardGuessDesc: "Tebak berapa jumlah ayat dari sebuah surah.",
   cardConnectTitle: "Sambung Ayat",
   cardConnectDesc: "Lanjutkan ayat berikutnya. Latih hafalan juz 30!",
+  cardSnakeLadderTitle: "Ular Tangga Qur'an",
+  cardSnakeLadderDesc:
+    "Lempar dadu dan jawab soal acak di setiap kotak untuk maju.",
   cardHistoryTitle: "Riwayat Skor",
   cardHistoryDesc: "Lihat catatan bermain & jawaban benar/salah-mu.",
   cardIqraTitle: "Iqra",

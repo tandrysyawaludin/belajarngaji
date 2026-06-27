@@ -44,6 +44,13 @@ const GAME_THEME: Record<HistoryEntry["gameId"], { bg: string; text: string; rin
     emoji: "🔗",
     href: "/sambung",
   },
+  "ular-tangga": {
+    bg: "bg-lime-100",
+    text: "text-lime-900",
+    ring: "ring-lime-200",
+    emoji: "🎲",
+    href: "/ular-tangga",
+  },
 };
 
 function useHistory(): HistoryEntry[] {

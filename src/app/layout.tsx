@@ -27,17 +27,66 @@ const notoArabic = Noto_Naskh_Arabic({
   weight: ["400", "700"],
 });
 
+const siteUrl = new URL("https://belajarngaji.my.id");
+
 export const metadata: Metadata = {
+  metadataBase: siteUrl,
   title: `${strings.siteTitle} — ${strings.siteTagline}`,
   description: strings.siteDescription,
   applicationName: strings.siteTitle,
+  keywords: [
+    "belajar ngaji",
+    "belajar Al-Qur'an",
+    "Iqra online",
+    "Iqra anak",
+    "surah Al-Qur'an",
+    "kuis Al-Qur'an",
+    "game edukasi Islam",
+    "belajar membaca Al-Qur'an",
+  ],
+  authors: [{ name: strings.siteTitle, url: siteUrl }],
+  creator: strings.siteTitle,
+  publisher: strings.siteTitle,
   icons: {
-    icon: "/icon.svg",
+    icon: [{ url: "/icon.svg", type: "image/svg+xml" }],
+  },
+  openGraph: {
+    type: "website",
+    locale: "id_ID",
+    url: "/",
+    siteName: strings.siteTitle,
+    title: `${strings.siteTitle} — ${strings.siteTagline}`,
+    description: strings.siteDescription,
+    images: [
+      {
+        url: "/og-image.svg",
+        width: 1200,
+        height: 630,
+        alt: `${strings.siteTitle} - aplikasi belajar Al-Qur'an untuk anak`,
+      },
+    ],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: `${strings.siteTitle} — ${strings.siteTagline}`,
+    description: strings.siteDescription,
+    images: ["/og-image.svg"],
+  },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      "max-image-preview": "large",
+      "max-snippet": -1,
+      "max-video-preview": -1,
+    },
   },
 };
 
 export const viewport: Viewport = {
-  themeColor: "#ff7eb6",
+  themeColor: "#047857",
   width: "device-width",
   initialScale: 1,
 };

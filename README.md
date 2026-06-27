@@ -7,13 +7,14 @@ Antarmuka sepenuhnya dalam Bahasa Indonesia.
 
 | Halaman | Deskripsi |
 |---|---|
-| `/` | Halaman utama dengan empat kartu kegiatan |
+| `/` | Halaman utama dengan kartu kegiatan belajar |
 | `/surah` | Daftar 114 surah lengkap (nama, arti, jumlah ayat) |
 | `/surah/[id]` | Baca surah: tulisan Arab + terjemahan Indonesia + audio murottal |
 | `/kuis` | Kuis pilihan ganda "Apa arti surah X?" — confetti bila benar, animasi bom bila salah |
 | `/cocokkan` | Cocokkan nama surah dengan artinya |
 | `/tebak-ayat` | Tebak jumlah ayat dari sebuah surah |
 | `/sambung` | Sambung ayat — pilih ayat lanjutan dari surah juz 30 (latih hafalan) |
+| `/ular-tangga` | Ular tangga Qur'an — lempar dadu, jawab soal acak, naik tangga atau turun ular |
 
 ## Tech Stack
 

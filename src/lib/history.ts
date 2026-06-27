@@ -38,6 +38,7 @@ export const GAME_LABELS: Record<GameId, string> = {
   cocokkan: "Cocokkan",
   "tebak-ayat": "Tebak Jumlah Ayat",
   sambung: "Sambung Ayat",
+  "ular-tangga": "Ular Tangga",
 };
 
 export function gameLabel(gameId: GameId): string {
