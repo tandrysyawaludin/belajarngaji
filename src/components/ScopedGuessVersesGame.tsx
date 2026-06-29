@@ -12,7 +12,7 @@ export function ScopedGuessVersesGame() {
       minimum={1}
       defaultScope={DEFAULT_SCOPE}
     >
-      {(scope) => <GuessVersesGame scope={scope} />}
+      {(scope, players) => <GuessVersesGame scope={scope} players={players} />}
     </ScopedGame>
   );
 }

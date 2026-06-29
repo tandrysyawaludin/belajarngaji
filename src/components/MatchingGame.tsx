@@ -5,8 +5,11 @@ import { type Surah } from "@/data/surahs";
 import { strings } from "@/lib/strings";
 import { sampleUnique, shuffle } from "@/lib/random";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
+import { isMultiplayer, type Player } from "@/lib/players";
 import { FeedbackOverlay, type FeedbackKind, fireConfetti } from "./Feedback";
+import { MultiplayerResult } from "./MultiplayerResult";
 import { ThemedMascot } from "./ThemedMascot";
+import { TurnBanner } from "./TurnBanner";
 
 const MAX_PAIRS_PER_ROUND = 5;
 
@@ -36,7 +39,14 @@ const NAME_COLORS = [
   "bg-violet-100 text-violet-900 ring-violet-200 hover:bg-violet-200",
 ];
 
-export function MatchingGame({ scope }: { scope: Surah[] }) {
+export function MatchingGame({
+  scope,
+  players,
+}: {
+  scope: Surah[];
+  players: Player[];
+}) {
+  const multi = isMultiplayer(players);
   const [round, setRound] = useState<Round>(() => buildRound(scope));
   const [matched, setMatched] = useState<Set<number>>(new Set());
   const [selectedName, setSelectedName] = useState<number | null>(null);
@@ -46,12 +56,16 @@ export function MatchingGame({ scope }: { scope: Surah[] }) {
   const [feedback, setFeedback] = useState<FeedbackKind>(null);
   const [streak, setStreak] = useState(0);
   const [attempts, setAttempts] = useState<HistoryAnswer[]>([]);
+  const [scores, setScores] = useState<number[]>(() => players.map(() => 0));
+  const [currentPlayer, setCurrentPlayer] = useState(0);
   const savedRoundRef = useRef<Round | null>(null);
 
   const complete = matched.size === round.names.length;
 
+  const scoredPlayers = players.map((p, i) => ({ ...p, score: scores[i] ?? 0 }));
+
   useEffect(() => {
-    if (!complete) return;
+    if (!complete || multi) return;
     fireConfetti();
     if (savedRoundRef.current === round) return;
     savedRoundRef.current = round;
@@ -62,7 +76,7 @@ export function MatchingGame({ scope }: { scope: Surah[] }) {
       answers: attempts,
       scopeNumbers: scope.map((s) => s.number),
     });
-  }, [complete, round, attempts, scope]);
+  }, [complete, multi, round, attempts, scope]);
 
   const handleNamePick = (number: number) => {
     if (matched.has(number) || wrongPair) return;
@@ -88,6 +102,12 @@ export function MatchingGame({ scope }: { scope: Surah[] }) {
       setSelectedName(null);
       setStreak((s) => s + 1);
       setFeedback("correct");
+      // Correct match: this player scores and keeps their turn.
+      if (multi) {
+        setScores((prev) =>
+          prev.map((v, i) => (i === currentPlayer ? v + 1 : v)),
+        );
+      }
     } else {
       setWrongPair({ name: selectedName, meaning: meaningSurah.number });
       setFeedback("wrong");
@@ -95,6 +115,8 @@ export function MatchingGame({ scope }: { scope: Surah[] }) {
       window.setTimeout(() => {
         setWrongPair(null);
         setSelectedName(null);
+        // Wrong match: turn passes to the next player.
+        if (multi) setCurrentPlayer((p) => (p + 1) % players.length);
       }, 750);
     }
   };
@@ -107,6 +129,8 @@ export function MatchingGame({ scope }: { scope: Surah[] }) {
     setFeedback(null);
     setStreak(0);
     setAttempts([]);
+    setScores(players.map(() => 0));
+    setCurrentPlayer(0);
     savedRoundRef.current = null;
   };
 
@@ -118,14 +142,39 @@ export function MatchingGame({ scope }: { scope: Surah[] }) {
     [round],
   );
 
+  if (complete && multi) {
+    return (
+      <MultiplayerResult
+        players={scoredPlayers}
+        gameId="cocokkan"
+        scope={scope}
+        total={round.names.length}
+        unit="pasang"
+        onRestart={newRound}
+      />
+    );
+  }
+
   return (
     <div className="flex flex-col gap-4">
+      {multi && (
+        <TurnBanner
+          players={scoredPlayers}
+          currentIndex={currentPlayer}
+          scoreUnit="pasang"
+        />
+      )}
       <div className="flex flex-wrap items-center justify-between gap-3 rounded-2xl bg-white/85 p-3 px-4 shadow ring-2 ring-pink-100">
         <p className="text-sm font-bold text-pink-800">
           Cocok:{" "}
           <span className="text-emerald-600">{matched.size}</span> /{" "}
-          {round.names.length} • Streak:{" "}
-          <span className="text-pink-600">{streak}</span> ⚡
+          {round.names.length}
+          {!multi && (
+            <>
+              {" "}
+              • Streak: <span className="text-pink-600">{streak}</span> ⚡
+            </>
+          )}
         </p>
         <button
           type="button"

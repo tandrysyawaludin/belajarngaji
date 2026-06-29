@@ -16,7 +16,7 @@ export function ScopedSambungAyatGame() {
       restrictedNote={strings.scopeRestricted}
       defaultScope={DEFAULT_SCOPE}
     >
-      {(scope) => <SambungAyatGame scope={scope} />}
+      {(scope, players) => <SambungAyatGame scope={scope} players={players} />}
     </ScopedGame>
   );
 }

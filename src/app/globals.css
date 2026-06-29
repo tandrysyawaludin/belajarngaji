@@ -1,81 +1,88 @@
 @import "tailwindcss";
 
+/* Pixel-art look: square corners everywhere, no rounding. */
+*,
+*::before,
+*::after {
+  border-radius: 0 !important;
+}
+
 :root {
-  /* Defaults — match the "Kitty" theme so SSR matches the post-paint look. */
-  --background: #fff1f7;
+  /* Defaults — match the "Nadia" theme so SSR matches the post-paint look. */
+  --background: #fff0f5;
   --foreground: #2c1a3f;
-  --theme-primary: #ff7eb6;
-  --theme-primary-deep: #db2777;
-  --theme-primary-soft: #ffd6e7;
-  --theme-accent: #ff5e9c;
-  --theme-bg-1: #ffe4f0;
-  --theme-bg-2: #d8ecff;
-  --theme-bg-3: #fff5b8;
-  --theme-bg-base: #fff1f7;
+  --theme-primary: #fb6f92;
+  --theme-primary-deep: #c81e5b;
+  --theme-primary-soft: #ffd6e2;
+  --theme-accent: #ffa9c4;
+  --theme-bg-1: #ffe4ee;
+  --theme-bg-2: #ffd6e6;
+  --theme-bg-3: #fff3d6;
+  --theme-bg-base: #fff0f5;
 }
 
 /* Per-theme palette overrides. The values are mirrored from
    src/lib/themes.ts so changing them in one place requires updating the
    other — kept in sync via the test smoke runs. */
-html[data-theme="kitty"] {
-  --theme-primary: #ff7eb6;
-  --theme-primary-deep: #db2777;
-  --theme-primary-soft: #ffd6e7;
-  --theme-accent: #ff5e9c;
-  --theme-bg-1: #ffe4f0;
-  --theme-bg-2: #d8ecff;
-  --theme-bg-3: #fff5b8;
-  --theme-bg-base: #fff1f7;
+html[data-theme="nadia"] {
+  --theme-primary: #fb6f92;
+  --theme-primary-deep: #c81e5b;
+  --theme-primary-soft: #ffd6e2;
+  --theme-accent: #ffa9c4;
+  --theme-bg-1: #ffe4ee;
+  --theme-bg-2: #ffd6e6;
+  --theme-bg-3: #fff3d6;
+  --theme-bg-base: #fff0f5;
 }
-html[data-theme="melody"] {
-  --theme-primary: #f9728c;
-  --theme-primary-deep: #be185d;
-  --theme-primary-soft: #ffd9e1;
-  --theme-accent: #ef4f7b;
-  --theme-bg-1: #ffe4ec;
-  --theme-bg-2: #ffd2dc;
-  --theme-bg-3: #fff1d6;
-  --theme-bg-base: #fff0f4;
+html[data-theme="sinta"] {
+  --theme-primary: #14b8a6;
+  --theme-primary-deep: #0f766e;
+  --theme-primary-soft: #ccfbf1;
+  --theme-accent: #5eead4;
+  --theme-bg-1: #ccfbf1;
+  --theme-bg-2: #cffafe;
+  --theme-bg-3: #fef9c3;
+  --theme-bg-base: #f0fdfa;
 }
-html[data-theme="kuromi"] {
-  --theme-primary: #8b5cf6;
-  --theme-primary-deep: #6d28d9;
-  --theme-primary-soft: #e9defc;
-  --theme-accent: #ec4899;
-  --theme-bg-1: #e9defc;
-  --theme-bg-2: #fde4f3;
-  --theme-bg-3: #dfd0ff;
-  --theme-bg-base: #f4eefe;
-}
-html[data-theme="cinnamon"] {
-  --theme-primary: #38bdf8;
-  --theme-primary-deep: #0284c7;
-  --theme-primary-soft: #d1efff;
-  --theme-accent: #7dd3fc;
-  --theme-bg-1: #dcefff;
-  --theme-bg-2: #fef9c3;
-  --theme-bg-3: #ffffff;
-  --theme-bg-base: #eff8ff;
-}
-html[data-theme="pompom"] {
+html[data-theme="maya"] {
   --theme-primary: #f59e0b;
   --theme-primary-deep: #b45309;
   --theme-primary-soft: #fef3c7;
-  --theme-accent: #fbbf24;
+  --theme-accent: #fcd34d;
   --theme-bg-1: #fff3a3;
   --theme-bg-2: #ffe8c2;
   --theme-bg-3: #ffe4d6;
   --theme-bg-base: #fff8e1;
 }
-html[data-theme="keroppi"] {
+html[data-theme="rian"] {
+  --theme-primary: #3b82f6;
+  --theme-primary-deep: #1d4ed8;
+  --theme-primary-soft: #d6e6ff;
+  --theme-accent: #93c5fd;
+  --theme-bg-1: #dcebff;
+  --theme-bg-2: #e7f2ff;
+  --theme-bg-3: #fef3c7;
+  --theme-bg-base: #eff6ff;
+}
+html[data-theme="dimas"] {
   --theme-primary: #10b981;
   --theme-primary-deep: #047857;
   --theme-primary-soft: #d1fae5;
-  --theme-accent: #34d399;
+  --theme-accent: #6ee7b7;
   --theme-bg-1: #d1fae5;
-  --theme-bg-2: #fde68a;
-  --theme-bg-3: #dcfce7;
+  --theme-bg-2: #dcfce7;
+  --theme-bg-3: #fef9c3;
   --theme-bg-base: #ecfdf5;
+}
+html[data-theme="bayu"] {
+  --theme-primary: #9b6dff;
+  --theme-primary-deep: #6d28d9;
+  --theme-primary-soft: #e7defc;
+  --theme-accent: #c4b1ff;
+  --theme-bg-1: #ece2ff;
+  --theme-bg-2: #f3e3ff;
+  --theme-bg-3: #e0d4ff;
+  --theme-bg-base: #f5f0ff;
 }
 
 @theme inline {

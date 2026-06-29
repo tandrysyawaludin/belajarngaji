@@ -5,11 +5,16 @@ import { SURAHS, type Surah } from "@/data/surahs";
 import { strings } from "@/lib/strings";
 import { sampleUnique, shuffle } from "@/lib/random";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
+import { isMultiplayer, type Player } from "@/lib/players";
+import { useHotseat } from "@/lib/useHotseat";
 import { FeedbackOverlay, type FeedbackKind } from "./Feedback";
+import { MultiplayerResult } from "./MultiplayerResult";
 import { ThemedMascot } from "./ThemedMascot";
+import { TurnBanner } from "./TurnBanner";
 
 const TOTAL_QUESTIONS = 10;
 const OPTIONS_PER_QUESTION = 4;
+const MULTI_QUESTIONS_PER_PLAYER = 5;
 
 interface Question {
   surah: Surah;
@@ -38,13 +43,13 @@ function buildQuestion(scope: Surah[], used: Set<number>): Question {
   };
 }
 
-function buildSession(scope: Surah[]): Question[] {
-  // Cap question count at scope size so the kid is never asked the same surah
-  // twice in a single session.
-  const target = Math.min(TOTAL_QUESTIONS, Math.max(1, scope.length));
+function buildSessionOfLength(scope: Surah[], length: number): Question[] {
+  // Cycle through the scope so each player gets fresh surahs; only repeat once
+  // the whole scope has been used in the current session.
   const used = new Set<number>();
   const questions: Question[] = [];
-  for (let i = 0; i < target; i++) {
+  for (let i = 0; i < length; i++) {
+    if (used.size >= scope.length) used.clear();
     const q = buildQuestion(scope, used);
     used.add(q.surah.number);
     questions.push(q);
@@ -56,23 +61,37 @@ type AnswerState =
   | { phase: "answering" }
   | { phase: "revealed"; chosen: string; correct: boolean };
 
-export function QuizGame({ scope }: { scope: Surah[] }) {
-  const [session, setSession] = useState<Question[]>(() => buildSession(scope));
-  const [index, setIndex] = useState(0);
-  const [score, setScore] = useState(0);
+export function QuizGame({
+  scope,
+  players,
+}: {
+  scope: Surah[];
+  players: Player[];
+}) {
+  const multi = isMultiplayer(players);
+  const questionsPerPlayer = multi
+    ? MULTI_QUESTIONS_PER_PLAYER
+    : Math.min(TOTAL_QUESTIONS, Math.max(1, scope.length));
+  const totalQuestions = questionsPerPlayer * players.length;
+
+  const hot = useHotseat(players, questionsPerPlayer);
+  const [session, setSession] = useState<Question[]>(() =>
+    buildSessionOfLength(scope, totalQuestions),
+  );
   const [feedback, setFeedback] = useState<FeedbackKind>(null);
   const [answer, setAnswer] = useState<AnswerState>({ phase: "answering" });
   const [answers, setAnswers] = useState<HistoryAnswer[]>([]);
 
+  const index = hot.questionNumber;
   const current = session[index];
-  const finished = index >= session.length;
+  const finished = hot.isOver;
 
   const handleChoose = (option: string) => {
     if (answer.phase !== "answering") return;
     const correct = option === current.correct;
     setAnswer({ phase: "revealed", chosen: option, correct });
     setFeedback(correct ? "correct" : "wrong");
-    if (correct) setScore((s) => s + 1);
+    hot.recordResult(correct);
     setAnswers((a) => [
       ...a,
       {
@@ -87,23 +106,33 @@ export function QuizGame({ scope }: { scope: Surah[] }) {
   const handleNext = () => {
     setAnswer({ phase: "answering" });
     setFeedback(null);
-    setIndex((i) => i + 1);
+    hot.next();
   };
 
   const restart = () => {
-    setSession(buildSession(scope));
-    setIndex(0);
-    setScore(0);
+    setSession(buildSessionOfLength(scope, totalQuestions));
+    hot.reset();
     setAnswer({ phase: "answering" });
     setFeedback(null);
     setAnswers([]);
   };
 
   if (finished) {
+    if (multi) {
+      return (
+        <MultiplayerResult
+          players={hot.players}
+          gameId="kuis"
+          scope={scope}
+          total={questionsPerPlayer}
+          onRestart={restart}
+        />
+      );
+    }
     return (
       <Result
-        score={score}
-        total={session.length}
+        score={hot.players[0].score}
+        total={totalQuestions}
         answers={answers}
         scope={scope}
         onRestart={restart}
@@ -113,10 +142,18 @@ export function QuizGame({ scope }: { scope: Surah[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <ScoreBar index={index} total={session.length} score={score} />
+      {multi ? (
+        <TurnBanner players={hot.players} currentIndex={hot.turnIndex} />
+      ) : (
+        <ScoreBar
+          index={index}
+          total={totalQuestions}
+          score={hot.players[0].score}
+        />
+      )}
       <article className="rounded-3xl bg-white/95 p-6 shadow-lg ring-4 ring-pink-100">
         <p className="text-sm font-bold uppercase tracking-wider text-pink-500">
-          Pertanyaan {index + 1} dari {session.length}
+          Pertanyaan {index + 1} dari {totalQuestions}
         </p>
         <h2 className="mt-2 text-xl font-extrabold text-pink-700 sm:text-2xl">
           {strings.quizPrompt}{" "}
@@ -164,7 +201,7 @@ export function QuizGame({ scope }: { scope: Surah[] }) {
               onClick={handleNext}
               className="rounded-full bg-pink-500 px-6 py-3 text-base font-extrabold text-white shadow-md transition hover:bg-pink-600 active:scale-95"
             >
-              {index + 1 === session.length ? strings.finishButton : strings.nextButton} →
+              {index + 1 === totalQuestions ? strings.finishButton : strings.nextButton} →
             </button>
           </div>
         )}

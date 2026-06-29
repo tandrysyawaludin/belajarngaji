@@ -3,13 +3,18 @@
 import { useEffect, useRef, useState } from "react";
 import { type Surah } from "@/data/surahs";
 import { strings } from "@/lib/strings";
-import { sampleUnique, shuffle } from "@/lib/random";
+import { shuffle } from "@/lib/random";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
+import { isMultiplayer, type Player } from "@/lib/players";
+import { useHotseat } from "@/lib/useHotseat";
 import { FeedbackOverlay, type FeedbackKind } from "./Feedback";
+import { MultiplayerResult } from "./MultiplayerResult";
 import { ThemedMascot } from "./ThemedMascot";
+import { TurnBanner } from "./TurnBanner";
 
 const MAX_QUESTIONS = 8;
 const OPTIONS = 4;
+const MULTI_QUESTIONS_PER_PLAYER = 5;
 
 interface Question {
   surah: Surah;
@@ -35,23 +40,40 @@ function buildOptions(correct: number): number[] {
   return shuffle(Array.from(pool));
 }
 
-function buildSession(scope: Surah[]): Question[] {
-  const count = Math.min(MAX_QUESTIONS, Math.max(1, scope.length));
-  return sampleUnique(scope, count).map((surah) => ({
-    surah,
-    options: buildOptions(surah.verses),
-  }));
+function buildSessionOfLength(scope: Surah[], length: number): Question[] {
+  const out: Question[] = [];
+  let pool: Surah[] = [];
+  for (let i = 0; i < length; i++) {
+    if (pool.length === 0) pool = shuffle([...scope]);
+    const surah = pool.pop() as Surah;
+    out.push({ surah, options: buildOptions(surah.verses) });
+  }
+  return out;
 }
 
-export function GuessVersesGame({ scope }: { scope: Surah[] }) {
-  const [session, setSession] = useState<Question[]>(() => buildSession(scope));
-  const [index, setIndex] = useState(0);
-  const [score, setScore] = useState(0);
+export function GuessVersesGame({
+  scope,
+  players,
+}: {
+  scope: Surah[];
+  players: Player[];
+}) {
+  const multi = isMultiplayer(players);
+  const questionsPerPlayer = multi
+    ? MULTI_QUESTIONS_PER_PLAYER
+    : Math.min(MAX_QUESTIONS, Math.max(1, scope.length));
+  const totalQuestions = questionsPerPlayer * players.length;
+
+  const hot = useHotseat(players, questionsPerPlayer);
+  const [session, setSession] = useState<Question[]>(() =>
+    buildSessionOfLength(scope, totalQuestions),
+  );
   const [chosen, setChosen] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<FeedbackKind>(null);
   const [answers, setAnswers] = useState<HistoryAnswer[]>([]);
 
-  const finished = index >= session.length;
+  const index = hot.questionNumber;
+  const finished = hot.isOver;
   const current = session[index];
 
   const handleChoose = (option: number) => {
@@ -59,7 +81,7 @@ export function GuessVersesGame({ scope }: { scope: Surah[] }) {
     const correct = option === current.surah.verses;
     setChosen(option);
     setFeedback(correct ? "correct" : "wrong");
-    if (correct) setScore((s) => s + 1);
+    hot.recordResult(correct);
     setAnswers((a) => [
       ...a,
       {
@@ -74,23 +96,33 @@ export function GuessVersesGame({ scope }: { scope: Surah[] }) {
   const handleNext = () => {
     setChosen(null);
     setFeedback(null);
-    setIndex((i) => i + 1);
+    hot.next();
   };
 
   const restart = () => {
-    setSession(buildSession(scope));
-    setIndex(0);
-    setScore(0);
+    setSession(buildSessionOfLength(scope, totalQuestions));
+    hot.reset();
     setChosen(null);
     setFeedback(null);
     setAnswers([]);
   };
 
   if (finished) {
+    if (multi) {
+      return (
+        <MultiplayerResult
+          players={hot.players}
+          gameId="tebak-ayat"
+          scope={scope}
+          total={questionsPerPlayer}
+          onRestart={restart}
+        />
+      );
+    }
     return (
       <ResultCard
-        score={score}
-        total={session.length}
+        score={hot.players[0].score}
+        total={totalQuestions}
         answers={answers}
         scope={scope}
         onRestart={restart}
@@ -100,12 +132,16 @@ export function GuessVersesGame({ scope }: { scope: Surah[] }) {
 
   return (
     <div className="flex flex-col gap-4">
-      <div className="rounded-2xl bg-white/85 p-3 px-4 shadow ring-2 ring-pink-100">
-        <p className="text-sm font-bold text-pink-800">
-          Soal {index + 1} / {session.length} • Skor:{" "}
-          <span className="text-emerald-600">{score}</span>
-        </p>
-      </div>
+      {multi ? (
+        <TurnBanner players={hot.players} currentIndex={hot.turnIndex} />
+      ) : (
+        <div className="rounded-2xl bg-white/85 p-3 px-4 shadow ring-2 ring-pink-100">
+          <p className="text-sm font-bold text-pink-800">
+            Soal {index + 1} / {totalQuestions} • Skor:{" "}
+            <span className="text-emerald-600">{hot.players[0].score}</span>
+          </p>
+        </div>
+      )}
 
       <article className="rounded-3xl bg-white/95 p-6 shadow-lg ring-4 ring-pink-100">
         <p className="text-sm font-bold uppercase tracking-wider text-pink-500">
@@ -162,7 +198,7 @@ export function GuessVersesGame({ scope }: { scope: Surah[] }) {
               onClick={handleNext}
               className="rounded-full bg-pink-500 px-6 py-3 text-base font-extrabold text-white shadow-md transition hover:bg-pink-600 active:scale-95"
             >
-              {index + 1 === session.length ? strings.finishButton : strings.nextButton} →
+              {index + 1 === totalQuestions ? strings.finishButton : strings.nextButton} →
             </button>
           </div>
         )}

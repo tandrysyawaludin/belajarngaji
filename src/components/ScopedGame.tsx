@@ -8,7 +8,9 @@ import {
   subscribeScope,
   type GameId,
 } from "@/lib/scope";
+import { playersKey, type Player } from "@/lib/players";
 import { strings } from "@/lib/strings";
+import { GameSetup } from "./GameSetup";
 import { SurahScopePicker } from "./SurahScopePicker";
 
 interface ScopedGameProps {
@@ -18,8 +20,8 @@ interface ScopedGameProps {
   restrictedNote?: string;
   /** Default scope used if the kid has never picked before. */
   defaultScope?: number[];
-  /** Render-prop: gets the active scope (filtered to available surah objects). */
-  children: (scope: Surah[]) => React.ReactNode;
+  /** Render-prop: gets the active scope and the chosen players (1 = solo). */
+  children: (scope: Surah[], players: Player[]) => React.ReactNode;
 }
 
 function useStoredScope(gameId: GameId): number[] | null {
@@ -49,6 +51,8 @@ export function ScopedGame({
   // Track an in-memory override so confirming the picker doesn't race the
   // localStorage write/read round-trip.
   const [override, setOverride] = useState<number[] | null>(null);
+  // null = player setup not done yet (show the lobby once scope is ready).
+  const [players, setPlayers] = useState<Player[] | null>(null);
   // Tri-state picker visibility:
   //   null  = "auto" — open if scope isn't ready yet (first visit)
   //   true  = explicitly opened by kid via the Ganti Pilihan button
@@ -94,15 +98,31 @@ export function ScopedGame({
   return (
     <>
       {ready ? (
-        <>
-          <ScopeBadge
-            scope={activeScope}
-            onChange={() => setPickerVisible(true)}
-          />
-          {/* `key` on the wrapper forces the game to remount when the
-              kid changes scope, giving a fresh session with no stale state. */}
-          <div key={scopeKey}>{children(activeScope)}</div>
-        </>
+        players === null ? (
+          <div className="flex flex-col gap-4">
+            <ScopeBadge
+              scope={activeScope}
+              onChange={() => setPickerVisible(true)}
+            />
+            <GameSetup onStart={setPlayers} />
+          </div>
+        ) : (
+          <div className="flex flex-col gap-4">
+            <ScopeBadge
+              scope={activeScope}
+              onChange={() => setPickerVisible(true)}
+            />
+            <PlayersBadge
+              players={players}
+              onChange={() => setPlayers(null)}
+            />
+            {/* `key` forces the game to remount on scope/player changes,
+                giving a fresh session with no stale state. */}
+            <div key={`${scopeKey}|${playersKey(players)}`}>
+              {children(activeScope, players)}
+            </div>
+          </div>
+        )
       ) : (
         <ScopePlaceholder onPick={() => setPickerVisible(true)} />
       )}
@@ -117,6 +137,31 @@ export function ScopedGame({
         />
       )}
     </>
+  );
+}
+
+function PlayersBadge({
+  players,
+  onChange,
+}: {
+  players: Player[];
+  onChange: () => void;
+}) {
+  const label =
+    players.length > 1
+      ? `${players.length} pemain: ${players.map((p) => p.name).join(", ")}`
+      : "Main sendiri";
+  return (
+    <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-white/85 px-4 py-2 text-sm font-bold text-pink-800 shadow ring-2 ring-pink-100">
+      <p className="min-w-0 truncate">👥 {label}</p>
+      <button
+        type="button"
+        onClick={onChange}
+        className="shrink-0 rounded-full bg-pink-100 px-3 py-1.5 text-xs font-extrabold text-pink-700 ring-2 ring-pink-200 transition hover:bg-pink-200"
+      >
+        🔄 {strings.setupChange}
+      </button>
+    </div>
   );
 }
 

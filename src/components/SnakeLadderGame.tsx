@@ -10,25 +10,23 @@ import {
   getSnakeLadderQuestionKey,
   getMoveTarget,
   resolveAnsweredMove,
-  type BoardJump,
   type SnakeLadderQuestion,
 } from "@/lib/snake-ladder";
+import { isMultiplayer, playerTheme, type Player } from "@/lib/players";
 import { strings } from "@/lib/strings";
 import { FeedbackOverlay, type FeedbackKind } from "./Feedback";
+import { MultiplayerResult } from "./MultiplayerResult";
+import { TurnBanner } from "./TurnBanner";
 
-interface PendingTurn {
-  dice: number;
-  previousPosition: number;
-  targetPosition: number;
-  question: SnakeLadderQuestion;
-}
+type Phase = "ask" | "answering" | "roll" | "rolling" | "moving" | "wrong" | "won";
 
-interface RevealedTurn extends PendingTurn {
-  chosen: string;
-  correct: boolean;
-  landedPosition: number;
-  jump: BoardJump | null;
-}
+// Small per-seat offsets so multiple tokens on the same square stay visible.
+const TOKEN_OFFSETS = [
+  { dx: -8, dy: -7 },
+  { dx: 8, dy: -7 },
+  { dx: -8, dy: 9 },
+  { dx: 8, dy: 9 },
+];
 
 const BOARD_COLS = 6;
 const BOARD_ROWS = Math.ceil(BOARD_SIZE / BOARD_COLS);
@@ -83,49 +81,50 @@ function centerSvg(square: number): { x: number; y: number } {
   };
 }
 
-export function SnakeLadderGame({ scope }: { scope: Surah[] }) {
-  const [position, setPosition] = useState(1);
-  const [pending, setPending] = useState<PendingTurn | null>(null);
-  const [revealed, setRevealed] = useState<RevealedTurn | null>(null);
-  const [answers, setAnswers] = useState<HistoryAnswer[]>([]);
-  const [score, setScore] = useState(0);
-  const [feedback, setFeedback] = useState<FeedbackKind>(null);
-  const [finished, setFinished] = useState(false);
-  const [rolling, setRolling] = useState(false);
-  const [moving, setMoving] = useState(false);
-  const [resolvingAnswer, setResolvingAnswer] = useState(false);
-  const [questionOpen, setQuestionOpen] = useState(false);
+export function SnakeLadderGame({
+  scope,
+  players,
+}: {
+  scope: Surah[];
+  players: Player[];
+}) {
+  const multi = isMultiplayer(players);
+  const [positions, setPositions] = useState<number[]>(() =>
+    players.map(() => 1),
+  );
+  const [currentPlayer, setCurrentPlayer] = useState(0);
+  const [phase, setPhase] = useState<Phase>("ask");
+  const [turnQuestion, setTurnQuestion] = useState<SnakeLadderQuestion | null>(
+    null,
+  );
   const [diceValue, setDiceValue] = useState<number | null>(null);
   const [dicePop, setDicePop] = useState(false);
+  const [lastDice, setLastDice] = useState<number | null>(null);
+  const [feedback, setFeedback] = useState<FeedbackKind>(null);
+  const [answers, setAnswers] = useState<HistoryAnswer[]>([]);
+  const [winner, setWinner] = useState<number | null>(null);
   const [usedQuestionKeys, setUsedQuestionKeys] = useState<Set<string>>(
     () => new Set(),
   );
   const timersRef = useRef<number[]>([]);
 
-  const rollDisabled =
-    pending !== null ||
-    revealed !== null ||
-    finished ||
-    rolling ||
-    moving ||
-    resolvingAnswer;
+  const position = positions[currentPlayer];
+  const finished = winner !== null;
+  const rolling = phase === "rolling";
+  const moving = phase === "moving";
+  const soloScore = answers.filter((a) => a.correct).length;
   const progressPct = Math.round(((position - 1) / (BOARD_SIZE - 1)) * 100);
+  const standings = players.map((p, i) => ({ ...p, score: positions[i] }));
+  const currentName = players[currentPlayer]?.name ?? "";
 
   const statusText = useMemo(() => {
-    if (finished) return "Kamu sudah sampai di kotak terakhir.";
     if (rolling) return "Dadu sedang berputar...";
-    if (moving || resolvingAnswer) return "Jawaban benar! Ayam sedang berjalan...";
-    if (pending) return `Dadu berhenti di ${pending.dice}. Siap jawab soal?`;
-    if (revealed?.correct && revealed.jump) {
-      return revealed.jump.type === "ladder"
-        ? `Naik tangga ke kotak ${revealed.jump.to}.`
-        : `Turun ular ke kotak ${revealed.jump.to}.`;
-    }
-    if (revealed && !revealed.correct) {
-      return `Kembali ke kotak ${revealed.previousPosition}.`;
-    }
-    return "Lempar dadu untuk maju.";
-  }, [finished, moving, pending, resolvingAnswer, revealed, rolling]);
+    if (moving) return "Ayam sedang berjalan...";
+    if (phase === "roll") return strings.rollNow + "!";
+    if (phase === "wrong")
+      return multi ? strings.wrongTurnPass : strings.wrongTurnRetry;
+    return strings.answerFirstHint;
+  }, [moving, multi, phase, rolling]);
 
   useEffect(() => {
     return () => {
@@ -143,139 +142,166 @@ export function SnakeLadderGame({ scope }: { scope: Surah[] }) {
       timersRef.current.push(timer);
     });
 
-  const animatePosition = async (from: number, to: number) => {
+  const animateToken = async (playerIndex: number, from: number, to: number) => {
     if (from === to) return;
-    setMoving(true);
     const step = from < to ? 1 : -1;
-    for (let square = from + step; step > 0 ? square <= to : square >= to; square += step) {
-      await wait(560);
-      setPosition(square);
+    for (
+      let square = from + step;
+      step > 0 ? square <= to : square >= to;
+      square += step
+    ) {
+      await wait(440);
+      setPositions((prev) =>
+        prev.map((p, i) => (i === playerIndex ? square : p)),
+      );
     }
-    setMoving(false);
+  };
+
+  const openQuestion = () => {
+    if (phase !== "ask") return;
+    let nextUsed = usedQuestionKeys;
+    let question: SnakeLadderQuestion;
+    try {
+      question = buildSnakeLadderQuestion(scope, Math.random, usedQuestionKeys);
+    } catch {
+      // Whole question pool used this session: recycle it so play continues.
+      nextUsed = new Set();
+      question = buildSnakeLadderQuestion(scope, Math.random, nextUsed);
+    }
+    const used = new Set(nextUsed);
+    used.add(getSnakeLadderQuestionKey(question));
+    setUsedQuestionKeys(used);
+    setTurnQuestion(question);
+    setPhase("answering");
+  };
+
+  const chooseAnswer = (option: string) => {
+    if (!turnQuestion || phase !== "answering") return;
+    const correct = option === turnQuestion.correctAnswer;
+    setAnswers((prev) => [
+      ...prev,
+      {
+        prompt: turnQuestion.prompt,
+        yourAnswer: option,
+        correctAnswer: turnQuestion.correctAnswer,
+        correct,
+      },
+    ]);
+    setFeedback(correct ? "correct" : "wrong");
+    setPhase(correct ? "roll" : "wrong");
+  };
+
+  const endTurn = () => {
+    setPhase("ask");
+    setTurnQuestion(null);
+    setDiceValue(null);
+    setLastDice(null);
+    setFeedback(null);
+    setCurrentPlayer((p) => (p + 1) % players.length);
   };
 
   const rollDice = async () => {
-    if (rollDisabled) return;
+    if (phase !== "roll") return;
     const dice = Math.floor(Math.random() * 6) + 1;
-    setRolling(true);
+    setPhase("rolling");
     for (let i = 0; i < 16; i += 1) {
       setDiceValue(Math.floor(Math.random() * 6) + 1);
       await wait(110);
     }
     setDiceValue(dice);
-    await wait(320);
-    setRolling(false);
+    setLastDice(dice);
     setDicePop(true);
     const popTimer = window.setTimeout(() => setDicePop(false), 480);
     timersRef.current.push(popTimer);
+    await wait(320);
 
-    const targetPosition = getMoveTarget(position, dice);
-    let question: SnakeLadderQuestion;
-    try {
-      question = buildSnakeLadderQuestion(scope, Math.random, usedQuestionKeys);
-    } catch {
-      setFinished(true);
+    const mover = currentPlayer;
+    const from = positions[mover];
+    const target = getMoveTarget(from, dice);
+    const move = resolveAnsweredMove({
+      previousPosition: from,
+      targetPosition: target,
+      isCorrect: true,
+    });
+
+    setPhase("moving");
+    await wait(260);
+    await animateToken(mover, from, target);
+    if (move.jump) {
+      // Ladder or snake: glide straight to the destination in one motion.
+      await wait(320);
+      setPositions((prev) =>
+        prev.map((p, i) => (i === mover ? move.position : p)),
+      );
+      await wait(720);
+    }
+
+    if (move.position === BOARD_SIZE) {
+      setWinner(mover);
+      setPhase("won");
       return;
     }
-    setUsedQuestionKeys((current) => {
-      const next = new Set(current);
-      next.add(getSnakeLadderQuestionKey(question));
-      return next;
-    });
-    setPending({
-      dice,
-      previousPosition: position,
-      targetPosition,
-      question,
-    });
-    setQuestionOpen(false);
-  };
-
-  const chooseAnswer = async (option: string) => {
-    if (!pending) return;
-    const activeTurn = pending;
-
-    const correct = option === activeTurn.question.correctAnswer;
-    const move = resolveAnsweredMove({
-      previousPosition: activeTurn.previousPosition,
-      targetPosition: activeTurn.targetPosition,
-      isCorrect: correct,
-    });
-
-    setPending(null);
-    setQuestionOpen(false);
-    if (correct) {
-      setRevealed(null);
-      setFeedback(null);
-    } else {
-      setRevealed({
-        ...activeTurn,
-        chosen: option,
-        correct,
-        landedPosition: move.position,
-        jump: move.jump,
-      });
-      setFeedback(null);
-    }
-    if (correct) setScore((current) => current + 1);
-    setAnswers((current) => [
-      ...current,
-      {
-        prompt: `Kotak ${activeTurn.targetPosition}: ${activeTurn.question.prompt}`,
-        yourAnswer: option,
-        correctAnswer: activeTurn.question.correctAnswer,
-        correct,
-      },
-    ]);
-    if (correct) {
-      setResolvingAnswer(true);
-      await wait(260);
-      await animatePosition(activeTurn.previousPosition, activeTurn.targetPosition);
-      if (move.jump) {
-        // Ladder or snake: glide straight to the destination in one motion
-        // instead of stepping square by square.
-        await wait(320);
-        setPosition(move.position);
-        await wait(720);
-      }
-      setResolvingAnswer(false);
-      if (move.position === BOARD_SIZE) setFinished(true);
-    }
-  };
-
-  const nextTurn = () => {
-    setRevealed(null);
-    setFeedback(null);
-    setQuestionOpen(false);
+    endTurn();
   };
 
   const restart = () => {
-    setPosition(1);
-    setPending(null);
-    setRevealed(null);
-    setAnswers([]);
-    setScore(0);
-    setFeedback(null);
-    setFinished(false);
-    setRolling(false);
-    setMoving(false);
-    setResolvingAnswer(false);
-    setQuestionOpen(false);
+    setPositions(players.map(() => 1));
+    setCurrentPlayer(0);
+    setPhase("ask");
+    setTurnQuestion(null);
     setDiceValue(null);
     setDicePop(false);
+    setLastDice(null);
+    setFeedback(null);
+    setAnswers([]);
+    setWinner(null);
     setUsedQuestionKeys(new Set());
   };
 
   if (finished) {
+    if (multi) {
+      return (
+        <MultiplayerResult
+          players={standings}
+          gameId="ular-tangga"
+          scope={scope}
+          total={BOARD_SIZE}
+          unit={strings.squaresUnit}
+          onRestart={restart}
+        />
+      );
+    }
     return (
       <ResultCard
-        score={score}
+        score={soloScore}
         total={answers.length}
         answers={answers}
         scope={scope}
         onRestart={restart}
       />
     );
+  }
+
+  const busy = rolling || moving;
+  let actionLabel: string = strings.answerFirstHint;
+  let actionHandler: () => void = openQuestion;
+  let actionAccent: string = "bg-pink-500 hover:bg-pink-600";
+  if (phase === "ask") {
+    actionLabel = "Jawab Pertanyaan";
+    actionHandler = openQuestion;
+    actionAccent = "bg-pink-500 hover:bg-pink-600";
+  } else if (phase === "roll") {
+    actionLabel = strings.rollNow;
+    actionHandler = rollDice;
+    actionAccent = "bg-emerald-500 hover:bg-emerald-600";
+  } else if (phase === "wrong") {
+    actionLabel = multi ? strings.nextPlayer : strings.retry;
+    actionHandler = endTurn;
+    actionAccent = "bg-emerald-500 hover:bg-emerald-600";
+  } else {
+    actionLabel = statusText;
+    actionHandler = () => {};
+    actionAccent = "bg-emerald-500";
   }
 
   return (
@@ -287,12 +313,14 @@ export function SnakeLadderGame({ scope }: { scope: Surah[] }) {
               Papan Ular Tangga
             </p>
             <h2 className="text-2xl font-extrabold text-emerald-900">
-              Kotak {position} / {BOARD_SIZE}
+              {multi ? `${currentName} di kotak ${position}` : `Kotak ${position} / ${BOARD_SIZE}`}
             </h2>
           </div>
-          <div className="rounded-2xl bg-white/85 px-4 py-2 text-sm font-extrabold text-emerald-800 shadow ring-2 ring-emerald-100">
-            Skor {score} / {answers.length || 0}
-          </div>
+          {!multi && (
+            <div className="rounded-2xl bg-white/85 px-4 py-2 text-sm font-extrabold text-emerald-800 shadow ring-2 ring-emerald-100">
+              Skor {soloScore} / {answers.length || 0}
+            </div>
+          )}
         </div>
         <div className="mb-4 h-3 overflow-hidden rounded-full bg-white/80 ring-2 ring-emerald-100">
           <div
@@ -301,19 +329,27 @@ export function SnakeLadderGame({ scope }: { scope: Surah[] }) {
           />
         </div>
         <Board
-          position={position}
-          target={pending?.targetPosition ?? null}
+          positions={positions}
+          players={players}
+          currentIndex={currentPlayer}
           moving={moving}
         />
       </section>
 
       <aside className="flex flex-col gap-4">
+        {multi && (
+          <TurnBanner
+            players={standings}
+            currentIndex={currentPlayer}
+            scoreUnit={strings.squaresUnit}
+          />
+        )}
         <article className="rounded-3xl bg-white/95 p-5 shadow-lg ring-4 ring-emerald-100">
           <div className="flex items-center gap-3">
-            <ChickenCharacter size={92} animated={moving || rolling} />
+            <ChickenCharacter size={92} animated={busy} />
             <div>
               <p className="text-sm font-extrabold uppercase tracking-wide text-emerald-500">
-                Giliranmu
+                {multi ? `${strings.turnLabel}: ${currentName}` : "Giliranmu"}
               </p>
               <p
                 role="status"
@@ -326,49 +362,29 @@ export function SnakeLadderGame({ scope }: { scope: Surah[] }) {
           </div>
           <button
             type="button"
-            disabled={rollDisabled}
-            onClick={rollDice}
-            className="mt-4 w-full rounded-full bg-emerald-500 px-6 py-3 text-lg font-extrabold text-white shadow-md transition hover:bg-emerald-600 active:scale-95 disabled:cursor-not-allowed disabled:bg-emerald-200"
+            disabled={busy}
+            onClick={actionHandler}
+            className={`mt-4 w-full rounded-full px-6 py-3 text-lg font-extrabold text-white shadow-md transition active:scale-95 disabled:cursor-not-allowed disabled:bg-emerald-300 ${actionAccent}`}
           >
-            Lempar Dadu
+            {actionLabel}
           </button>
           <div className="mt-3 flex min-h-[6rem] items-center justify-center gap-8">
             <DiceCube value={diceValue} rolling={rolling} popping={dicePop} />
-            {pending && (
+            {lastDice !== null && (
               <DiceStatement
-                key={`${pending.previousPosition}-${pending.dice}`}
-                dice={pending.dice}
+                key={`${currentPlayer}-${lastDice}`}
+                dice={lastDice}
               />
             )}
           </div>
-          {pending && !questionOpen && (
-            <button
-              type="button"
-              onClick={() => setQuestionOpen(true)}
-              className="mt-4 w-full rounded-full bg-pink-500 px-6 py-3 text-lg font-extrabold text-white shadow-md transition hover:bg-pink-600 active:scale-95"
-            >
-              Jawab Pertanyaan
-            </button>
-          )}
         </article>
       </aside>
 
-      {pending && questionOpen && (
+      {phase === "answering" && turnQuestion && (
         <QuestionModal
-          turn={pending}
-          revealed={null}
-          moving={moving || resolvingAnswer}
+          question={turnQuestion}
+          playerName={multi ? currentName : null}
           onChoose={chooseAnswer}
-          onNext={nextTurn}
-        />
-      )}
-      {revealed && (
-        <QuestionModal
-          turn={revealed}
-          revealed={revealed}
-          moving={moving || resolvingAnswer}
-          onChoose={chooseAnswer}
-          onNext={nextTurn}
         />
       )}
       <FeedbackOverlay kind={feedback} onDone={() => setFeedback(null)} />
@@ -476,25 +492,28 @@ function DiceStatement({ dice }: { dice: number }) {
 }
 
 function Board({
-  position,
-  target,
+  positions,
+  players,
+  currentIndex,
   moving,
 }: {
-  position: number;
-  target: number | null;
+  positions: number[];
+  players: Player[];
+  currentIndex: number;
   moving: boolean;
 }) {
   const jumps = Object.entries(BOARD_JUMPS).map(([from, to]) => ({
     from: Number(from),
     to,
   }));
+  const currentSquare = positions[currentIndex];
 
   return (
     <div className="relative mx-auto aspect-[6/5] w-full overflow-hidden rounded-2xl">
       {/* Layer 1: colored cells */}
       <div className="grid h-full w-full grid-cols-6 grid-rows-5 gap-1">
         {DISPLAY_SQUARES.map((square) => {
-          const isTarget = square === target;
+          const isTarget = square === currentSquare;
           const color = SQUARE_COLORS[square % SQUARE_COLORS.length];
           return (
             <div
@@ -547,7 +566,12 @@ function Board({
         ))}
       </div>
 
-      <ChickenToken position={position} moving={moving} />
+      <Tokens
+        positions={positions}
+        players={players}
+        currentIndex={currentIndex}
+        moving={moving}
+      />
     </div>
   );
 }
@@ -641,27 +665,48 @@ function Snake({
   );
 }
 
-function ChickenToken({
-  position,
+function Tokens({
+  positions,
+  players,
+  currentIndex,
   moving,
 }: {
-  position: number;
+  positions: number[];
+  players: Player[];
+  currentIndex: number;
   moving: boolean;
 }) {
-  const { x, y } = centerPercent(position);
+  const spread = players.length > 1;
   return (
-    <div
-      className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-in-out"
-      style={{ left: `${x}%`, top: `${y}%` }}
-    >
-      <span
-        className={`text-2xl drop-shadow-md sm:text-3xl ${
-          moving ? "chicken-hop inline-block" : "inline-block"
-        }`}
-      >
-        🐔
-      </span>
-    </div>
+    <>
+      {players.map((player, i) => {
+        const { x, y } = centerPercent(positions[i]);
+        const offset = spread
+          ? TOKEN_OFFSETS[i % TOKEN_OFFSETS.length]
+          : { dx: 0, dy: 0 };
+        const isActive = i === currentIndex;
+        return (
+          <div
+            key={player.id}
+            className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-in-out"
+            style={{
+              left: `${x}%`,
+              top: `${y}%`,
+              marginLeft: offset.dx,
+              marginTop: offset.dy,
+            }}
+          >
+            <span
+              className={`inline-block drop-shadow-md ${
+                isActive ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl opacity-80"
+              } ${moving && isActive ? "chicken-hop" : ""}`}
+            >
+              {playerTheme(i).token}
+            </span>
+          </div>
+        );
+      })}
+    </>
   );
 }
 
@@ -675,17 +720,13 @@ function describeSquare(square: number): string {
 }
 
 function QuestionModal({
-  turn,
-  revealed,
-  moving,
+  question,
+  playerName,
   onChoose,
-  onNext,
 }: {
-  turn: PendingTurn;
-  revealed: RevealedTurn | null;
-  moving: boolean;
+  question: SnakeLadderQuestion;
+  playerName: string | null;
   onChoose: (option: string) => void;
-  onNext?: () => void;
 }) {
   const dialogRef = useRef<HTMLElement | null>(null);
 
@@ -729,77 +770,28 @@ function QuestionModal({
         className="pop-in max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl bg-white/95 p-5 shadow-2xl ring-4 ring-pink-100"
       >
         <p className="text-sm font-extrabold uppercase tracking-wide text-pink-500">
-          Soal Kotak {turn.targetPosition}
+          {playerName ? `${strings.turnLabel}: ${playerName}` : "Jawab dulu ya"}
         </p>
         <h3
           id="snake-ladder-question-title"
           className="mt-2 text-xl font-extrabold text-pink-800"
         >
-          {turn.question.prompt}
+          {question.prompt}
         </h3>
-        <p className="arabic mt-1 text-pink-600">{turn.question.surah.arabic}</p>
+        <p className="arabic mt-1 text-pink-600">{question.surah.arabic}</p>
 
         <div className="mt-5 grid gap-3">
-          {turn.question.options.map((option) => {
-            const isChosen = revealed?.chosen === option;
-            // Only reveal the correct option when the player answered correctly.
-            const showCorrect =
-              revealed?.correct === true &&
-              option === turn.question.correctAnswer;
-            const base =
-              "rounded-2xl px-5 py-4 text-left text-base font-bold shadow-sm ring-2 transition active:scale-[0.98]";
-            let style =
-              "bg-white text-pink-900 ring-pink-100 hover:bg-pink-50 hover:ring-pink-200";
-            if (revealed) {
-              if (showCorrect) {
-                style = "bg-emerald-200 text-emerald-900 ring-emerald-300 pop-in";
-              } else if (isChosen) {
-                style = "bg-red-200 text-red-900 ring-red-300 shake";
-              } else {
-                style = "bg-white/70 text-pink-900/60 ring-pink-100";
-              }
-            }
-
-            return (
-              <button
-                key={option}
-                type="button"
-                disabled={revealed !== null}
-                onClick={() => onChoose(option)}
-                className={`${base} ${style}`}
-              >
-                {option}
-              </button>
-            );
-          })}
-        </div>
-
-        {revealed && (
-          <div className="mt-5 flex flex-col gap-3">
-            <p className="rounded-2xl bg-pink-50 px-4 py-3 text-sm font-bold text-pink-800 ring-2 ring-pink-100">
-              {revealed.correct ? (
-                <>
-                  Jawaban benar:{" "}
-                  <span className="underline">{turn.question.correctAnswer}</span>
-                </>
-              ) : (
-                "Coba Lagi"
-              )}
-            </p>
+          {question.options.map((option) => (
             <button
+              key={option}
               type="button"
-              onClick={onNext}
-              disabled={moving}
-              className="rounded-full bg-pink-500 px-6 py-3 text-base font-extrabold text-white shadow-md transition hover:bg-pink-600 active:scale-95 disabled:cursor-not-allowed disabled:bg-pink-200"
+              onClick={() => onChoose(option)}
+              className="rounded-2xl bg-white px-5 py-4 text-left text-base font-bold text-pink-900 shadow-sm ring-2 ring-pink-100 transition hover:bg-pink-50 hover:ring-pink-200 active:scale-[0.98]"
             >
-              {moving
-                ? "Ayam sedang berjalan..."
-                : revealed.correct
-                  ? "Lanjut Lempar Dadu →"
-                  : "Coba Lagi"}
+              {option}
             </button>
-          </div>
-        )}
+          ))}
+        </div>
       </article>
     </div>
   );

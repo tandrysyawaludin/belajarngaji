@@ -58,5 +58,9 @@ Build menggunakan `generateStaticParams` untuk pre-render semua 114 halaman sura
 ## Lisensi
 
 MIT — silakan dipakai dan dikembangkan untuk kebaikan.
-Karakter maskot adalah karya asli, terinspirasi gaya *kawaii* pastel namun bukan
-karakter Sanrio.
+Karakter maskot adalah pixel art orisinal (6 karakter: Nadia, Sinta, Maya,
+Rian, Dimas, Bayu — tiga gaya tutup kepala: hijab/peci, topi, dan topi koboi
+untuk anak perempuan dan laki-laki) yang digambar sebagai inline SVG di
+`src/components/PixelMascot.tsx` — bebas lisensi, tanpa file gambar eksternal
+dan bukan karakter pihak ketiga. Seluruh antarmuka memakai gaya sudut kotak
+(pixel art).

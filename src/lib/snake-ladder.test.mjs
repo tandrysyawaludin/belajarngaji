@@ -75,6 +75,38 @@ describe("Snake and Ladder movement", () => {
   });
 });
 
+describe("Snake and Ladder answer-first turn", () => {
+  it("rolls and moves (then climbs a ladder) after a correct answer", () => {
+    // Answer-first flow: a correct answer unlocks the dice. From square 1 a
+    // roll of 2 lands on square 3, which is a ladder up to square 11.
+    const from = 1;
+    const dice = 2;
+    const target = getMoveTarget(from, dice);
+    assert.equal(target, 3);
+
+    const result = resolveAnsweredMove({
+      previousPosition: from,
+      targetPosition: target,
+      isCorrect: true,
+    });
+    assert.equal(result.position, BOARD_JUMPS[3]);
+    assert.equal(result.jump?.type, "ladder");
+  });
+
+  it("keeps the player on their square when the answer is wrong (no roll)", () => {
+    // A wrong answer means the player never rolls, so they stay put and the
+    // turn passes to the next player.
+    const from = 5;
+    const result = resolveAnsweredMove({
+      previousPosition: from,
+      targetPosition: getMoveTarget(from, 6),
+      isCorrect: false,
+    });
+    assert.equal(result.position, from);
+    assert.equal(result.jump, null);
+  });
+});
+
 describe("Snake and Ladder questions", () => {
   it("builds a random multiple-choice Quran question from the active scope", () => {
     const question = buildSnakeLadderQuestion(scope, () => 0);
