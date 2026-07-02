@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { getSurah, SURAHS } from "@/data/surahs";
 import { fetchSurahWithTranslation, recitationUrl } from "@/lib/quran";
 import { strings } from "@/lib/strings";
+import { SurahVerses } from "@/components/SurahVerses";
 import { ThemedMascot } from "@/components/ThemedMascot";
 import { SurahAudio } from "@/components/SurahAudio";
 
@@ -84,30 +85,7 @@ export default async function SurahPage({
         </section>
       )}
 
-      {verses && (
-        <section className="flex flex-col gap-3">
-          {verses.map((v) => (
-            <article
-              key={v.verse}
-              className="rounded-2xl bg-white/95 p-4 shadow-md ring-2 ring-pink-100"
-            >
-              <div className="flex items-center justify-between gap-3">
-                <span className="grid h-9 w-9 place-items-center rounded-full bg-pink-500 text-sm font-extrabold text-white shadow">
-                  {v.verse}
-                </span>
-                <p className="arabic flex-1 text-right text-pink-900">
-                  {v.arabic}
-                </p>
-              </div>
-              {v.translation && (
-                <p className="mt-3 border-t border-pink-100 pt-3 text-base font-semibold leading-relaxed text-slate-700">
-                  {v.translation}
-                </p>
-              )}
-            </article>
-          ))}
-        </section>
-      )}
+      {verses && <SurahVerses surahNumber={surah.number} verses={verses} />}
     </div>
   );
 }

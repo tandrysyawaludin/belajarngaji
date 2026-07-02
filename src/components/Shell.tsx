@@ -7,11 +7,7 @@ const nav = [
   { href: "/", label: strings.navHome, color: "bg-pink-200 text-pink-900 hover:bg-pink-300" },
   { href: "/surah", label: strings.navSurah, color: "bg-sky-200 text-sky-900 hover:bg-sky-300" },
   { href: "/iqra", label: strings.navIqra, color: "bg-lime-200 text-lime-900 hover:bg-lime-300" },
-  { href: "/kuis", label: strings.navQuiz, color: "bg-yellow-200 text-yellow-900 hover:bg-yellow-300" },
-  { href: "/cocokkan", label: strings.navMatch, color: "bg-emerald-200 text-emerald-900 hover:bg-emerald-300" },
-  { href: "/tebak-ayat", label: strings.navGuess, color: "bg-violet-200 text-violet-900 hover:bg-violet-300" },
-  { href: "/sambung", label: strings.navConnect, color: "bg-orange-200 text-orange-900 hover:bg-orange-300" },
-  { href: "/ular-tangga", label: strings.navSnakeLadder, color: "bg-lime-200 text-lime-900 hover:bg-lime-300" },
+  { href: "/games", label: strings.navGames, color: "bg-yellow-200 text-yellow-900 hover:bg-yellow-300" },
   { href: "/riwayat", label: strings.navHistory, color: "bg-rose-200 text-rose-900 hover:bg-rose-300" },
 ] as const;
 

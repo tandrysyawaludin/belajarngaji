@@ -5,7 +5,8 @@ export const strings = {
     "Belajar ngaji online untuk anak-anak dengan Iqra, bacaan surah, audio murottal, dan game edukasi Al-Qur'an interaktif.",
 
   navHome: "Beranda",
-  navSurah: "Daftar Surah",
+  navSurah: "Al Quran",
+  navGames: "Games",
   navQuiz: "Kuis Arti",
   navMatch: "Cocokkan",
   navGuess: "Tebak Surah",
@@ -19,8 +20,11 @@ export const strings = {
   homeIntro:
     "Yuk belajar Al-Qur'an bersama teman-teman lucu. Pilih kegiatan di bawah ini.",
 
-  cardSurahTitle: "Baca Surah",
+  cardSurahTitle: "Al Quran",
   cardSurahDesc: "Lihat tulisan Arab dan artinya dalam bahasa Indonesia.",
+  cardGamesTitle: "Games",
+  cardGamesDesc: "Kuis, cocokkan, tebak ayat, dan game edukasi Al-Qur'an lainnya.",
+  gamesIntro: "Pilih game favoritmu untuk belajar sambil bermain!",
   cardQuizTitle: "Kuis Arti Surah",
   cardQuizDesc: "Tebak arti nama surah, dapatkan bintang dan kejutan!",
   cardMatchTitle: "Cocokkan Surah",
@@ -51,7 +55,10 @@ export const strings = {
   revelationLabel: "Diturunkan di",
   meaningLabel: "Artinya",
   listenLabel: "Dengarkan Murottal",
-  backToList: "Kembali ke Daftar Surah",
+  backToList: "Kembali ke Al Quran",
+  bookmarkContinue: "Lanjutkan membaca",
+  bookmarkVerse: "Ayat",
+  bookmarkOpen: "Buka",
 
   quizPrompt: "Apa arti dari surah",
   matchPrompt: "Pasangkan surah dengan artinya",

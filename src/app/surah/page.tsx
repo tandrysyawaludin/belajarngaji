@@ -1,11 +1,14 @@
 import Link from "next/link";
+import { ContinueReading } from "@/components/ContinueReading";
 import { SURAHS } from "@/data/surahs";
 import { strings } from "@/lib/strings";
 
 export const metadata = {
   title: `${strings.navSurah} — ${strings.siteTitle}`,
-  description: "Daftar 114 surah dalam Al-Qur'an.",
+  description: "Baca 114 surah dalam Al-Qur'an.",
 };
+
+const SURAHS_DESC = [...SURAHS].reverse();
 
 const PALETTES = [
   "from-pink-200 to-rose-200 text-rose-900 ring-rose-200",
@@ -28,8 +31,10 @@ export default function SurahListPage() {
         </p>
       </section>
 
+      <ContinueReading />
+
       <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
-        {SURAHS.map((s) => {
+        {SURAHS_DESC.map((s) => {
           const palette = PALETTES[(s.number - 1) % PALETTES.length];
           return (
             <Link

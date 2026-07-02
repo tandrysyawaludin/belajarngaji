@@ -15,6 +15,7 @@ const STATIC_PATHS = [
   "",
   "/surah",
   "/iqra",
+  "/games",
   "/kuis",
   "/cocokkan",
   "/tebak-ayat",
