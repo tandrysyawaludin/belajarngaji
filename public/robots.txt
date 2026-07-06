@@ -1,0 +1,4 @@
+User-Agent: *
+Allow: /
+
+Sitemap: https://belajarngaji.my.id/sitemap.xml
