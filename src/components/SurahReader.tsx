@@ -3,6 +3,7 @@
 import Link from "next/link";
 import type { Surah } from "@/data/surahs";
 import { useStrings } from "@/components/LocaleProvider";
+import { PrintButton } from "@/components/PrintButton";
 import { SurahAudio } from "@/components/SurahAudio";
 import { SurahVerses } from "@/components/SurahVerses";
 import { ThemedMascot } from "@/components/ThemedMascot";
@@ -31,18 +32,25 @@ export function SurahReader({
       : strings.revelationMadaniyah;
 
   return (
-    <div className="flex flex-col gap-5">
-      <Link
-        href="/surah"
-        className="self-start rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-pink-700 shadow-sm ring-2 ring-pink-100 hover:bg-pink-100"
-      >
-        ← {strings.backToList}
-      </Link>
+    <div className="printable-root flex flex-col gap-5">
+      <div className="flex flex-wrap items-center justify-between gap-3">
+        <Link
+          href="/surah"
+          className="print-hide self-start rounded-full bg-white/90 px-4 py-2 text-sm font-bold text-pink-700 shadow-sm ring-2 ring-pink-100 hover:bg-pink-100"
+        >
+          ← {strings.backToList}
+        </Link>
+        <PrintButton className="rounded-full bg-white/90 text-pink-700 ring-2 ring-pink-100" />
+      </div>
+
+      <p className="print-only text-center text-sm font-bold text-stone-600">
+        {strings.siteTitle} · {strings.surahNumberLabel} {surah.number} · {surah.name}
+      </p>
 
       <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-pink-200 via-pink-100 to-yellow-100 p-6 shadow-lg ring-4 ring-white/60">
-        <div className="dotted absolute inset-0 opacity-40" aria-hidden="true" />
+        <div className="dotted absolute inset-0 opacity-40 print:hidden" aria-hidden="true" />
         <div className="relative flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
-          <ThemedMascot size={96} mood="happy" className="wobble" />
+          <ThemedMascot size={96} mood="happy" className="wobble print-hide" />
           <div className="flex-1 text-center sm:text-left">
             <p className="text-xs font-bold uppercase tracking-wider text-pink-500">
               {strings.surahNumberLabel} {surah.number}
@@ -57,7 +65,7 @@ export function SurahReader({
           </div>
           <div className="arabic text-pink-700">{surah.arabic}</div>
         </div>
-        <div className="relative mt-4">
+        <div className="relative mt-4 print-hide">
           <SurahAudio src={audioSrc} />
         </div>
       </section>

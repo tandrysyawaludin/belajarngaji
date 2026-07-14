@@ -21,12 +21,25 @@ import {
   resolveAnsweredMove,
   type SnakeLadderQuestion,
 } from "@/lib/snake-ladder";
-import { useStrings } from "@/components/LocaleProvider";
+import { useStrings, useFormat } from "@/components/LocaleProvider";
 import { FeedbackOverlay, type FeedbackKind } from "./Feedback";
 import { MultiplayerResult } from "./MultiplayerResult";
 import { TurnBanner } from "./TurnBanner";
 
-type Phase = "ask" | "answering" | "roll" | "rolling" | "moving" | "wrong" | "won";
+type Phase = "ask" | "answering" | "act" | "working" | "moving" | "wrong" | "won";
+type FarmAction = "water" | "plant" | "harvest";
+
+const FARM_ACTION_STEPS: Record<FarmAction, { min: number; max: number }> = {
+  water: { min: 1, max: 3 },
+  plant: { min: 2, max: 4 },
+  harvest: { min: 1, max: 6 },
+};
+
+const FARM_ACTION_EMOJI: Record<FarmAction, string> = {
+  water: "💧",
+  plant: "🌱",
+  harvest: "🌾",
+};
 
 const TOKEN_OFFSETS = [
   { dx: -8, dy: -7 },
@@ -55,14 +68,14 @@ export function FarmingGame({
   players: Player[];
 }) {
   const strings = useStrings();
+  const format = useFormat();
   const multi = isMultiplayer(players);
   const [positions, setPositions] = useState<number[]>(() => players.map(() => 1));
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [phase, setPhase] = useState<Phase>("ask");
   const [turnQuestion, setTurnQuestion] = useState<SnakeLadderQuestion | null>(null);
-  const [diceValue, setDiceValue] = useState<number | null>(null);
-  const [dicePop, setDicePop] = useState(false);
-  const [lastDice, setLastDice] = useState<number | null>(null);
+  const [lastAction, setLastAction] = useState<FarmAction | null>(null);
+  const [lastGrowth, setLastGrowth] = useState<number | null>(null);
   const [feedback, setFeedback] = useState<FeedbackKind>(null);
   const [answers, setAnswers] = useState<HistoryAnswer[]>([]);
   const [winner, setWinner] = useState<number | null>(null);
@@ -71,7 +84,7 @@ export function FarmingGame({
 
   const position = positions[currentPlayer];
   const finished = winner !== null;
-  const rolling = phase === "rolling";
+  const working = phase === "working";
   const moving = phase === "moving";
   const soloScore = answers.filter((a) => a.correct).length;
   const progressPct = Math.round(((position - 1) / (BOARD_SIZE - 1)) * 100);
@@ -79,12 +92,14 @@ export function FarmingGame({
   const currentName = players[currentPlayer]?.name ?? "";
 
   const statusText = useMemo(() => {
-    if (rolling) return strings.farmRollingStatus;
+    if (working && lastAction === "water") return strings.farmWorkingWater;
+    if (working && lastAction === "plant") return strings.farmWorkingPlant;
+    if (working && lastAction === "harvest") return strings.farmWorkingHarvest;
     if (moving) return strings.farmMovingStatus;
-    if (phase === "roll") return `${strings.farmPlantAction}!`;
+    if (phase === "act") return strings.farmChooseAction;
     if (phase === "wrong") return multi ? strings.wrongTurnPass : strings.wrongTurnRetry;
-    return strings.answerFirstHint;
-  }, [moving, multi, phase, rolling, strings]);
+    return strings.farmAnswerFirstHint;
+  }, [lastAction, moving, multi, phase, strings, working]);
 
   useEffect(() => {
     return () => {
@@ -145,36 +160,30 @@ export function FarmingGame({
       },
     ]);
     setFeedback(correct ? "correct" : "wrong");
-    setPhase(correct ? "roll" : "wrong");
+    setPhase(correct ? "act" : "wrong");
   };
 
   const endTurn = () => {
     setPhase("ask");
     setTurnQuestion(null);
-    setDiceValue(null);
-    setLastDice(null);
+    setLastAction(null);
+    setLastGrowth(null);
     setFeedback(null);
     setCurrentPlayer((p) => (p + 1) % players.length);
   };
 
-  const plantSeeds = async () => {
-    if (phase !== "roll") return;
-    const dice = Math.floor(Math.random() * 6) + 1;
-    setPhase("rolling");
-    for (let i = 0; i < 16; i += 1) {
-      setDiceValue(Math.floor(Math.random() * 6) + 1);
-      await wait(110);
-    }
-    setDiceValue(dice);
-    setLastDice(dice);
-    setDicePop(true);
-    const popTimer = window.setTimeout(() => setDicePop(false), 480);
-    timersRef.current.push(popTimer);
-    await wait(320);
+  const doFarmAction = async (action: FarmAction) => {
+    if (phase !== "act") return;
+    const { min, max } = FARM_ACTION_STEPS[action];
+    const steps = min + Math.floor(Math.random() * (max - min + 1));
+    setLastAction(action);
+    setLastGrowth(steps);
+    setPhase("working");
+    await wait(900);
 
     const mover = currentPlayer;
     const from = positions[mover];
-    const target = getMoveTarget(from, dice);
+    const target = getMoveTarget(from, steps);
     const move = resolveAnsweredMove({
       previousPosition: from,
       targetPosition: target,
@@ -203,9 +212,8 @@ export function FarmingGame({
     setCurrentPlayer(0);
     setPhase("ask");
     setTurnQuestion(null);
-    setDiceValue(null);
-    setDicePop(false);
-    setLastDice(null);
+    setLastAction(null);
+    setLastGrowth(null);
     setFeedback(null);
     setAnswers([]);
     setWinner(null);
@@ -236,24 +244,18 @@ export function FarmingGame({
     );
   }
 
-  const busy = rolling || moving;
-  let actionLabel: string = strings.answerFirstHint;
+  const busy = working || moving;
+  const showMainButton = phase === "ask" || phase === "wrong";
+  let actionLabel = strings.farmAnswerFirstHint;
   let actionHandler: () => void = openQuestion;
   let actionAccent = "bg-lime-600 hover:bg-lime-700";
   if (phase === "ask") {
     actionLabel = strings.farmAnswerQuestion;
     actionHandler = openQuestion;
-  } else if (phase === "roll") {
-    actionLabel = strings.farmPlantAction;
-    actionHandler = plantSeeds;
-    actionAccent = "bg-emerald-600 hover:bg-emerald-700";
   } else if (phase === "wrong") {
     actionLabel = multi ? strings.nextPlayer : strings.retry;
     actionHandler = endTurn;
     actionAccent = "bg-amber-600 hover:bg-amber-700";
-  } else {
-    actionLabel = statusText;
-    actionHandler = () => {};
   }
 
   return (
@@ -310,20 +312,47 @@ export function FarmingGame({
               </p>
             </div>
           </div>
-          <button
-            type="button"
-            disabled={busy || phase === "answering"}
-            onClick={actionHandler}
-            className={`mt-4 w-full border-4 border-black px-5 py-4 text-base font-extrabold text-white shadow-[4px_4px_0_#000] transition active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-60 ${actionAccent}`}
-          >
-            {actionLabel}
-          </button>
-          <div className="mt-3 flex min-h-[6rem] items-center justify-center gap-8">
-            {lastDice !== null && !rolling && <DiceCube value={lastDice} rolling={false} popping={dicePop} />}
-            {rolling && <DiceCube value={diceValue} rolling />}
-            {lastDice !== null && !rolling && (
-              <p className="font-mono text-3xl font-extrabold text-stone-800">
-                {lastDice} {strings.farmStepsUnit}
+          {showMainButton ? (
+            <button
+              type="button"
+              disabled={busy}
+              onClick={actionHandler}
+              className={`mt-4 w-full border-4 border-black px-5 py-4 text-base font-extrabold text-white shadow-[4px_4px_0_#000] transition active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-60 ${actionAccent}`}
+            >
+              {actionLabel}
+            </button>
+          ) : phase === "act" ? (
+            <div className="mt-4 grid gap-2">
+              {(
+                [
+                  ["water", strings.farmWaterAction],
+                  ["plant", strings.farmPlantAction],
+                  ["harvest", strings.farmHarvestAction],
+                ] as const
+              ).map(([action, label]) => (
+                <button
+                  key={action}
+                  type="button"
+                  disabled={busy}
+                  onClick={() => doFarmAction(action)}
+                  className="flex items-center gap-3 border-4 border-black bg-white px-4 py-3 text-left text-base font-extrabold text-stone-900 shadow-[3px_3px_0_#000] transition hover:bg-lime-50 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-60"
+                >
+                  <span className="text-2xl">{FARM_ACTION_EMOJI[action]}</span>
+                  {label}
+                </button>
+              ))}
+            </div>
+          ) : null}
+          <div className="mt-3 flex min-h-[5rem] flex-col items-center justify-center gap-2">
+            {working && lastAction && (
+              <p className="farm-action-pulse text-5xl" aria-hidden="true">
+                {FARM_ACTION_EMOJI[lastAction]}
+              </p>
+            )}
+            {lastGrowth !== null && lastAction && (working || moving) && (
+              <p className="text-center font-mono text-lg font-extrabold text-lime-800">
+                {FARM_ACTION_EMOJI[lastAction]}{" "}
+                {format(strings.farmGrowthResult, { n: lastGrowth })}
               </p>
             )}
           </div>
@@ -585,78 +614,6 @@ function FarmTokens({
         );
       })}
     </>
-  );
-}
-
-const DICE_DOTS: Record<number, number[]> = {
-  1: [5],
-  2: [1, 9],
-  3: [1, 5, 9],
-  4: [1, 3, 7, 9],
-  5: [1, 3, 5, 7, 9],
-  6: [1, 3, 4, 6, 7, 9],
-};
-
-const FACE_ROTATION: Record<number, { x: number; y: number }> = {
-  1: { x: 0, y: 0 },
-  2: { x: -90, y: 0 },
-  3: { x: 0, y: -90 },
-  4: { x: 0, y: 90 },
-  5: { x: 90, y: 0 },
-  6: { x: 0, y: -180 },
-};
-
-function DiceCube({
-  value,
-  rolling,
-  popping = false,
-}: {
-  value: number | null;
-  rolling: boolean;
-  popping?: boolean;
-}) {
-  const v = value ?? 1;
-  const rot = FACE_ROTATION[v];
-  const settled = `rotateX(${-18 + rot.x}deg) rotateY(${-22 + rot.y}deg)`;
-  return (
-    <div className={`dice-scene ${rolling ? "is-rolling" : ""} ${popping ? "is-pop" : ""}`}>
-      <div className={`dice3d farm-dice ${rolling ? "is-rolling" : ""}`} style={{ transform: settled }}>
-        {(["front", "back", "right", "left", "top", "bottom"] as const).map((face, i) => {
-          const faceValue = [1, 6, 3, 4, 2, 5][i];
-          return (
-            <DiceFace3D
-              key={face}
-              face={face}
-              value={faceValue}
-              active={rolling || v === faceValue}
-            />
-          );
-        })}
-      </div>
-    </div>
-  );
-}
-
-function DiceFace3D({
-  face,
-  value,
-  active,
-}: {
-  face: string;
-  value: number;
-  active: boolean;
-}) {
-  const dots = DICE_DOTS[value] ?? [5];
-  return (
-    <div className={`dice3d-face dice3d-face--${face} farm-dice-face`}>
-      {active &&
-        Array.from({ length: 9 }, (_, index) => (
-          <span
-            key={index}
-            className={`dice3d-pip ${dots.includes(index + 1) ? "farm-dice-pip" : "is-off"}`}
-          />
-        ))}
-    </div>
   );
 }
 

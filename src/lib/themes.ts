@@ -38,7 +38,7 @@ export interface ThemeDef {
 export const THEMES: readonly ThemeDef[] = [
   {
     id: "nadia",
-    name: "Nadia",
+    name: "Pinky",
     tagline: "Anak perempuan berhijab pink",
     gender: "girl",
     hat: "muslim",
@@ -53,7 +53,7 @@ export const THEMES: readonly ThemeDef[] = [
   },
   {
     id: "sinta",
-    name: "Sinta",
+    name: "Tealy",
     tagline: "Si ceria bertopi toska",
     gender: "girl",
     hat: "hat",
@@ -68,7 +68,7 @@ export const THEMES: readonly ThemeDef[] = [
   },
   {
     id: "maya",
-    name: "Maya",
+    name: "Yellowy",
     tagline: "Koboi cilik bertopi kuning",
     gender: "girl",
     hat: "cowboy",
@@ -83,7 +83,7 @@ export const THEMES: readonly ThemeDef[] = [
   },
   {
     id: "rian",
-    name: "Rian",
+    name: "Bluey",
     tagline: "Anak laki-laki berpeci biru",
     gender: "boy",
     hat: "muslim",
@@ -98,7 +98,7 @@ export const THEMES: readonly ThemeDef[] = [
   },
   {
     id: "dimas",
-    name: "Dimas",
+    name: "Greeny",
     tagline: "Si ceria bertopi hijau",
     gender: "boy",
     hat: "hat",
@@ -113,7 +113,7 @@ export const THEMES: readonly ThemeDef[] = [
   },
   {
     id: "bayu",
-    name: "Bayu",
+    name: "Purpley",
     tagline: "Koboi cilik bertopi ungu",
     gender: "boy",
     hat: "cowboy",

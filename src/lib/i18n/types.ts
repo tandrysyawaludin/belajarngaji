@@ -63,6 +63,8 @@ export type Strings = {
   revelationMadaniyah: string;
   meaningLabel: string;
   listenLabel: string;
+  printPdf: string;
+  printPdfHint: string;
   backToList: string;
   bookmarkContinue: string;
   bookmarkVerse: string;
@@ -147,11 +149,17 @@ export type Strings = {
   farmYourTurn: string;
   farmAnswerFirstShort: string;
   farmAnswerQuestion: string;
+  farmAnswerFirstHint: string;
+  farmChooseAction: string;
+  farmWaterAction: string;
   farmPlantAction: string;
-  farmRollingStatus: string;
+  farmHarvestAction: string;
+  farmWorkingWater: string;
+  farmWorkingPlant: string;
+  farmWorkingHarvest: string;
   farmMovingStatus: string;
+  farmGrowthResult: string;
   farmFinishTitle: string;
-  farmStepsUnit: string;
   farmStartLabel: string;
   farmFinishLabel: string;
   gameLabels: Record<string, string>;

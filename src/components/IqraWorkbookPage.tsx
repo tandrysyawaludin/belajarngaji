@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import type { IqraCell, IqraPage, IqraRow } from "@/lib/iqra";
+import { PrintButton } from "@/components/PrintButton";
 import { useStrings } from "@/components/LocaleProvider";
 
 interface IqraWorkbookPageProps {
@@ -181,8 +182,8 @@ export function IqraWorkbookPage({ page }: IqraWorkbookPageProps) {
   const ebtaChecklistLines = page.subtitle.split("\n");
 
   return (
-    <div className="flex flex-col gap-6">
-      <div className="rounded-[2rem] bg-white/85 p-5 shadow-lg ring-4 ring-lime-100">
+    <div className="printable-root flex flex-col gap-6">
+      <div className="rounded-[2rem] bg-white/85 p-5 shadow-lg ring-4 ring-lime-100 print-hide">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href={`/iqra/jilid-${page.jilid}`}
@@ -190,13 +191,21 @@ export function IqraWorkbookPage({ page }: IqraWorkbookPageProps) {
           >
             ← {strings.iqraBackToJilid} {page.jilid}
           </Link>
-          <p className="rounded-full bg-white px-4 py-2 text-sm font-extrabold text-emerald-700 shadow-sm ring-2 ring-emerald-100">
-            {strings.iqraJilid} {page.jilid} · {strings.iqraPage} {page.page}
-          </p>
+          <div className="flex flex-wrap items-center gap-2">
+            <p className="rounded-full bg-white px-4 py-2 text-sm font-extrabold text-emerald-700 shadow-sm ring-2 ring-emerald-100">
+              {strings.iqraJilid} {page.jilid} · {strings.iqraPage} {page.page}
+            </p>
+            <PrintButton className="rounded-full bg-emerald-50 text-emerald-800 ring-2 ring-emerald-100" />
+          </div>
         </div>
       </div>
 
-      <article className="mx-auto w-full max-w-2xl rounded-[2rem] bg-stone-100 p-3 shadow-2xl ring-4 ring-white/80 sm:p-5">
+      <p className="print-only text-center text-sm font-bold text-stone-600">
+        {strings.siteTitle} · {strings.iqraJilid} {page.jilid} · {strings.iqraPage}{" "}
+        {page.page}
+      </p>
+
+      <article className="iqra-print-sheet mx-auto w-full max-w-2xl rounded-[2rem] bg-stone-100 p-3 shadow-2xl ring-4 ring-white/80 sm:p-5">
         <div className="relative overflow-hidden rounded-2xl border-[3px] border-stone-800 bg-[#f8f5eb] p-4 text-stone-950 shadow-inner sm:p-6">
           <span className="absolute left-2 top-2 text-2xl font-black text-stone-700" aria-hidden="true">
             +

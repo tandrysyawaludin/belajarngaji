@@ -8,7 +8,7 @@
 }
 
 :root {
-  /* Defaults — match the "Nadia" theme so SSR matches the post-paint look. */
+  /* Defaults — match the "Pinky" theme so SSR matches the post-paint look. */
   --background: #fff0f5;
   --foreground: #2c1a3f;
   --theme-primary: #fb6f92;
@@ -247,10 +247,58 @@ body {
   border: 3px solid #1c1917;
   box-shadow: 3px 3px 0 #1c1917;
 }
-.farm-dice-face {
-  background: linear-gradient(145deg, #84cc16, #65a30d) !important;
-  border-color: #1c1917 !important;
+.farm-action-pulse {
+  animation: farm-action-pulse 700ms ease-in-out infinite;
 }
-.farm-dice-pip {
-  background: #1c1917 !important;
+@keyframes farm-action-pulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.15); }
+}
+
+/* Print / Save as PDF */
+@media print {
+  @page {
+    margin: 1.2cm;
+    size: A4;
+  }
+
+  body {
+    background: white !important;
+    color: #111 !important;
+  }
+
+  header,
+  footer,
+  .print-hide {
+    display: none !important;
+  }
+
+  main {
+    max-width: 100% !important;
+    padding: 0 !important;
+  }
+
+  .printable-root {
+    gap: 0.75rem !important;
+  }
+
+  .printable-root .print-verse,
+  .printable-root .iqra-print-sheet {
+    break-inside: avoid;
+    page-break-inside: avoid;
+    box-shadow: none !important;
+    background: white !important;
+  }
+
+  .print-only {
+    display: block !important;
+  }
+
+  .arabic {
+    color: #111 !important;
+  }
+}
+
+.print-only {
+  display: none;
 }

@@ -60,7 +60,7 @@ export function SurahVerses({
         <article
           key={v.verse}
           id={`verse-${v.verse}`}
-          className="scroll-mt-24 rounded-2xl bg-white/95 p-4 shadow-md ring-2 ring-pink-100"
+          className="print-verse scroll-mt-24 rounded-2xl bg-white/95 p-4 shadow-md ring-2 ring-pink-100"
         >
           <div className="flex items-center justify-between gap-3">
             <span className="grid h-9 w-9 place-items-center rounded-full bg-pink-500 text-sm font-extrabold text-white shadow">
