@@ -3,18 +3,21 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Surah } from "@/data/surahs";
 import {
-  DISPLAY_SQUARES,
-  centerPercent,
-} from "@/lib/board-path";
+  CARROT_GOAL,
+  FARM_ACTIONS,
+  GRID_SIZE,
+  applyAction,
+  canDoAction,
+  createFarm,
+  indexToPos,
+  type FarmAction,
+  type FarmCell,
+} from "@/lib/farm-grid";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { isMultiplayer, playerTheme, type Player } from "@/lib/players";
 import {
-  BOARD_JUMPS,
-  BOARD_SIZE,
   buildSnakeLadderQuestion,
-  getMoveTarget,
   getSnakeLadderQuestionKey,
-  resolveAnsweredMove,
   type SnakeLadderQuestion,
 } from "@/lib/snake-ladder";
 import { useStrings, useFormat } from "@/components/LocaleProvider";
@@ -22,39 +25,23 @@ import { FeedbackOverlay, type FeedbackKind } from "./Feedback";
 import { MultiplayerResult } from "./MultiplayerResult";
 import { TurnBanner } from "./TurnBanner";
 
-type Phase = "ask" | "answering" | "act" | "working" | "moving" | "wrong" | "won";
-type FarmAction = "water" | "plant" | "harvest";
+type Phase = "ask" | "answering" | "play" | "wrong" | "won";
 
-const FARM_ACTION_STEPS: Record<FarmAction, { min: number; max: number }> = {
-  water: { min: 1, max: 3 },
-  plant: { min: 2, max: 4 },
-  harvest: { min: 1, max: 6 },
-};
-
-const FARM_ACTION_EMOJI: Record<FarmAction, string> = {
-  water: "💧",
-  plant: "🌱",
-  harvest: "🌾",
-};
-
+const CENTER_INDEX = Math.floor((GRID_SIZE * GRID_SIZE) / 2);
 const TOKEN_OFFSETS = [
-  { dx: -8, dy: -7 },
-  { dx: 8, dy: -7 },
-  { dx: -8, dy: 9 },
-  { dx: 8, dy: 9 },
+  { dx: -10, dy: -8 },
+  { dx: 10, dy: -8 },
+  { dx: -10, dy: 10 },
+  { dx: 10, dy: 10 },
 ];
 
-const CROP_TILES = new Set([4, 8, 12, 16, 20, 24, 28]);
-const WATER_TILES = new Set(
-  Object.entries(BOARD_JUMPS)
-    .filter(([from, to]) => to > Number(from))
-    .map(([from]) => Number(from)),
-);
-const HOLE_TILES = new Set(
-  Object.entries(BOARD_JUMPS)
-    .filter(([from, to]) => to < Number(from))
-    .map(([from]) => Number(from)),
-);
+const ACTION_ICON: Record<FarmAction, string> = {
+  kill: "🐀",
+  seed: "🌱",
+  water: "💧",
+  harvest: "🥕",
+  tree: "🌳",
+};
 
 export function FarmingGame({
   scope,
@@ -66,65 +53,47 @@ export function FarmingGame({
   const strings = useStrings();
   const format = useFormat();
   const multi = isMultiplayer(players);
-  const [positions, setPositions] = useState<number[]>(() => players.map(() => 1));
+  const [cells, setCells] = useState<FarmCell[]>(() => createFarm());
+  const [positions, setPositions] = useState<number[]>(() =>
+    players.map(() => CENTER_INDEX),
+  );
+  const [carrots, setCarrots] = useState<number[]>(() => players.map(() => 0));
   const [currentPlayer, setCurrentPlayer] = useState(0);
   const [phase, setPhase] = useState<Phase>("ask");
   const [turnQuestion, setTurnQuestion] = useState<SnakeLadderQuestion | null>(null);
-  const [lastAction, setLastAction] = useState<FarmAction | null>(null);
-  const [lastGrowth, setLastGrowth] = useState<number | null>(null);
+  const [movedThisTurn, setMovedThisTurn] = useState(false);
   const [feedback, setFeedback] = useState<FeedbackKind>(null);
   const [answers, setAnswers] = useState<HistoryAnswer[]>([]);
   const [winner, setWinner] = useState<number | null>(null);
   const [usedQuestionKeys, setUsedQuestionKeys] = useState<Set<string>>(() => new Set());
-  const timersRef = useRef<number[]>([]);
 
   const position = positions[currentPlayer];
+  const cell = cells[position];
   const finished = winner !== null;
-  const working = phase === "working";
-  const moving = phase === "moving";
-  const soloScore = answers.filter((a) => a.correct).length;
-  const progressPct = Math.round(((position - 1) / (BOARD_SIZE - 1)) * 100);
-  const standings = players.map((p, i) => ({ ...p, score: positions[i] }));
+  const playing = phase === "play";
+  const soloCarrots = carrots[0] ?? 0;
   const currentName = players[currentPlayer]?.name ?? "";
+  const standings = players.map((p, i) => ({ ...p, score: carrots[i] }));
+
+  const availableActions = useMemo(
+    () => FARM_ACTIONS.filter((action) => canDoAction(cell, action)),
+    [cell],
+  );
+
+  const actionLabels: Record<FarmAction, string> = {
+    kill: strings.farmActionKill,
+    seed: strings.farmActionSeed,
+    water: strings.farmActionWater,
+    harvest: strings.farmActionHarvest,
+    tree: strings.farmActionTree,
+  };
 
   const statusText = useMemo(() => {
-    if (working && lastAction === "water") return strings.farmWorkingWater;
-    if (working && lastAction === "plant") return strings.farmWorkingPlant;
-    if (working && lastAction === "harvest") return strings.farmWorkingHarvest;
-    if (moving) return strings.farmMovingStatus;
-    if (phase === "act") return strings.farmChooseAction;
+    if (playing && !movedThisTurn) return strings.farmTapPlotHint;
+    if (playing && movedThisTurn) return strings.farmChooseAction;
     if (phase === "wrong") return multi ? strings.wrongTurnPass : strings.wrongTurnRetry;
     return strings.farmAnswerFirstHint;
-  }, [lastAction, moving, multi, phase, strings, working]);
-
-  useEffect(() => {
-    return () => {
-      for (const timer of timersRef.current) window.clearTimeout(timer);
-      timersRef.current = [];
-    };
-  }, []);
-
-  const wait = (ms: number) =>
-    new Promise<void>((resolve) => {
-      const timer = window.setTimeout(() => {
-        timersRef.current = timersRef.current.filter((item) => item !== timer);
-        resolve();
-      }, ms);
-      timersRef.current.push(timer);
-    });
-
-  const animateToken = async (playerIndex: number, from: number, to: number) => {
-    if (from === to) return;
-    const step = from < to ? 1 : -1;
-    for (
-      let square = from + step;
-      step > 0 ? square <= to : square >= to;
-      square += step
-    ) {
-      await wait(440);
-      setPositions((prev) => prev.map((p, i) => (i === playerIndex ? square : p)));
-    }
-  };
+  }, [movedThisTurn, multi, phase, playing, strings]);
 
   const openQuestion = () => {
     if (phase !== "ask") return;
@@ -156,60 +125,63 @@ export function FarmingGame({
       },
     ]);
     setFeedback(correct ? "correct" : "wrong");
-    setPhase(correct ? "act" : "wrong");
+    if (correct) {
+      setMovedThisTurn(false);
+      setPhase("play");
+    } else {
+      setPhase("wrong");
+    }
   };
 
   const endTurn = () => {
     setPhase("ask");
     setTurnQuestion(null);
-    setLastAction(null);
-    setLastGrowth(null);
+    setMovedThisTurn(false);
     setFeedback(null);
     setCurrentPlayer((p) => (p + 1) % players.length);
   };
 
-  const doFarmAction = async (action: FarmAction) => {
-    if (phase !== "act") return;
-    const { min, max } = FARM_ACTION_STEPS[action];
-    const steps = min + Math.floor(Math.random() * (max - min + 1));
-    setLastAction(action);
-    setLastGrowth(steps);
-    setPhase("working");
-    await wait(900);
+  const moveTo = (index: number) => {
+    if (phase !== "play") return;
+    setPositions((prev) => prev.map((p, i) => (i === currentPlayer ? index : p)));
+    setMovedThisTurn(true);
+  };
 
-    const mover = currentPlayer;
-    const from = positions[mover];
-    const target = getMoveTarget(from, steps);
-    const move = resolveAnsweredMove({
-      previousPosition: from,
-      targetPosition: target,
-      isCorrect: true,
-    });
+  const doAction = (action: FarmAction) => {
+    if (phase !== "play" || !movedThisTurn) return;
+    const plot = cells[position];
+    if (!canDoAction(plot, action)) return;
 
-    setPhase("moving");
-    await wait(260);
-    await animateToken(mover, from, target);
-    if (move.jump) {
-      await wait(320);
-      setPositions((prev) => prev.map((p, i) => (i === mover ? move.position : p)));
-      await wait(720);
-    }
+    const result = applyAction(plot, action);
+    setCells((prev) => prev.map((c, i) => (i === position ? result.cell : c)));
 
-    if (move.position === BOARD_SIZE) {
-      setWinner(mover);
-      setPhase("won");
-      return;
+    if (result.carrot) {
+      const nextCarrots = carrots.map((n, i) =>
+        i === currentPlayer ? n + 1 : n,
+      );
+      setCarrots(nextCarrots);
+      if (nextCarrots[currentPlayer] >= CARROT_GOAL) {
+        setWinner(currentPlayer);
+        setPhase("won");
+        return;
+      }
     }
     endTurn();
   };
 
+  const skipAction = () => {
+    if (phase !== "play" || !movedThisTurn) return;
+    endTurn();
+  };
+
   const restart = () => {
-    setPositions(players.map(() => 1));
+    setCells(createFarm());
+    setPositions(players.map(() => CENTER_INDEX));
+    setCarrots(players.map(() => 0));
     setCurrentPlayer(0);
     setPhase("ask");
     setTurnQuestion(null);
-    setLastAction(null);
-    setLastGrowth(null);
+    setMovedThisTurn(false);
     setFeedback(null);
     setAnswers([]);
     setWinner(null);
@@ -223,16 +195,15 @@ export function FarmingGame({
           players={standings}
           gameId="berkebun"
           scope={scope}
-          total={BOARD_SIZE}
-          unit={strings.squaresUnit}
+          total={CARROT_GOAL}
+          unit={strings.farmCarrotsUnit}
           onRestart={restart}
         />
       );
     }
     return (
       <ResultCard
-        score={soloScore}
-        total={answers.length}
+        carrots={soloCarrots}
         answers={answers}
         scope={scope}
         onRestart={restart}
@@ -240,7 +211,6 @@ export function FarmingGame({
     );
   }
 
-  const busy = working || moving;
   const showMainButton = phase === "ask" || phase === "wrong";
   let actionLabel = strings.farmAnswerFirstHint;
   let actionHandler: () => void = openQuestion;
@@ -264,24 +234,32 @@ export function FarmingGame({
             </p>
             <h2 className="text-xl font-extrabold text-white drop-shadow-[1px_1px_0_#3d2817] sm:text-2xl">
               {multi
-                ? `${currentName} · ${format(strings.farmProgressText, { current: position, total: BOARD_SIZE })}`
-                : format(strings.farmProgressText, { current: position, total: BOARD_SIZE })}
+                ? `${currentName} · ${format(strings.farmCarrotGoal, { current: carrots[currentPlayer], goal: CARROT_GOAL })}`
+                : format(strings.farmCarrotGoal, { current: soloCarrots, goal: CARROT_GOAL })}
             </h2>
           </div>
           {!multi && (
             <div className="farm-wood-panel rounded-lg px-3 py-2 text-sm font-extrabold text-amber-950">
-              {strings.scoreLabel} {soloScore}/{answers.length || 0}
+              {strings.scoreLabel} {answers.filter((a) => a.correct).length}/{answers.length || 0}
             </div>
           )}
         </div>
         <div className="farm-progress-track mb-3 h-4 overflow-hidden rounded-full">
-          <div className="farm-progress-fill h-full transition-all" style={{ width: `${progressPct}%` }} />
+          <div
+            className="farm-progress-fill h-full transition-all"
+            style={{
+              width: `${Math.min(100, Math.round(((multi ? carrots[currentPlayer] : soloCarrots) / CARROT_GOAL) * 100))}%`,
+            }}
+          />
         </div>
-        <FarmScene
+        <FarmGrid
+          cells={cells}
           positions={positions}
           players={players}
           currentIndex={currentPlayer}
-          moving={moving}
+          playing={playing}
+          movedThisTurn={movedThisTurn}
+          onSelectPlot={playing ? moveTo : undefined}
         />
       </section>
 
@@ -290,12 +268,12 @@ export function FarmingGame({
           <TurnBanner
             players={standings}
             currentIndex={currentPlayer}
-            scoreUnit={strings.squaresUnit}
+            scoreUnit={strings.farmCarrotsUnit}
           />
         )}
         <article className="farm-wood-panel rounded-2xl p-5">
           <div className="flex items-center gap-3">
-            <FarmerAvatar size={88} animated={busy} />
+            <FarmerAvatar size={88} animated={playing && movedThisTurn} />
             <div>
               <p className="text-sm font-extrabold uppercase tracking-wide text-amber-900/80">
                 {multi ? `${strings.turnLabel}: ${currentName}` : strings.farmYourTurn}
@@ -308,55 +286,40 @@ export function FarmingGame({
           {showMainButton ? (
             <button
               type="button"
-              disabled={busy}
               onClick={actionHandler}
-              className={`mt-4 w-full rounded-xl px-5 py-4 text-base font-extrabold text-white shadow-md transition hover:brightness-105 active:scale-[0.98] disabled:opacity-60 ${actionAccent}`}
+              className={`mt-4 w-full rounded-xl px-5 py-4 text-base font-extrabold text-white shadow-md transition hover:brightness-105 active:scale-[0.98] ${actionAccent}`}
             >
               {actionLabel}
             </button>
-          ) : phase === "act" ? (
-            <div className="mt-4">
-              <p className="mb-2 text-center text-xs font-extrabold uppercase tracking-wide text-amber-900/70">
-                {strings.farmChooseAction}
-              </p>
-              <div className="grid grid-cols-3 gap-2">
-                {(
-                  [
-                    ["water", strings.farmWaterAction, "💧"],
-                    ["plant", strings.farmPlantAction, "🌱"],
-                    ["harvest", strings.farmHarvestAction, "🌾"],
-                  ] as const
-                ).map(([action, label, icon]) => (
-                  <button
-                    key={action}
-                    type="button"
-                    disabled={busy}
-                    onClick={() => doFarmAction(action)}
-                    title={label}
-                    className="farm-hotbar-slot flex flex-col items-center gap-1 rounded-lg px-2 py-3 text-center transition active:scale-95 disabled:opacity-60"
-                  >
-                    <span className="text-2xl">{icon}</span>
-                    <span className="text-[10px] font-extrabold leading-tight text-amber-950 sm:text-xs">
-                      {label}
-                    </span>
-                  </button>
-                ))}
-              </div>
+          ) : playing && movedThisTurn ? (
+            <div className="mt-4 grid gap-2">
+              {FARM_ACTIONS.map((action) => (
+                <button
+                  key={action}
+                  type="button"
+                  disabled={!availableActions.includes(action)}
+                  onClick={() => doAction(action)}
+                  className="flex items-center gap-2 rounded-xl bg-white/90 px-4 py-3 text-left text-sm font-extrabold text-amber-950 shadow-sm ring-2 ring-amber-200/80 transition hover:bg-white active:scale-[0.98] disabled:cursor-not-allowed disabled:opacity-40"
+                >
+                  <span aria-hidden="true">{ACTION_ICON[action]}</span>
+                  {actionLabels[action]}
+                </button>
+              ))}
+              {availableActions.length === 0 && (
+                <button
+                  type="button"
+                  onClick={skipAction}
+                  className="rounded-xl bg-amber-800/10 px-4 py-3 text-sm font-extrabold text-amber-950"
+                >
+                  {strings.farmSkipAction}
+                </button>
+              )}
             </div>
+          ) : playing ? (
+            <p className="mt-4 rounded-xl bg-amber-950/10 px-4 py-3 text-center text-sm font-extrabold text-amber-950">
+              {strings.farmChooseDestination}
+            </p>
           ) : null}
-          <div className="mt-3 flex min-h-[4.5rem] flex-col items-center justify-center gap-2">
-            {working && lastAction && (
-              <p className="farm-action-pulse text-5xl" aria-hidden="true">
-                {FARM_ACTION_EMOJI[lastAction]}
-              </p>
-            )}
-            {lastGrowth !== null && lastAction && (working || moving) && (
-              <p className="text-center text-base font-extrabold text-amber-950">
-                {FARM_ACTION_EMOJI[lastAction]}{" "}
-                {format(strings.farmGrowthResult, { n: lastGrowth })}
-              </p>
-            )}
-          </div>
         </article>
       </aside>
 
@@ -372,183 +335,173 @@ export function FarmingGame({
   );
 }
 
-function FarmScene({
+function cellCenterPercent(index: number): { x: number; y: number } {
+  const { row, col } = indexToPos(index);
+  const step = 100 / GRID_SIZE;
+  return { x: step * col + step / 2, y: step * row + step / 2 };
+}
+
+function FarmGrid({
+  cells,
   positions,
   players,
   currentIndex,
-  moving,
+  playing,
+  movedThisTurn,
+  onSelectPlot,
 }: {
+  cells: FarmCell[];
   positions: number[];
   players: Player[];
   currentIndex: number;
-  moving: boolean;
+  playing: boolean;
+  movedThisTurn: boolean;
+  onSelectPlot?: (index: number) => void;
 }) {
   const strings = useStrings();
-  const currentSquare = positions[currentIndex];
-  const maxReached = Math.max(...positions);
+  const format = useFormat();
+  const currentPos = positions[currentIndex];
 
   return (
-    <div className="farm-field relative mx-auto aspect-[6/5] w-full overflow-hidden rounded-xl p-2">
-      <span className="pointer-events-none absolute left-1 top-1 text-lg opacity-80" aria-hidden="true">
-        🌳
-      </span>
-      <span className="pointer-events-none absolute right-1 top-1 text-lg opacity-80" aria-hidden="true">
-        🌲
-      </span>
-      <span className="pointer-events-none absolute bottom-1 left-1 text-lg opacity-80" aria-hidden="true">
-        🪵
-      </span>
-      <span className="pointer-events-none absolute bottom-1 right-1 text-lg opacity-80" aria-hidden="true">
+    <div className="farm-field relative mx-auto aspect-square w-full max-w-md overflow-hidden rounded-xl p-3">
+      <span className="pointer-events-none absolute left-2 top-2 text-xl opacity-80" aria-hidden="true">
         🌻
       </span>
+      <span className="pointer-events-none absolute right-2 top-2 text-xl opacity-80" aria-hidden="true">
+        🌲
+      </span>
+      <span className="pointer-events-none absolute bottom-2 left-2 text-xl opacity-80" aria-hidden="true">
+        🪵
+      </span>
+      <span className="pointer-events-none absolute bottom-2 right-2 text-xl opacity-80" aria-hidden="true">
+        🏠
+      </span>
 
-      <div className="grid h-full w-full grid-cols-6 grid-rows-5 gap-0.5">
-        {DISPLAY_SQUARES.map((square) => {
-          const isActive = square === currentSquare;
-          const passed = square < maxReached;
-          const jumpTo = BOARD_JUMPS[square];
-          const variant =
-            square === BOARD_SIZE
-              ? "silo"
-              : square === 1
-                ? "barn"
-                : WATER_TILES.has(square)
-                  ? "water"
-                  : HOLE_TILES.has(square)
-                    ? "hole"
-                    : CROP_TILES.has(square) || passed
-                      ? "crop"
-                      : "soil";
+      <div className="grid h-full w-full grid-cols-3 grid-rows-3 gap-1.5">
+        {cells.map((plot, index) => {
+          const isHere = index === currentPos;
+          const canMove = playing && !movedThisTurn;
+          const highlight = playing && (canMove || (movedThisTurn && isHere));
           return (
-            <FarmTile
-              key={square}
-              square={square}
-              variant={variant}
-              active={isActive}
-              passed={passed && variant === "soil"}
-              jumpTo={jumpTo}
-              label={
-                square === 1
-                  ? strings.farmStartLabel
-                  : square === BOARD_SIZE
-                    ? strings.farmFinishLabel
-                    : undefined
-              }
+            <FarmPlot
+              key={index}
+              index={index}
+              plot={plot}
+              active={isHere}
+              reachable={canMove}
+              highlight={highlight}
+              label={format(strings.farmPlotLabel, { n: index + 1 })}
+              onSelect={onSelectPlot}
             />
           );
         })}
       </div>
 
-      <FarmTokens
-        positions={positions}
-        players={players}
-        currentIndex={currentIndex}
-        moving={moving}
-      />
+      <FarmTokens positions={positions} players={players} currentIndex={currentIndex} />
     </div>
   );
 }
 
-function FarmTile({
-  square,
-  variant,
+function FarmPlot({
+  index,
+  plot,
   active,
-  passed,
-  jumpTo,
+  reachable,
+  highlight,
   label,
+  onSelect,
 }: {
-  square: number;
-  variant: "soil" | "crop" | "water" | "hole" | "barn" | "silo";
+  index: number;
+  plot: FarmCell;
   active: boolean;
-  passed?: boolean;
-  jumpTo?: number;
-  label?: string;
+  reachable?: boolean;
+  highlight?: boolean;
+  label: string;
+  onSelect?: (index: number) => void;
 }) {
-  const tileClass =
-    variant === "barn"
-      ? "farm-tile--barn"
-      : variant === "silo"
-        ? "farm-tile--silo"
-        : variant === "water"
-          ? "farm-tile--water"
-          : variant === "hole"
-            ? "farm-tile--hole"
-            : variant === "crop"
-              ? "farm-tile--crop"
-              : passed
-                ? "farm-tile--soil-done"
-                : "farm-tile--soil";
+  const decor = plotDecor(plot);
+  const tileClass = plot.tree
+    ? "farm-tile--crop"
+    : plot.mouse
+      ? "farm-tile--hole"
+      : plot.crop === "ready"
+        ? "farm-tile--crop"
+        : plot.crop === "seeded" || plot.crop === "watered"
+          ? "farm-tile--soil-done"
+          : "farm-tile--soil";
 
-  const decor =
-    variant === "barn"
-      ? "🏠"
-      : variant === "silo"
-        ? "🏆"
-        : variant === "water"
-          ? "⛲"
-          : variant === "hole"
-            ? "🐀"
-            : variant === "crop"
-              ? passed
-                ? "🌾"
-                : "🌱"
-              : passed
-                ? "🥕"
-                : null;
+  const className = [
+    "farm-tile",
+    tileClass,
+    active ? "farm-tile--active" : "",
+    reachable ? "farm-tile--reachable" : "",
+    highlight && !reachable ? "ring-2 ring-amber-300" : "",
+  ]
+    .filter(Boolean)
+    .join(" ");
 
-  const jumpHint =
-    jumpTo !== undefined
-      ? jumpTo > square
-        ? "⬆️"
-        : "⬇️"
-      : null;
-
-  return (
-    <div
-      className={`farm-tile ${tileClass} ${active ? "farm-tile--active" : ""}`}
-      aria-label={label ?? `Plot ${square}`}
-    >
+  const content = (
+    <>
       {decor && (
-        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base sm:text-lg" aria-hidden="true">
+        <span
+          className="pointer-events-none absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-xl sm:text-2xl"
+          aria-hidden="true"
+        >
           {decor}
         </span>
       )}
-      {jumpHint && (
-        <span className="absolute right-0.5 top-0.5 text-[10px] sm:text-xs" aria-hidden="true">
-          {jumpHint}
-        </span>
-      )}
-      {label && (
-        <span className="absolute bottom-0 left-0 right-0 bg-black/55 py-0.5 text-center text-[8px] font-extrabold uppercase text-white sm:text-[9px]">
-          {label}
-        </span>
-      )}
+    </>
+  );
+
+  if (reachable && onSelect) {
+    return (
+      <button
+        type="button"
+        className={className}
+        aria-label={label}
+        onClick={() => onSelect(index)}
+      >
+        {content}
+      </button>
+    );
+  }
+
+  return (
+    <div className={className} aria-label={label}>
+      {content}
     </div>
   );
+}
+
+function plotDecor(plot: FarmCell): string | null {
+  if (plot.mouse) return "🐀";
+  if (plot.tree) return plot.treePicked ? "🌳" : "🥕";
+  if (plot.crop === "ready") return "🥕";
+  if (plot.crop === "watered") return "💧";
+  if (plot.crop === "seeded") return "🌱";
+  return null;
 }
 
 function FarmTokens({
   positions,
   players,
   currentIndex,
-  moving,
 }: {
   positions: number[];
   players: Player[];
   currentIndex: number;
-  moving: boolean;
 }) {
   const spread = players.length > 1;
   return (
     <>
       {players.map((player, i) => {
-        const { x, y } = centerPercent(positions[i]);
+        const { x, y } = cellCenterPercent(positions[i]);
         const offset = spread ? TOKEN_OFFSETS[i % TOKEN_OFFSETS.length] : { dx: 0, dy: 0 };
         const isActive = i === currentIndex;
         return (
           <div
             key={player.id}
-            className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-1/2 transition-all duration-500 ease-in-out"
+            className="pointer-events-none absolute z-30 -translate-x-1/2 -translate-y-1/2 transition-all duration-300 ease-in-out"
             style={{
               left: `${x}%`,
               top: `${y}%`,
@@ -559,7 +512,7 @@ function FarmTokens({
             <span
               className={`farm-player inline-block ${
                 isActive ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl opacity-90"
-              } ${moving && isActive ? "chicken-hop" : ""}`}
+              }`}
             >
               {isActive ? "🧑‍🌾" : playerTheme(i).token}
             </span>
@@ -599,7 +552,7 @@ function QuestionModal({
   useEffect(() => {
     const previousFocus =
       typeof document !== "undefined" ? document.activeElement : null;
-    (dialogRef.current)?.focus();
+    dialogRef.current?.focus();
     return () => {
       if (previousFocus instanceof HTMLElement) previousFocus.focus();
     };
@@ -637,32 +590,32 @@ function QuestionModal({
 }
 
 function ResultCard({
-  score,
-  total,
+  carrots,
   answers,
   scope,
   onRestart,
 }: {
-  score: number;
-  total: number;
+  carrots: number;
   answers: HistoryAnswer[];
   scope: Surah[];
   onRestart: () => void;
 }) {
   const strings = useStrings();
+  const format = useFormat();
   const savedRef = useRef(false);
+  const correct = answers.filter((a) => a.correct).length;
 
   useEffect(() => {
     if (savedRef.current) return;
     savedRef.current = true;
     addEntry({
       gameId: "berkebun",
-      score,
-      total,
+      score: carrots,
+      total: CARROT_GOAL,
       answers,
       scopeNumbers: scope.map((s) => s.number),
     });
-  }, [score, total, answers, scope]);
+  }, [carrots, answers, scope]);
 
   useEffect(() => {
     import("./Feedback").then(({ fireConfetti }) => fireConfetti());
@@ -675,7 +628,10 @@ function ResultCard({
         {strings.farmFinishTitle}
       </h2>
       <p className="text-xl font-bold text-stone-900">
-        {strings.scoreLabel}: <span className="text-emerald-700">{score}</span> / {total}
+        {format(strings.farmCarrotGoal, { current: carrots, goal: CARROT_GOAL })}
+      </p>
+      <p className="text-base font-bold text-stone-700">
+        {strings.scoreLabel}: {correct}/{answers.length || 0}
       </p>
       <button
         type="button"
