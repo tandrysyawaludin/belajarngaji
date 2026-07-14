@@ -4,9 +4,10 @@ import Link from "next/link";
 import { useCallback, useSyncExternalStore } from "react";
 import { getSurah } from "@/data/surahs";
 import { readBookmark, subscribeBookmark } from "@/lib/bookmark";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 
 export function ContinueReading() {
+  const strings = useStrings();
   const subscribe = useCallback((cb: () => void) => subscribeBookmark(cb), []);
   const getSnapshot = useCallback(() => readBookmark(), []);
   const getServerSnapshot = useCallback(() => null, []);

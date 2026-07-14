@@ -17,6 +17,7 @@ const STATIC_PATHS = [
   "/tebak-ayat",
   "/sambung",
   "/ular-tangga",
+  "/berkebun",
   "/riwayat",
   "/iqra/jilid-1",
   "/iqra/jilid-2",

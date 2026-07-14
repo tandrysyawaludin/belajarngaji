@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { type Surah } from "@/data/surahs";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 import { sampleUnique, shuffle } from "@/lib/random";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { isMultiplayer, type Player } from "@/lib/players";
@@ -46,6 +46,7 @@ export function MatchingGame({
   scope: Surah[];
   players: Player[];
 }) {
+  const strings = useStrings();
   const multi = isMultiplayer(players);
   const [round, setRound] = useState<Round>(() => buildRound(scope));
   const [matched, setMatched] = useState<Set<number>>(new Set());

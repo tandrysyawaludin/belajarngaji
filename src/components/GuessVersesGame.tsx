@@ -2,7 +2,7 @@
 
 import { useEffect, useRef, useState } from "react";
 import { type Surah } from "@/data/surahs";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 import { shuffle } from "@/lib/random";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { isMultiplayer, type Player } from "@/lib/players";
@@ -58,6 +58,7 @@ export function GuessVersesGame({
   scope: Surah[];
   players: Player[];
 }) {
+  const strings = useStrings();
   const multi = isMultiplayer(players);
   const questionsPerPlayer = multi
     ? MULTI_QUESTIONS_PER_PLAYER
@@ -190,7 +191,7 @@ export function GuessVersesGame({
         {chosen !== null && (
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-base font-bold text-pink-800">
-              Jawaban yang benar:{" "}
+              {strings.historyCorrectAnswer}:{" "}
               <span className="underline">{current.surah.verses} ayat</span>
             </p>
             <button
@@ -221,6 +222,7 @@ function ResultCard({
   scope: Surah[];
   onRestart: () => void;
 }) {
+  const strings = useStrings();
   const pct = (score / total) * 100;
   const mood = pct >= 70 ? "excited" : pct >= 40 ? "happy" : "sad";
   const message =

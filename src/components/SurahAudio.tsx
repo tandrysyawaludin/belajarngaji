@@ -1,9 +1,10 @@
 "use client";
 
 import { useRef, useState } from "react";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 
 export function SurahAudio({ src }: { src: string }) {
+  const strings = useStrings();
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const [playing, setPlaying] = useState(false);
   const [error, setError] = useState(false);

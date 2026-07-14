@@ -2,7 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState } from "react";
 import { SURAHS, type Surah } from "@/data/surahs";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 import { sampleUnique, shuffle } from "@/lib/random";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { isMultiplayer, type Player } from "@/lib/players";
@@ -68,6 +68,7 @@ export function QuizGame({
   scope: Surah[];
   players: Player[];
 }) {
+  const strings = useStrings();
   const multi = isMultiplayer(players);
   const questionsPerPlayer = multi
     ? MULTI_QUESTIONS_PER_PLAYER
@@ -194,7 +195,7 @@ export function QuizGame({
         {answer.phase === "revealed" && (
           <div className="mt-5 flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
             <p className="text-base font-bold text-pink-800">
-              Jawaban yang benar: <span className="underline">{current.correct}</span>
+              {strings.historyCorrectAnswer}: <span className="underline">{current.correct}</span>
             </p>
             <button
               type="button"
@@ -220,6 +221,7 @@ function ScoreBar({
   total: number;
   score: number;
 }) {
+  const strings = useStrings();
   const pct = Math.max(0, Math.min(100, (index / total) * 100));
   return (
     <div className="rounded-2xl bg-white/85 p-3 shadow ring-2 ring-pink-100">
@@ -255,12 +257,13 @@ function Result({
   scope: Surah[];
   onRestart: () => void;
 }) {
+  const strings = useStrings();
   const pct = (score / total) * 100;
   const message = useMemo(() => {
     if (pct === 100) return strings.perfectScore;
     if (pct >= 70) return strings.goodJob;
     return strings.keepTrying;
-  }, [pct]);
+  }, [pct, strings]);
   const mood = pct >= 70 ? "excited" : pct >= 40 ? "happy" : "sad";
 
   // Persist this session into history exactly once per Result mount.

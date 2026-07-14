@@ -9,9 +9,10 @@ import {
   playerTheme,
   type Player,
 } from "@/lib/players";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 
 export function GameSetup({ onStart }: { onStart: (players: Player[]) => void }) {
+  const strings = useStrings();
   const [mode, setMode] = useState<"solo" | "multi">("solo");
   const [count, setCount] = useState(2);
   const [names, setNames] = useState<string[]>(() =>

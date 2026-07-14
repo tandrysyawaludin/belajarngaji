@@ -5,7 +5,7 @@ import type { Surah } from "@/data/surahs";
 import { addEntry } from "@/lib/history";
 import { playerTheme, type Player } from "@/lib/players";
 import type { GameId } from "@/lib/scope";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 import { fireConfetti } from "./Feedback";
 import { ThemedMascot } from "./ThemedMascot";
 
@@ -14,7 +14,7 @@ export function MultiplayerResult({
   gameId,
   scope,
   total,
-  unit = strings.pointsUnit,
+  unit,
   onRestart,
 }: {
   players: Player[];
@@ -24,6 +24,8 @@ export function MultiplayerResult({
   unit?: string;
   onRestart: () => void;
 }) {
+  const strings = useStrings();
+  const scoreUnit = unit ?? strings.pointsUnit;
   const ranked = useMemo(
     () =>
       players
@@ -47,12 +49,12 @@ export function MultiplayerResult({
       scopeNumbers: scope.map((s) => s.number),
       answers: ranked.map((r) => ({
         prompt: r.player.name,
-        yourAnswer: `${r.player.score} ${unit}`,
-        correctAnswer: `${r.player.score} ${unit}`,
+        yourAnswer: `${r.player.score} ${scoreUnit}`,
+        correctAnswer: `${r.player.score} ${scoreUnit}`,
         correct: r.player.score === topScore,
       })),
     });
-  }, [gameId, ranked, scope, topScore, total, unit]);
+  }, [gameId, ranked, scope, topScore, total, scoreUnit]);
 
   useEffect(() => {
     fireConfetti();
@@ -89,7 +91,7 @@ export function MultiplayerResult({
                 {isWinner && !isTie && <span aria-hidden="true">👑</span>}
               </span>
               <span className="text-emerald-600">
-                {entry.player.score} {unit}
+                {entry.player.score} {scoreUnit}
               </span>
             </li>
           );

@@ -2,9 +2,8 @@
 
 import { useCallback, useMemo, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 import {
-  GAME_LABELS,
   clearHistory,
   deleteEntry,
   readHistory,
@@ -51,6 +50,13 @@ const GAME_THEME: Record<HistoryEntry["gameId"], { bg: string; text: string; rin
     emoji: "🎲",
     href: "/ular-tangga",
   },
+  berkebun: {
+    bg: "bg-green-100",
+    text: "text-green-900",
+    ring: "ring-green-200",
+    emoji: "🌾",
+    href: "/berkebun",
+  },
 };
 
 function useHistory(): HistoryEntry[] {
@@ -81,6 +87,7 @@ function formatTimestamp(ts: number): string {
 }
 
 export function HistoryList() {
+  const strings = useStrings();
   const entries = useHistory();
   const [openId, setOpenId] = useState<string | null>(null);
 
@@ -115,7 +122,7 @@ export function HistoryList() {
               href={t.href}
               className={`rounded-full px-4 py-2 text-sm font-extrabold shadow-sm ring-2 ${t.bg} ${t.text} ${t.ring} transition hover:brightness-95`}
             >
-              {t.emoji} {GAME_LABELS[id as HistoryEntry["gameId"]]}
+              {t.emoji} {strings.gameLabels[id as HistoryEntry["gameId"]]}
             </Link>
           ))}
         </div>
@@ -144,7 +151,7 @@ export function HistoryList() {
                 className={`rounded-2xl p-4 shadow ring-2 ${t.bg} ${t.text} ${t.ring}`}
               >
                 <p className="text-sm font-bold opacity-80">
-                  {t.emoji} {GAME_LABELS[id]}
+                  {t.emoji} {strings.gameLabels[id as HistoryEntry["gameId"]]}
                 </p>
                 {s ? (
                   <>
@@ -187,7 +194,7 @@ export function HistoryList() {
                   </span>
                   <div className="min-w-0">
                     <p className={`text-base font-extrabold ${t.text}`}>
-                      {entry.gameLabel}
+                      {strings.gameLabels[entry.gameId] ?? entry.gameLabel}
                     </p>
                     <p className="text-xs font-semibold text-pink-700/70">
                       {formatTimestamp(entry.timestamp)}

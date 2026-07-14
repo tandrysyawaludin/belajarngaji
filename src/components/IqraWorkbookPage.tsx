@@ -1,6 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import type { IqraCell, IqraPage, IqraRow } from "@/lib/iqra";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 
 interface IqraWorkbookPageProps {
   page: IqraPage;
@@ -172,6 +174,7 @@ function IqraRowContent({ row }: { row: IqraRow }) {
 }
 
 export function IqraWorkbookPage({ page }: IqraWorkbookPageProps) {
+  const strings = useStrings();
   const hasHeader = page.showBismillah || page.title || page.subtitle;
   const hasEbtaChecklistHeader =
     page.title === "EBTA" && page.subtitle.includes("•");

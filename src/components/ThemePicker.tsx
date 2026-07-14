@@ -2,7 +2,7 @@
 
 import { useEffect } from "react";
 import type { ThemeDef } from "@/lib/themes";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 import { MascotImage } from "./MascotImage";
 
 interface ThemePickerProps {
@@ -18,6 +18,7 @@ export function ThemePicker({
   onPick,
   onDismiss,
 }: ThemePickerProps) {
+  const strings = useStrings();
   useEffect(() => {
     const prev = document.body.style.overflow;
     document.body.style.overflow = "hidden";
@@ -98,7 +99,7 @@ export function ThemePicker({
                       {t.name}
                     </p>
                     <p className="text-xs font-semibold text-slate-700/80">
-                      {t.tagline}
+                      {strings.themeTaglines[t.id] ?? t.tagline}
                     </p>
                     <div className="mt-1 flex items-center gap-1.5">
                       {[t.palette.primary, t.palette.accent, t.palette.primarySoft].map(

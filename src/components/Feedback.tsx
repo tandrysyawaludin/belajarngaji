@@ -3,7 +3,7 @@
 import confetti from "canvas-confetti";
 import { useEffect } from "react";
 import { ThemedMascot } from "./ThemedMascot";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 
 const HAPPY_COLORS = ["#ff7eb6", "#ffd166", "#9bd0ff", "#b8f1d2", "#e2d4ff"];
 
@@ -33,6 +33,7 @@ export function FeedbackOverlay({
   kind: FeedbackKind;
   onDone?: () => void;
 }) {
+  const strings = useStrings();
   useEffect(() => {
     if (!kind) return;
     if (kind === "correct") fireConfetti();

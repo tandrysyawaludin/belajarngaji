@@ -1,17 +1,22 @@
+"use client";
+
 import Link from "next/link";
-import { strings } from "@/lib/strings";
+import { LanguageBadge } from "@/components/LanguageBadge";
+import { useStrings } from "@/components/LocaleProvider";
 import { ThemedMascot } from "./ThemedMascot";
 import { ThemeBadge } from "./ThemeBadge";
 
 const nav = [
-  { href: "/", label: strings.navHome, color: "bg-pink-200 text-pink-900 hover:bg-pink-300" },
-  { href: "/surah", label: strings.navSurah, color: "bg-sky-200 text-sky-900 hover:bg-sky-300" },
-  { href: "/iqra", label: strings.navIqra, color: "bg-lime-200 text-lime-900 hover:bg-lime-300" },
-  { href: "/games", label: strings.navGames, color: "bg-yellow-200 text-yellow-900 hover:bg-yellow-300" },
-  { href: "/riwayat", label: strings.navHistory, color: "bg-rose-200 text-rose-900 hover:bg-rose-300" },
+  { href: "/", key: "navHome" as const, color: "bg-pink-200 text-pink-900 hover:bg-pink-300" },
+  { href: "/surah", key: "navSurah" as const, color: "bg-sky-200 text-sky-900 hover:bg-sky-300" },
+  { href: "/iqra", key: "navIqra" as const, color: "bg-lime-200 text-lime-900 hover:bg-lime-300" },
+  { href: "/games", key: "navGames" as const, color: "bg-yellow-200 text-yellow-900 hover:bg-yellow-300" },
+  { href: "/riwayat", key: "navHistory" as const, color: "bg-rose-200 text-rose-900 hover:bg-rose-300" },
 ] as const;
 
 export function Shell({ children }: { children: React.ReactNode }) {
+  const strings = useStrings();
+
   return (
     <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col gap-5 px-4 py-6">
       <header
@@ -32,7 +37,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
               </span>
             </span>
           </Link>
-          <ThemeBadge />
+          <div className="flex flex-wrap items-center gap-2">
+            <LanguageBadge />
+            <ThemeBadge />
+          </div>
         </div>
         <nav className="mt-3 flex flex-wrap gap-2">
           {nav.map((item) => (
@@ -41,7 +49,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
               href={item.href}
               className={`rounded-full px-4 py-2 text-sm font-bold shadow-sm transition active:scale-95 ${item.color}`}
             >
-              {item.label}
+              {strings[item.key]}
             </Link>
           ))}
         </nav>

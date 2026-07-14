@@ -1,6 +1,8 @@
+"use client";
+
 import Link from "next/link";
 import type { IqraPage } from "@/lib/iqra";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 
 interface IqraJilidMenuProps {
   jilid: number;
@@ -8,6 +10,7 @@ interface IqraJilidMenuProps {
 }
 
 export function IqraJilidMenu({ jilid, pages }: IqraJilidMenuProps) {
+  const strings = useStrings();
   return (
     <div className="flex flex-col gap-6">
       <div className="rounded-[2rem] bg-white/85 p-6 shadow-lg ring-4 ring-lime-100">

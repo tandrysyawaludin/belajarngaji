@@ -9,7 +9,7 @@ import {
   type GameId,
 } from "@/lib/scope";
 import { playersKey, type Player } from "@/lib/players";
-import { strings } from "@/lib/strings";
+import { useStrings, useFormat } from "@/components/LocaleProvider";
 import { GameSetup } from "./GameSetup";
 import { SurahScopePicker } from "./SurahScopePicker";
 
@@ -42,6 +42,7 @@ export function ScopedGame({
   defaultScope,
   children,
 }: ScopedGameProps) {
+  const strings = useStrings();
   const allowedSet = useMemo(
     () => (availableNumbers ? new Set(availableNumbers) : null),
     [availableNumbers],
@@ -147,10 +148,15 @@ function PlayersBadge({
   players: Player[];
   onChange: () => void;
 }) {
+  const strings = useStrings();
+  const format = useFormat();
   const label =
     players.length > 1
-      ? `${players.length} pemain: ${players.map((p) => p.name).join(", ")}`
-      : "Main sendiri";
+      ? format(strings.playersBadgeMulti, {
+          count: players.length,
+          names: players.map((p) => p.name).join(", "),
+        })
+      : strings.setupSolo;
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-white/85 px-4 py-2 text-sm font-bold text-pink-800 shadow ring-2 ring-pink-100">
       <p className="min-w-0 truncate">👥 {label}</p>
@@ -166,10 +172,11 @@ function PlayersBadge({
 }
 
 function ScopePlaceholder({ onPick }: { onPick: () => void }) {
+  const strings = useStrings();
   return (
     <div className="flex flex-col items-center gap-4 rounded-3xl bg-white/90 p-8 text-center shadow ring-2 ring-pink-100">
       <p className="text-base font-bold text-pink-500">
-        🎯 Pilih surah dulu yuk untuk mulai bermain!
+        🎯 {strings.scopePickFirstHint}
       </p>
       <button
         type="button"
@@ -189,6 +196,8 @@ function ScopeBadge({
   scope: Surah[];
   onChange: () => void;
 }) {
+  const strings = useStrings();
+  const format = useFormat();
   const preview = scope
     .slice(0, 3)
     .map((s) => s.name)
@@ -197,11 +206,11 @@ function ScopeBadge({
   return (
     <div className="flex flex-wrap items-center justify-between gap-2 rounded-2xl bg-white/85 px-4 py-2 text-sm font-bold text-pink-800 shadow ring-2 ring-pink-100">
       <p className="min-w-0 truncate">
-        🎯 {scope.length} surah:{" "}
-        <span className="font-semibold text-pink-700/80">
-          {preview}
-          {extra}
-        </span>
+        🎯{" "}
+        {format(strings.scopeActivePreview, {
+          count: scope.length,
+          preview: `${preview}${extra}`,
+        })}
       </p>
       <button
         type="button"

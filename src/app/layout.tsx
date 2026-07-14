@@ -5,7 +5,11 @@ import "./globals.css";
 import { Shell } from "@/components/Shell";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { THEME_BOOTSTRAP_SCRIPT } from "@/lib/theme";
+import { LocaleProvider } from "@/components/LocaleProvider";
+import { JsonLd } from "@/components/JsonLd";
 import { strings } from "@/lib/strings";
+import { LOCALE_BOOTSTRAP_SCRIPT } from "@/lib/locale";
+import { siteJsonLd } from "@/lib/seo";
 
 const quicksand = Quicksand({
   variable: "--font-quicksand",
@@ -36,14 +40,22 @@ export const metadata: Metadata = {
   applicationName: strings.siteTitle,
   keywords: [
     "belajar ngaji",
+    "belajar ngaji online",
+    "belajar ngaji anak",
     "belajar Al-Qur'an",
     "Iqra online",
     "Iqra anak",
+    "Iqra jilid 1",
     "surah Al-Qur'an",
+    "baca Al-Qur'an online",
     "kuis Al-Qur'an",
     "game edukasi Islam",
     "belajar membaca Al-Qur'an",
+    "murottal anak",
   ],
+  alternates: {
+    canonical: "/",
+  },
   authors: [{ name: strings.siteTitle, url: siteUrl }],
   creator: strings.siteTitle,
   publisher: strings.siteTitle,
@@ -106,11 +118,15 @@ export default function RootLayout({
         {/* Sync-set the data-theme attribute *before* paint so the kid never
             sees a flash of the wrong palette on first render. */}
         <script dangerouslySetInnerHTML={{ __html: THEME_BOOTSTRAP_SCRIPT }} />
+        <script dangerouslySetInnerHTML={{ __html: LOCALE_BOOTSTRAP_SCRIPT }} />
+        <JsonLd data={siteJsonLd()} />
       </head>
       <body className="min-h-full font-sans antialiased">
-        <ThemeProvider>
-          <Shell>{children}</Shell>
-        </ThemeProvider>
+        <LocaleProvider>
+          <ThemeProvider>
+            <Shell>{children}</Shell>
+          </ThemeProvider>
+        </LocaleProvider>
         <Analytics />
       </body>
     </html>

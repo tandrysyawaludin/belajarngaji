@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { JUZ30_CHAPTERS, JUZ30_NUMBERS, type Juz30Verse } from "@/data/juz30";
 import { getSurah, type Surah } from "@/data/surahs";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 import { sampleUnique, shuffle, pick } from "@/lib/random";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { isMultiplayer, type Player } from "@/lib/players";
@@ -96,6 +96,7 @@ export function SambungAyatGame({
   scope: Surah[];
   players: Player[];
 }) {
+  const strings = useStrings();
   const multi = isMultiplayer(players);
   const questionsPerPlayer = multi ? MULTI_QUESTIONS_PER_PLAYER : TOTAL;
   const totalQuestions = questionsPerPlayer * players.length;
@@ -277,13 +278,14 @@ function ResultCard({
   scope: Surah[];
   onRestart: () => void;
 }) {
+  const strings = useStrings();
   const pct = (score / total) * 100;
   const mood = pct >= 70 ? "excited" : pct >= 40 ? "happy" : "sad";
   const message = useMemo(() => {
     if (pct === 100) return strings.perfectScore;
     if (pct >= 70) return strings.goodJob;
     return strings.keepTrying;
-  }, [pct]);
+  }, [pct, strings]);
 
   const savedRef = useRef(false);
   useEffect(() => {

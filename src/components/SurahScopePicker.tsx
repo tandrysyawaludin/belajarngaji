@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import { SURAHS, type Surah } from "@/data/surahs";
 import { JUZ30_NUMBERS } from "@/data/juz30";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 
 export interface ScopePickerProps {
   /** Initial set of surah numbers selected. */
@@ -28,6 +28,7 @@ export function SurahScopePicker({
   onConfirm,
   onCancel,
 }: ScopePickerProps) {
+  const strings = useStrings();
   const available = useMemo<Surah[]>(() => {
     if (!availableNumbers || !availableNumbers.length) return SURAHS;
     const allowed = new Set(availableNumbers);
@@ -199,6 +200,7 @@ function PresetButtons({
   available: Surah[];
   onPick: (numbers: number[]) => void;
 }) {
+  const strings = useStrings();
   const allNumbers = useMemo(() => available.map((s) => s.number), [available]);
   const juz30 = useMemo(
     () =>

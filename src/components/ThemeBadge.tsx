@@ -1,6 +1,6 @@
 "use client";
 
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 import { useTheme } from "./ThemeProvider";
 
 /**
@@ -8,6 +8,7 @@ import { useTheme } from "./ThemeProvider";
  * Renders as a client component so it can read the active theme from context.
  */
 export function ThemeBadge() {
+  const strings = useStrings();
   const { theme, openPicker } = useTheme();
   return (
     <button

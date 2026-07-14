@@ -1,17 +1,19 @@
 "use client";
 
 import { playerTheme, type Player } from "@/lib/players";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 
 export function TurnBanner({
   players,
   currentIndex,
-  scoreUnit = strings.scoreLabel,
+  scoreUnit,
 }: {
   players: Player[];
   currentIndex: number;
   scoreUnit?: string;
 }) {
+  const strings = useStrings();
+  const unit = scoreUnit ?? strings.scoreLabel;
   const current = players[currentIndex];
   return (
     <div className="flex flex-col gap-3 rounded-2xl bg-white/90 p-3 shadow ring-2 ring-pink-100">
@@ -47,7 +49,7 @@ export function TurnBanner({
           );
         })}
       </div>
-      <span className="sr-only">{scoreUnit}</span>
+      <span className="sr-only">{unit}</span>
     </div>
   );
 }

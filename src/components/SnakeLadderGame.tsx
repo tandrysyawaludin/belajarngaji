@@ -13,7 +13,7 @@ import {
   type SnakeLadderQuestion,
 } from "@/lib/snake-ladder";
 import { isMultiplayer, playerTheme, type Player } from "@/lib/players";
-import { strings } from "@/lib/strings";
+import { useStrings } from "@/components/LocaleProvider";
 import { FeedbackOverlay, type FeedbackKind } from "./Feedback";
 import { MultiplayerResult } from "./MultiplayerResult";
 import { TurnBanner } from "./TurnBanner";
@@ -88,6 +88,7 @@ export function SnakeLadderGame({
   scope: Surah[];
   players: Player[];
 }) {
+  const strings = useStrings();
   const multi = isMultiplayer(players);
   const [positions, setPositions] = useState<number[]>(() =>
     players.map(() => 1),
@@ -287,7 +288,7 @@ export function SnakeLadderGame({
   let actionHandler: () => void = openQuestion;
   let actionAccent: string = "bg-pink-500 hover:bg-pink-600";
   if (phase === "ask") {
-    actionLabel = "Jawab Pertanyaan";
+    actionLabel = strings.snakeAnswerQuestion;
     actionHandler = openQuestion;
     actionAccent = "bg-pink-500 hover:bg-pink-600";
   } else if (phase === "roll") {
@@ -349,7 +350,7 @@ export function SnakeLadderGame({
             <ChickenCharacter size={92} animated={busy} />
             <div>
               <p className="text-sm font-extrabold uppercase tracking-wide text-emerald-500">
-                {multi ? `${strings.turnLabel}: ${currentName}` : "Giliranmu"}
+                {multi ? `${strings.turnLabel}: ${currentName}` : strings.snakeYourTurn}
               </p>
               <p
                 role="status"
@@ -728,6 +729,7 @@ function QuestionModal({
   playerName: string | null;
   onChoose: (option: string) => void;
 }) {
+  const strings = useStrings();
   const dialogRef = useRef<HTMLElement | null>(null);
 
   useEffect(() => {
@@ -770,7 +772,7 @@ function QuestionModal({
         className="pop-in max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-3xl bg-white/95 p-5 shadow-2xl ring-4 ring-pink-100"
       >
         <p className="text-sm font-extrabold uppercase tracking-wide text-pink-500">
-          {playerName ? `${strings.turnLabel}: ${playerName}` : "Jawab dulu ya"}
+          {playerName ? `${strings.turnLabel}: ${playerName}` : strings.snakeAnswerFirstShort}
         </p>
         <h3
           id="snake-ladder-question-title"
@@ -839,6 +841,7 @@ function ResultCard({
   scope: Surah[];
   onRestart: () => void;
 }) {
+  const strings = useStrings();
   const savedRef = useRef(false);
   const pct = total > 0 ? (score / total) * 100 : 0;
   const mood = pct >= 70 ? "excited" : pct >= 40 ? "happy" : "sad";
@@ -863,7 +866,7 @@ function ResultCard({
     <article className="flex flex-col items-center gap-4 rounded-3xl bg-gradient-to-br from-lime-100 via-emerald-100 to-sky-100 p-8 text-center shadow-lg ring-4 ring-white/60">
       <ChickenCharacter size={140} animated={mood === "excited"} />
       <h2 className="text-3xl font-extrabold text-emerald-700">
-        Masya Allah, sampai finish!
+        {strings.snakeFinishTitle}
       </h2>
       <p className="text-xl font-bold text-emerald-950">
         {strings.scoreLabel}:{" "}

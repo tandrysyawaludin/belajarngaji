@@ -233,3 +233,24 @@ body {
   45% { transform: translateY(-12px) scale(1.08); }
 }
 .chicken-hop { animation: chicken-hop 760ms ease-in-out infinite; }
+
+/* Block farm (Minecraft-style) */
+.farm-sky {
+  background: linear-gradient(180deg, #7dd3fc 0%, #38bdf8 55%, #5d9e3a 55%, #4d8c32 100%);
+}
+.mc-block {
+  image-rendering: pixelated;
+  border: 2px solid #1c1917;
+}
+.mc-badge {
+  background: #fde047;
+  border: 3px solid #1c1917;
+  box-shadow: 3px 3px 0 #1c1917;
+}
+.farm-dice-face {
+  background: linear-gradient(145deg, #84cc16, #65a30d) !important;
+  border-color: #1c1917 !important;
+}
+.farm-dice-pip {
+  background: #1c1917 !important;
+}

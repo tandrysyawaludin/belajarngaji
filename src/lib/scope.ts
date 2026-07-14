@@ -2,7 +2,7 @@
 // the kid is allowed to be quizzed on. Saving lets her keep her chosen "learned
 // so far" list across visits without re-selecting every time.
 
-export type GameId = "kuis" | "cocokkan" | "tebak-ayat" | "sambung" | "ular-tangga";
+export type GameId = "kuis" | "cocokkan" | "tebak-ayat" | "sambung" | "ular-tangga" | "berkebun";
 
 const STORAGE_PREFIX = "belajarngaji:scope:";
 
