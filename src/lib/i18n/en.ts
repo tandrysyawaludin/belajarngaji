@@ -47,7 +47,7 @@ export const en: Strings = {
   cardSnakeLadderDesc: "Roll the dice and answer questions to move forward.",
   cardFarmingTitle: "Qur'an Block Farm",
   cardFarmingDesc:
-    "Minecraft style! Answer first, then water, plant, or harvest to move on the farm.",
+    "2D farm adventure! Answer first, then water, plant, or harvest your way to the big harvest.",
   cardHistoryTitle: "Score History",
   cardHistoryDesc: "See your play records and right/wrong answers.",
   cardIqraTitle: "Iqra",
@@ -63,7 +63,7 @@ export const en: Strings = {
   snakePageDesc:
     "Roll the dice, answer a random Qur'an question, climb ladders or slide down snakes. Wrong answers move you back.",
   farmingPageDesc:
-    "Minecraft-style block farm! Answer a Qur'an question, then water, plant, or harvest to move. Water channels help, mole holes set you back.",
+    "2D farm game! Answer Qur'an questions, then use farm tools to move forward. Springs help, mole holes set you back.",
   loadingLabel: "Loading verses...",
   errorLabel: "Sorry, something went wrong. Please try again.",
   retry: "Try Again",
@@ -170,7 +170,8 @@ export const en: Strings = {
   snakeAnswerFirstShort: "Answer first",
   snakeAnswerQuestion: "Answer Question",
   snakeFinishTitle: "Masha Allah, you made it!",
-  farmBoardTitle: "Block Farm",
+  farmBoardTitle: "My Farm",
+  farmProgressText: "To harvest: {current}/{total}",
   farmPlotLabel: "Plot",
   farmYourTurn: "Your turn",
   farmAnswerFirstShort: "Answer first",

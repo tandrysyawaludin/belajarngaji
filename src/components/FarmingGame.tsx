@@ -3,12 +3,8 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { Surah } from "@/data/surahs";
 import {
-  BOARD_COLS,
-  BOARD_ROWS,
-  CELL_UNIT,
   DISPLAY_SQUARES,
   centerPercent,
-  centerSvg,
 } from "@/lib/board-path";
 import { addEntry, type HistoryAnswer } from "@/lib/history";
 import { isMultiplayer, playerTheme, type Player } from "@/lib/players";
@@ -259,32 +255,29 @@ export function FarmingGame({
   }
 
   return (
-    <div className="grid gap-5 lg:grid-cols-[minmax(0,1.2fr)_minmax(320px,0.8fr)]">
-      <section className="farm-sky rounded-[2rem] p-4 shadow-lg ring-4 ring-white/70">
+    <div className="grid gap-5 lg:grid-cols-[minmax(0,1.25fr)_minmax(300px,0.75fr)]">
+      <section className="farm-scene-panel rounded-[2rem] p-4 shadow-lg">
         <div className="mb-3 flex flex-wrap items-center justify-between gap-2">
           <div>
-            <p className="text-sm font-extrabold uppercase tracking-wide text-lime-200">
+            <p className="text-sm font-extrabold uppercase tracking-wide text-amber-100 drop-shadow">
               {strings.farmBoardTitle}
             </p>
-            <h2 className="font-mono text-2xl font-extrabold text-white drop-shadow-[2px_2px_0_#000]">
+            <h2 className="text-xl font-extrabold text-white drop-shadow-[1px_1px_0_#3d2817] sm:text-2xl">
               {multi
-                ? `${currentName} · ${strings.farmPlotLabel} ${position}`
-                : `${strings.farmPlotLabel} ${position} / ${BOARD_SIZE}`}
+                ? `${currentName} · ${format(strings.farmProgressText, { current: position, total: BOARD_SIZE })}`
+                : format(strings.farmProgressText, { current: position, total: BOARD_SIZE })}
             </h2>
           </div>
           {!multi && (
-            <div className="mc-badge rounded-none px-3 py-2 text-sm font-extrabold text-lime-950">
-              {strings.scoreLabel} {soloScore} / {answers.length || 0}
+            <div className="farm-wood-panel rounded-lg px-3 py-2 text-sm font-extrabold text-amber-950">
+              {strings.scoreLabel} {soloScore}/{answers.length || 0}
             </div>
           )}
         </div>
-        <div className="mb-4 h-3 overflow-hidden border-2 border-black bg-stone-800">
-          <div
-            className="h-full bg-lime-500 transition-all"
-            style={{ width: `${progressPct}%` }}
-          />
+        <div className="farm-progress-track mb-3 h-4 overflow-hidden rounded-full">
+          <div className="farm-progress-fill h-full transition-all" style={{ width: `${progressPct}%` }} />
         </div>
-        <FarmBoard
+        <FarmScene
           positions={positions}
           players={players}
           currentIndex={currentPlayer}
@@ -300,14 +293,14 @@ export function FarmingGame({
             scoreUnit={strings.squaresUnit}
           />
         )}
-        <article className="rounded-none border-4 border-black bg-stone-200 p-5 shadow-[6px_6px_0_#000]">
+        <article className="farm-wood-panel rounded-2xl p-5">
           <div className="flex items-center gap-3">
-            <FarmerAvatar size={92} animated={busy} />
+            <FarmerAvatar size={88} animated={busy} />
             <div>
-              <p className="text-sm font-extrabold uppercase tracking-wide text-lime-700">
+              <p className="text-sm font-extrabold uppercase tracking-wide text-amber-900/80">
                 {multi ? `${strings.turnLabel}: ${currentName}` : strings.farmYourTurn}
               </p>
-              <p role="status" aria-live="polite" className="text-lg font-extrabold text-stone-900">
+              <p role="status" aria-live="polite" className="text-lg font-extrabold text-amber-950">
                 {statusText}
               </p>
             </div>
@@ -317,40 +310,48 @@ export function FarmingGame({
               type="button"
               disabled={busy}
               onClick={actionHandler}
-              className={`mt-4 w-full border-4 border-black px-5 py-4 text-base font-extrabold text-white shadow-[4px_4px_0_#000] transition active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-60 ${actionAccent}`}
+              className={`mt-4 w-full rounded-xl px-5 py-4 text-base font-extrabold text-white shadow-md transition hover:brightness-105 active:scale-[0.98] disabled:opacity-60 ${actionAccent}`}
             >
               {actionLabel}
             </button>
           ) : phase === "act" ? (
-            <div className="mt-4 grid gap-2">
-              {(
-                [
-                  ["water", strings.farmWaterAction],
-                  ["plant", strings.farmPlantAction],
-                  ["harvest", strings.farmHarvestAction],
-                ] as const
-              ).map(([action, label]) => (
-                <button
-                  key={action}
-                  type="button"
-                  disabled={busy}
-                  onClick={() => doFarmAction(action)}
-                  className="flex items-center gap-3 border-4 border-black bg-white px-4 py-3 text-left text-base font-extrabold text-stone-900 shadow-[3px_3px_0_#000] transition hover:bg-lime-50 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none disabled:opacity-60"
-                >
-                  <span className="text-2xl">{FARM_ACTION_EMOJI[action]}</span>
-                  {label}
-                </button>
-              ))}
+            <div className="mt-4">
+              <p className="mb-2 text-center text-xs font-extrabold uppercase tracking-wide text-amber-900/70">
+                {strings.farmChooseAction}
+              </p>
+              <div className="grid grid-cols-3 gap-2">
+                {(
+                  [
+                    ["water", strings.farmWaterAction, "💧"],
+                    ["plant", strings.farmPlantAction, "🌱"],
+                    ["harvest", strings.farmHarvestAction, "🌾"],
+                  ] as const
+                ).map(([action, label, icon]) => (
+                  <button
+                    key={action}
+                    type="button"
+                    disabled={busy}
+                    onClick={() => doFarmAction(action)}
+                    title={label}
+                    className="farm-hotbar-slot flex flex-col items-center gap-1 rounded-lg px-2 py-3 text-center transition active:scale-95 disabled:opacity-60"
+                  >
+                    <span className="text-2xl">{icon}</span>
+                    <span className="text-[10px] font-extrabold leading-tight text-amber-950 sm:text-xs">
+                      {label}
+                    </span>
+                  </button>
+                ))}
+              </div>
             </div>
           ) : null}
-          <div className="mt-3 flex min-h-[5rem] flex-col items-center justify-center gap-2">
+          <div className="mt-3 flex min-h-[4.5rem] flex-col items-center justify-center gap-2">
             {working && lastAction && (
               <p className="farm-action-pulse text-5xl" aria-hidden="true">
                 {FARM_ACTION_EMOJI[lastAction]}
               </p>
             )}
             {lastGrowth !== null && lastAction && (working || moving) && (
-              <p className="text-center font-mono text-lg font-extrabold text-lime-800">
+              <p className="text-center text-base font-extrabold text-amber-950">
                 {FARM_ACTION_EMOJI[lastAction]}{" "}
                 {format(strings.farmGrowthResult, { n: lastGrowth })}
               </p>
@@ -371,7 +372,7 @@ export function FarmingGame({
   );
 }
 
-function FarmBoard({
+function FarmScene({
   positions,
   players,
   currentIndex,
@@ -383,34 +384,49 @@ function FarmBoard({
   moving: boolean;
 }) {
   const strings = useStrings();
-  const jumps = Object.entries(BOARD_JUMPS).map(([from, to]) => ({
-    from: Number(from),
-    to,
-  }));
   const currentSquare = positions[currentIndex];
+  const maxReached = Math.max(...positions);
 
   return (
-    <div className="relative mx-auto aspect-[6/5] w-full overflow-hidden border-4 border-black bg-sky-300">
-      <div className="grid h-full w-full grid-cols-6 grid-rows-5 gap-0.5 p-0.5">
+    <div className="farm-field relative mx-auto aspect-[6/5] w-full overflow-hidden rounded-xl p-2">
+      <span className="pointer-events-none absolute left-1 top-1 text-lg opacity-80" aria-hidden="true">
+        🌳
+      </span>
+      <span className="pointer-events-none absolute right-1 top-1 text-lg opacity-80" aria-hidden="true">
+        🌲
+      </span>
+      <span className="pointer-events-none absolute bottom-1 left-1 text-lg opacity-80" aria-hidden="true">
+        🪵
+      </span>
+      <span className="pointer-events-none absolute bottom-1 right-1 text-lg opacity-80" aria-hidden="true">
+        🌻
+      </span>
+
+      <div className="grid h-full w-full grid-cols-6 grid-rows-5 gap-0.5">
         {DISPLAY_SQUARES.map((square) => {
-          const isTarget = square === currentSquare;
-          const variant = square === BOARD_SIZE
-            ? "goal"
-            : square === 1
-              ? "start"
-              : WATER_TILES.has(square)
-                ? "water"
-                : HOLE_TILES.has(square)
-                  ? "hole"
-                  : CROP_TILES.has(square)
-                    ? "wheat"
-                    : "grass";
+          const isActive = square === currentSquare;
+          const passed = square < maxReached;
+          const jumpTo = BOARD_JUMPS[square];
+          const variant =
+            square === BOARD_SIZE
+              ? "silo"
+              : square === 1
+                ? "barn"
+                : WATER_TILES.has(square)
+                  ? "water"
+                  : HOLE_TILES.has(square)
+                    ? "hole"
+                    : CROP_TILES.has(square) || passed
+                      ? "crop"
+                      : "soil";
           return (
-            <McBlock
+            <FarmTile
               key={square}
               square={square}
               variant={variant}
-              active={isTarget}
+              active={isActive}
+              passed={passed && variant === "soil"}
+              jumpTo={jumpTo}
               label={
                 square === 1
                   ? strings.farmStartLabel
@@ -423,23 +439,6 @@ function FarmBoard({
         })}
       </div>
 
-      <svg
-        viewBox={`0 0 ${BOARD_COLS * CELL_UNIT} ${BOARD_ROWS * CELL_UNIT}`}
-        preserveAspectRatio="none"
-        className="pointer-events-none absolute inset-0 z-10 h-full w-full"
-        aria-hidden="true"
-      >
-        {jumps.map(({ from, to }) => {
-          const a = centerSvg(from);
-          const b = centerSvg(to);
-          return to > from ? (
-            <WaterChannel key={from} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
-          ) : (
-            <MoleTunnel key={from} x1={a.x} y1={a.y} x2={b.x} y2={b.y} />
-          );
-        })}
-      </svg>
-
       <FarmTokens
         positions={positions}
         players={players}
@@ -450,127 +449,81 @@ function FarmBoard({
   );
 }
 
-function McBlock({
+function FarmTile({
   square,
   variant,
   active,
+  passed,
+  jumpTo,
   label,
 }: {
   square: number;
-  variant: "grass" | "wheat" | "water" | "hole" | "start" | "goal";
+  variant: "soil" | "crop" | "water" | "hole" | "barn" | "silo";
   active: boolean;
+  passed?: boolean;
+  jumpTo?: number;
   label?: string;
 }) {
-  const top =
-    variant === "water"
-      ? "#3b82f6"
-      : variant === "hole"
-        ? "#44403c"
-        : variant === "wheat"
-          ? "#84cc16"
-          : variant === "goal"
-            ? "#fbbf24"
-            : "#5d9e3a";
-  const side = variant === "water" ? "#1d4ed8" : variant === "hole" ? "#292524" : "#6d4c11";
+  const tileClass =
+    variant === "barn"
+      ? "farm-tile--barn"
+      : variant === "silo"
+        ? "farm-tile--silo"
+        : variant === "water"
+          ? "farm-tile--water"
+          : variant === "hole"
+            ? "farm-tile--hole"
+            : variant === "crop"
+              ? "farm-tile--crop"
+              : passed
+                ? "farm-tile--soil-done"
+                : "farm-tile--soil";
+
+  const decor =
+    variant === "barn"
+      ? "🏠"
+      : variant === "silo"
+        ? "🏆"
+        : variant === "water"
+          ? "⛲"
+          : variant === "hole"
+            ? "🐀"
+            : variant === "crop"
+              ? passed
+                ? "🌾"
+                : "🌱"
+              : passed
+                ? "🥕"
+                : null;
+
+  const jumpHint =
+    jumpTo !== undefined
+      ? jumpTo > square
+        ? "⬆️"
+        : "⬇️"
+      : null;
 
   return (
     <div
-      className={`relative ${active ? "z-20 ring-2 ring-yellow-300 ring-offset-1 ring-offset-black" : ""}`}
-      aria-label={`${square}`}
+      className={`farm-tile ${tileClass} ${active ? "farm-tile--active" : ""}`}
+      aria-label={label ?? `Plot ${square}`}
     >
-      <div
-        className="mc-block h-full min-h-[2.5rem] w-full"
-        style={{
-          background: `linear-gradient(180deg, ${top} 0%, ${top} 62%, ${side} 62%, ${side} 100%)`,
-          boxShadow: "inset 2px 2px 0 rgba(255,255,255,0.25), inset -2px -2px 0 rgba(0,0,0,0.2)",
-        }}
-      >
-        <span className="absolute right-0.5 top-0.5 font-mono text-[10px] font-bold text-black/70 sm:text-xs">
-          {square}
+      {decor && (
+        <span className="absolute left-1/2 top-1/2 -translate-x-1/2 -translate-y-1/2 text-base sm:text-lg" aria-hidden="true">
+          {decor}
         </span>
-        {variant === "wheat" && (
-          <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 text-sm sm:text-base" aria-hidden="true">
-            🌾
-          </span>
-        )}
-        {variant === "water" && (
-          <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 text-sm" aria-hidden="true">
-            💧
-          </span>
-        )}
-        {variant === "hole" && (
-          <span className="absolute bottom-0.5 left-1/2 -translate-x-1/2 text-sm" aria-hidden="true">
-            🕳️
-          </span>
-        )}
-        {label && (
-          <span className="absolute bottom-0.5 left-0.5 bg-black/75 px-1 font-mono text-[8px] font-bold uppercase text-white sm:text-[10px]">
-            {label}
-          </span>
-        )}
-      </div>
+      )}
+      {jumpHint && (
+        <span className="absolute right-0.5 top-0.5 text-[10px] sm:text-xs" aria-hidden="true">
+          {jumpHint}
+        </span>
+      )}
+      {label && (
+        <span className="absolute bottom-0 left-0 right-0 bg-black/55 py-0.5 text-center text-[8px] font-extrabold uppercase text-white sm:text-[9px]">
+          {label}
+        </span>
+      )}
     </div>
-  );
-}
-
-function WaterChannel({
-  x1,
-  y1,
-  x2,
-  y2,
-}: {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-}) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const len = Math.hypot(dx, dy) || 1;
-  const px = -dy / len;
-  const py = dx / len;
-  const offset = 2.2;
-  return (
-    <g strokeLinecap="round">
-      <path
-        d={`M ${x1 + px * offset} ${y1 + py * offset} L ${x2 + px * offset} ${y2 + py * offset}`}
-        stroke="#1e40af"
-        strokeWidth="2.4"
-        strokeDasharray="3 2"
-      />
-      <path
-        d={`M ${x1 - px * offset} ${y1 - py * offset} L ${x2 - px * offset} ${y2 - py * offset}`}
-        stroke="#60a5fa"
-        strokeWidth="2"
-      />
-    </g>
-  );
-}
-
-function MoleTunnel({
-  x1,
-  y1,
-  x2,
-  y2,
-}: {
-  x1: number;
-  y1: number;
-  x2: number;
-  y2: number;
-}) {
-  const dx = x2 - x1;
-  const dy = y2 - y1;
-  const amp = 5;
-  const c1x = x1 + dx * 0.3 + amp;
-  const c1y = y1 + dy * 0.3;
-  const c2x = x1 + dx * 0.7 - amp;
-  const c2y = y1 + dy * 0.7;
-  const path = `M ${x1} ${y1} C ${c1x} ${c1y} ${c2x} ${c2y} ${x2} ${y2}`;
-  return (
-    <g fill="none" strokeLinecap="round">
-      <path d={path} stroke="#292524" strokeWidth="4" />
-      <path d={path} stroke="#78716c" strokeWidth="1.5" strokeDasharray="2 3" />
-    </g>
   );
 }
 
@@ -604,8 +557,8 @@ function FarmTokens({
             }}
           >
             <span
-              className={`inline-block drop-shadow-[2px_2px_0_#000] ${
-                isActive ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl opacity-85"
+              className={`farm-player inline-block ${
+                isActive ? "text-2xl sm:text-3xl" : "text-xl sm:text-2xl opacity-90"
               } ${moving && isActive ? "chicken-hop" : ""}`}
             >
               {isActive ? "🧑‍🌾" : playerTheme(i).token}
@@ -621,12 +574,12 @@ function FarmerAvatar({ size, animated = false }: { size: number; animated?: boo
   return (
     <div
       aria-hidden="true"
-      className={`flex shrink-0 items-center justify-center border-4 border-black bg-lime-400 shadow-[4px_4px_0_#000] ${
+      className={`flex shrink-0 items-center justify-center rounded-xl border-2 border-amber-900/40 bg-amber-100/80 shadow-inner ${
         animated ? "chicken-hop" : "wobble"
       }`}
-      style={{ width: size, height: size, imageRendering: "pixelated" }}
+      style={{ width: size, height: size }}
     >
-      <span style={{ fontSize: Math.round(size * 0.5) }}>🧑‍🌾</span>
+      <span style={{ fontSize: Math.round(size * 0.48) }}>🧑‍🌾</span>
     </div>
   );
 }
@@ -653,13 +606,13 @@ function QuestionModal({
   }, []);
 
   return (
-    <div className="fixed inset-0 z-40 flex items-center justify-center bg-stone-950/50 p-4 backdrop-blur-sm">
+    <div className="fixed inset-0 z-40 flex items-center justify-center bg-emerald-950/40 p-4 backdrop-blur-sm">
       <article
         ref={dialogRef}
         role="dialog"
         aria-modal="true"
         tabIndex={-1}
-        className="pop-in max-h-[90vh] w-full max-w-xl overflow-y-auto border-4 border-black bg-stone-100 p-5 shadow-[8px_8px_0_#000]"
+        className="pop-in farm-wood-panel max-h-[90vh] w-full max-w-xl overflow-y-auto rounded-2xl p-5"
       >
         <p className="font-mono text-sm font-extrabold uppercase tracking-wide text-lime-700">
           {playerName ? `${strings.turnLabel}: ${playerName}` : strings.farmAnswerFirstShort}
@@ -672,7 +625,7 @@ function QuestionModal({
               key={option}
               type="button"
               onClick={() => onChoose(option)}
-              className="border-4 border-black bg-white px-5 py-4 text-left text-base font-bold text-stone-900 shadow-[3px_3px_0_#000] transition hover:bg-lime-50 active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+              className="rounded-xl bg-white/90 px-5 py-4 text-left text-base font-bold text-amber-950 shadow-sm ring-2 ring-amber-200/80 transition hover:bg-white active:scale-[0.98]"
             >
               {option}
             </button>
@@ -716,7 +669,7 @@ function ResultCard({
   }, []);
 
   return (
-    <article className="flex flex-col items-center gap-4 border-4 border-black bg-gradient-to-br from-lime-200 via-emerald-200 to-sky-200 p-8 text-center shadow-[8px_8px_0_#000]">
+    <article className="flex flex-col items-center gap-4 rounded-2xl bg-gradient-to-br from-lime-200 via-amber-100 to-sky-200 p-8 text-center shadow-lg ring-4 ring-amber-200/60">
       <FarmerAvatar size={140} animated />
       <h2 className="font-mono text-3xl font-extrabold text-lime-900 drop-shadow-[2px_2px_0_#fff]">
         {strings.farmFinishTitle}
@@ -727,7 +680,7 @@ function ResultCard({
       <button
         type="button"
         onClick={onRestart}
-        className="border-4 border-black bg-lime-500 px-7 py-3 text-base font-extrabold text-white shadow-[4px_4px_0_#000] active:translate-x-0.5 active:translate-y-0.5 active:shadow-none"
+        className="rounded-xl bg-lime-600 px-7 py-3 text-base font-extrabold text-white shadow-md transition hover:bg-lime-700 active:scale-95"
       >
         🌾 {strings.playAgain}
       </button>

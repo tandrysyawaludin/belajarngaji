@@ -145,6 +145,7 @@ export type Strings = {
   snakeAnswerQuestion: string;
   snakeFinishTitle: string;
   farmBoardTitle: string;
+  farmProgressText: string;
   farmPlotLabel: string;
   farmYourTurn: string;
   farmAnswerFirstShort: string;

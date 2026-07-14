@@ -47,7 +47,7 @@ export const ja: Strings = {
   cardSnakeLadderDesc: "サイコロを振って問題に答えて進もう。",
   cardFarmingTitle: "クルアーンブロック農園",
   cardFarmingDesc:
-    "マインクラフト風！まず問題に答えて、水やり・種まき・収穫で農園を進もう。",
+    "2D農園アドベンチャー！問題に答えて、水やり・種まき・収穫で進もう。",
   cardHistoryTitle: "スコア履歴",
   cardHistoryDesc: "プレイ記録と正解・不正解を見よう。",
   cardIqraTitle: "イクラ",
@@ -63,7 +63,7 @@ export const ja: Strings = {
   snakePageDesc:
     "サイコロを振ってクルアーンの問題に答え、梯子で上がるか蛇で下がろう。不正解は戻ります。",
   farmingPageDesc:
-    "マインクラフト風ブロック農園！クルアーンの問題に答えてから、水やり・種まき・収穫で進もう。水路は助け、モグラ穴は邪魔。",
+    "2D農園ゲーム！クルアーンの問題に答えてから農具で進もう。泉は助け、モグラ穴は邪魔。",
   loadingLabel: "節を読み込み中...",
   errorLabel: "ごめんね、エラーが出ました。もう一度試してね。",
   retry: "もう一度",
@@ -169,7 +169,8 @@ export const ja: Strings = {
   snakeAnswerFirstShort: "まず答えてね",
   snakeAnswerQuestion: "問題に答える",
   snakeFinishTitle: "マシャアッラー、ゴール！",
-  farmBoardTitle: "ブロック農園",
+  farmBoardTitle: "ぼくの農園",
+  farmProgressText: "収穫まで: {current}/{total}",
   farmPlotLabel: "区画",
   farmYourTurn: "あなたの番",
   farmAnswerFirstShort: "まず答えてね",

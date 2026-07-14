@@ -48,7 +48,7 @@ export const id: Strings = {
     "Lempar dadu dan jawab soal acak di setiap kotak untuk maju.",
   cardFarmingTitle: "Petani Blok Qur'an",
   cardFarmingDesc:
-    "Gaya Minecraft! Jawab soal dulu, lalu siram, tanam, atau panen untuk maju di kebun.",
+    "Petualangan kebun 2D! Jawab soal dulu, lalu siram, tanam, atau panen untuk maju ke panen raya.",
   cardHistoryTitle: "Riwayat Skor",
   cardHistoryDesc: "Lihat catatan bermain & jawaban benar/salah-mu.",
   cardIqraTitle: "Iqra",
@@ -64,7 +64,7 @@ export const id: Strings = {
   snakePageDesc:
     "Lempar dadu, jawab soal Al-Quran acak, lalu naik tangga atau turun ular. Kalau salah, kembali ke kotak sebelumnya.",
   farmingPageDesc:
-    "Kebun blok gaya Minecraft! Jawab soal Al-Qur'an dulu, lalu pilih siram, tanam, atau panen untuk maju. Saluran air bantu, lubang tikus menghalangi.",
+    "Game kebun 2D! Jawab soal Al-Qur'an, lalu gunakan alat pertanian untuk maju. Mata air bantu, lubang tikus menghalangi.",
   loadingLabel: "Sedang memuat ayat...",
   errorLabel: "Maaf, ada gangguan. Coba lagi ya.",
   retry: "Coba Lagi",
@@ -174,7 +174,8 @@ export const id: Strings = {
   snakeAnswerFirstShort: "Jawab dulu ya",
   snakeAnswerQuestion: "Jawab Pertanyaan",
   snakeFinishTitle: "Masya Allah, sampai finish!",
-  farmBoardTitle: "Kebun Blok",
+  farmBoardTitle: "Kebunku",
+  farmProgressText: "Menuju panen: {current}/{total}",
   farmPlotLabel: "Petak",
   farmYourTurn: "Giliranmu",
   farmAnswerFirstShort: "Jawab dulu ya",
