@@ -38,9 +38,12 @@ export function ThemePicker({
       role="dialog"
       aria-modal="true"
       aria-label={strings.themePickerTitle}
+      onClick={(event) => {
+        if (event.target === event.currentTarget) onDismiss();
+      }}
     >
-      <div className="relative w-full max-w-4xl overflow-hidden rounded-[2rem] bg-gradient-to-br from-white via-pink-50 to-yellow-50 shadow-2xl ring-4 ring-white/70">
-        <header className="flex items-start justify-between gap-3 border-b-2 border-pink-100 bg-white/85 p-5">
+      <div className="relative flex max-h-[92vh] w-full max-w-4xl flex-col overflow-hidden rounded-[2rem] bg-gradient-to-br from-white via-pink-50 to-yellow-50 shadow-2xl ring-4 ring-white/70">
+        <header className="flex shrink-0 items-start justify-between gap-3 border-b-2 border-pink-100 bg-white/85 p-5">
           <div>
             <h2 className="text-2xl font-extrabold text-pink-700 sm:text-3xl">
               🎨 {strings.themePickerTitle}
@@ -59,7 +62,7 @@ export function ThemePicker({
           </button>
         </header>
 
-        <div className="max-h-[70vh] overflow-y-auto p-5">
+        <div className="min-h-0 flex-1 overflow-y-auto p-5">
           <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-4">
             {themes.map((t) => {
               const isCurrent = t.id === currentId;
@@ -126,7 +129,14 @@ export function ThemePicker({
           </ul>
         </div>
 
-        <footer className="border-t-2 border-pink-100 bg-white/80 p-3 text-center">
+        <footer className="flex shrink-0 flex-col items-center gap-3 border-t-2 border-pink-100 bg-white/80 p-3">
+          <button
+            type="button"
+            onClick={onDismiss}
+            className="w-full max-w-sm rounded-full bg-pink-500 px-6 py-3 text-base font-extrabold text-white shadow-md transition hover:bg-pink-600 active:scale-95"
+          >
+            {strings.themePickerSkip}
+          </button>
           <p className="text-xs font-semibold text-pink-900/70">
             {strings.themePickerFooter}
           </p>

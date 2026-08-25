@@ -41,4 +41,11 @@ export const GAME_CARD_DEFS = [
     bg: "from-green-400 to-lime-600",
     emoji: "🌾",
   },
+  {
+    href: "/tukang-burger",
+    titleKey: "cardBurgerTitle" as const,
+    descKey: "cardBurgerDesc" as const,
+    bg: "from-amber-400 to-orange-600",
+    emoji: "🍔",
+  },
 ] as const;

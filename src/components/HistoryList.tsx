@@ -57,6 +57,13 @@ const GAME_THEME: Record<HistoryEntry["gameId"], { bg: string; text: string; rin
     emoji: "🌾",
     href: "/berkebun",
   },
+  "tukang-burger": {
+    bg: "bg-amber-100",
+    text: "text-amber-900",
+    ring: "ring-amber-200",
+    emoji: "🍔",
+    href: "/tukang-burger",
+  },
 };
 
 function useHistory(): HistoryEntry[] {

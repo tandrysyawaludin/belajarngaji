@@ -15,6 +15,9 @@ const SESSION_KEY = "belajarngaji:theme:shown";
 let snapshot: { raw: string | null; value: string | null } | null = null;
 const subscribers = new Set<() => void>();
 const sessionSubscribers = new Set<() => void>();
+// Survives ThemeProvider remounts when sessionStorage is blocked (embedded
+// browsers / privacy mode). Without this, dismiss can look like a no-op.
+let shownThisRuntime = false;
 
 function rawReadId(): string | null {
   if (typeof window === "undefined") return null;
@@ -40,13 +43,14 @@ export function writeThemeId(id: ThemeDef["id"]): void {
     window.localStorage.setItem(STORAGE_KEY, id);
     snapshot = null;
     for (const cb of subscribers) cb();
-    markPickerShown();
   } catch {
     /* storage disabled — silently ignore */
   }
+  markPickerShown();
 }
 
 export function hasShownPickerThisSession(): boolean {
+  if (shownThisRuntime) return true;
   if (typeof window === "undefined") return false;
   try {
     return window.sessionStorage.getItem(SESSION_KEY) === "1";
@@ -56,13 +60,15 @@ export function hasShownPickerThisSession(): boolean {
 }
 
 export function markPickerShown(): void {
-  if (typeof window === "undefined") return;
+  shownThisRuntime = true;
   try {
-    window.sessionStorage.setItem(SESSION_KEY, "1");
-    for (const cb of sessionSubscribers) cb();
+    if (typeof window !== "undefined") {
+      window.sessionStorage.setItem(SESSION_KEY, "1");
+    }
   } catch {
-    /* ignore */
+    /* storage disabled — in-memory flag still hides the picker */
   }
+  for (const cb of sessionSubscribers) cb();
 }
 
 export function subscribeSessionShown(callback: () => void): () => void {

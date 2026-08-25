@@ -12,7 +12,7 @@ export const id: Strings = {
   seoIqraBlurb:
     "Belajar Iqra online gratis jilid 1 sampai 6. Latihan membaca huruf hijaiyah dan tajwid untuk anak-anak pemula.",
   seoGamesBlurb:
-    "Game belajar Al-Qur'an untuk anak: kuis arti surah, cocokkan, tebak ayat, sambung ayat, dan ular tangga edukasi Islam.",
+    "Game belajar Al-Qur'an untuk anak: kuis arti surah, cocokkan, tebak ayat, sambung ayat, ular tangga, petani blok, dan tukang burger.",
   homeSectionTitle: "Belajar Ngaji Online untuk Anak",
   navHome: "Beranda",
   navSurah: "Al Quran",
@@ -23,6 +23,7 @@ export const id: Strings = {
   navConnect: "Sambung Ayat",
   navSnakeLadder: "Ular Tangga",
   navFarming: "Petani Blok",
+  navBurger: "Tukang Burger",
   navHistory: "Riwayat",
   navTheme: "Tema",
   navIqra: "Iqra",
@@ -33,7 +34,7 @@ export const id: Strings = {
   cardSurahTitle: "Al Quran",
   cardSurahDesc: "Lihat tulisan Arab dan artinya dalam bahasa Indonesia.",
   cardGamesTitle: "Games",
-  cardGamesDesc: "Kuis, cocokkan, tebak ayat, dan game edukasi Al-Qur'an lainnya.",
+  cardGamesDesc: "Kuis, cocokkan, tebak ayat, tukang burger, dan game edukasi Al-Qur'an lainnya.",
   gamesIntro: "Pilih game favoritmu untuk belajar sambil bermain!",
   cardQuizTitle: "Kuis Arti Surah",
   cardQuizDesc: "Tebak arti nama surah, dapatkan bintang dan kejutan!",
@@ -49,6 +50,9 @@ export const id: Strings = {
   cardFarmingTitle: "Petani Blok Qur'an",
   cardFarmingDesc:
     "Kebun 3×3! Jawab soal, pilih petak, basmi tikus, tanam, siram, dan panen wortel.",
+  cardBurgerTitle: "Tukang Burger",
+  cardBurgerDesc:
+    "10 soal, 10 kesempatan. Benar = masak lalu sajikan. Salah = belum bisa masak!",
   cardHistoryTitle: "Riwayat Skor",
   cardHistoryDesc: "Lihat catatan bermain & jawaban benar/salah-mu.",
   cardIqraTitle: "Iqra",
@@ -65,6 +69,8 @@ export const id: Strings = {
     "Lempar dadu, jawab soal Al-Quran acak, lalu naik tangga atau turun ular. Kalau salah, kembali ke kotak sebelumnya.",
   farmingPageDesc:
     "Kebun 3×3 bergaya Harvest Moon. Jawab soal Al-Qur'an, pilih petak, basmi tikus, tanam, siram, dan kumpulkan 3 wortel untuk menang.",
+  burgerPageDesc:
+    "10 soal, 10 kesempatan. Jawaban benar membuka dapur: masak lalu sajikan makanan. Salah? Belum bisa masak. Skor akhir seperti 8/10.",
   loadingLabel: "Sedang memuat ayat...",
   errorLabel: "Maaf, ada gangguan. Coba lagi ya.",
   retry: "Coba Lagi",
@@ -192,6 +198,15 @@ export const id: Strings = {
   farmActionTree: "Ambil Wortel dari Pohon",
   farmSkipAction: "Lewati",
   farmFinishTitle: "Panen raya! 3 wortel terkumpul!",
+  burgerKitchenTitle: "Dapur Burger",
+  burgerChanceLabel: "Kesempatan {current}/{total}",
+  burgerCookHint: "Mantap! Yuk masak dulu...",
+  burgerServeHint: "Siap! Sajikan ke pelanggan...",
+  burgerServedHint: "Pesanan tersaji! Pelanggan senang.",
+  burgerNoCook: "Jawaban kurang tepat. Kali ini belum bisa masak.",
+  burgerSkipAnim: "Lewati",
+  burgerFinishTitle: "Shift selesai!",
+  burgerOrdersUnit: "benar",
   gameLabels: {
     kuis: "Kuis Arti",
     cocokkan: "Cocokkan",
@@ -199,5 +214,6 @@ export const id: Strings = {
     sambung: "Sambung Ayat",
     "ular-tangga": "Ular Tangga",
     berkebun: "Petani Blok",
+    "tukang-burger": "Tukang Burger",
   },
 };

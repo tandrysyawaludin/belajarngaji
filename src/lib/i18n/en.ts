@@ -12,7 +12,7 @@ export const en: Strings = {
   seoIqraBlurb:
     "Free online Iqra lessons volumes 1–6. Practice Arabic letters and reading basics for young learners.",
   seoGamesBlurb:
-    "Qur'an learning games for kids: meaning quizzes, matching, verse guessing, connect-the-verse, and snake & ladder.",
+    "Qur'an learning games for kids: meaning quizzes, matching, verse guessing, connect-the-verse, snake & ladder, farm, and burger chef.",
   homeSectionTitle: "Online Qur'an Learning for Kids",
   navHome: "Home",
   navSurah: "Qur'an",
@@ -23,6 +23,7 @@ export const en: Strings = {
   navConnect: "Connect Verses",
   navSnakeLadder: "Snake & Ladder",
   navFarming: "Block Farmer",
+  navBurger: "Burger Chef",
   navHistory: "History",
   navTheme: "Theme",
   navIqra: "Iqra",
@@ -33,7 +34,7 @@ export const en: Strings = {
   cardSurahTitle: "Qur'an",
   cardSurahDesc: "Read Arabic text with Indonesian meaning.",
   cardGamesTitle: "Games",
-  cardGamesDesc: "Quizzes, matching, verse games, and more Qur'an fun.",
+  cardGamesDesc: "Quizzes, matching, verse games, burger chef, and more Qur'an fun.",
   gamesIntro: "Pick your favorite game and learn while playing!",
   cardQuizTitle: "Surah Meaning Quiz",
   cardQuizDesc: "Guess the meaning of surah names and earn stars!",
@@ -48,6 +49,9 @@ export const en: Strings = {
   cardFarmingTitle: "Qur'an Block Farm",
   cardFarmingDesc:
     "3×3 farm! Answer questions, pick a plot, chase mice, plant, water, and harvest carrots.",
+  cardBurgerTitle: "Burger Chef",
+  cardBurgerDesc:
+    "10 questions, 10 chances. Correct = cook then serve. Wrong = no cooking!",
   cardHistoryTitle: "Score History",
   cardHistoryDesc: "See your play records and right/wrong answers.",
   cardIqraTitle: "Iqra",
@@ -64,6 +68,8 @@ export const en: Strings = {
     "Roll the dice, answer a random Qur'an question, climb ladders or slide down snakes. Wrong answers move you back.",
   farmingPageDesc:
     "Harvest Moon-style 3×3 farm. Answer Qur'an questions, pick any plot, kill mice, seed, water, and collect 3 carrots to win.",
+  burgerPageDesc:
+    "10 questions, 10 chances. A correct answer opens the kitchen: cook, then serve. Wrong answers skip cooking. Final score looks like 8/10.",
   loadingLabel: "Loading verses...",
   errorLabel: "Sorry, something went wrong. Please try again.",
   retry: "Try Again",
@@ -188,6 +194,15 @@ export const en: Strings = {
   farmActionTree: "Pick Carrot from Tree",
   farmSkipAction: "Skip",
   farmFinishTitle: "Harvest time! 3 carrots collected!",
+  burgerKitchenTitle: "Burger Kitchen",
+  burgerChanceLabel: "Chance {current}/{total}",
+  burgerCookHint: "Nice! Time to cook...",
+  burgerServeHint: "Ready! Serve the customer...",
+  burgerServedHint: "Order served! The customer is happy.",
+  burgerNoCook: "Not quite. No cooking this time.",
+  burgerSkipAnim: "Skip",
+  burgerFinishTitle: "Shift complete!",
+  burgerOrdersUnit: "correct",
   gameLabels: {
     kuis: "Meaning Quiz",
     cocokkan: "Match",
@@ -195,5 +210,6 @@ export const en: Strings = {
     sambung: "Connect Verses",
     "ular-tangga": "Snake & Ladder",
     berkebun: "Block Farmer",
+    "tukang-burger": "Burger Chef",
   },
 };

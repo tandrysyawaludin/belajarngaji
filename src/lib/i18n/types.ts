@@ -16,6 +16,7 @@ export type Strings = {
   navConnect: string;
   navSnakeLadder: string;
   navFarming: string;
+  navBurger: string;
   navHistory: string;
   navTheme: string;
   navIqra: string;
@@ -39,6 +40,8 @@ export type Strings = {
   cardSnakeLadderDesc: string;
   cardFarmingTitle: string;
   cardFarmingDesc: string;
+  cardBurgerTitle: string;
+  cardBurgerDesc: string;
   cardHistoryTitle: string;
   cardHistoryDesc: string;
   cardIqraTitle: string;
@@ -49,6 +52,7 @@ export type Strings = {
   connectPageDesc: string;
   snakePageDesc: string;
   farmingPageDesc: string;
+  burgerPageDesc: string;
   loadingLabel: string;
   errorLabel: string;
   retry: string;
@@ -162,6 +166,15 @@ export type Strings = {
   farmActionTree: string;
   farmSkipAction: string;
   farmFinishTitle: string;
+  burgerKitchenTitle: string;
+  burgerChanceLabel: string;
+  burgerCookHint: string;
+  burgerServeHint: string;
+  burgerServedHint: string;
+  burgerNoCook: string;
+  burgerSkipAnim: string;
+  burgerFinishTitle: string;
+  burgerOrdersUnit: string;
   gameLabels: Record<string, string>;
 };
 

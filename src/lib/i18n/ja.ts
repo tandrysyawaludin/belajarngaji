@@ -12,7 +12,7 @@ export const ja: Strings = {
   seoIqraBlurb:
     "イクラ1〜6巻を無料でオンライン学習。初心者向けのアラビア文字と読み方の練習。",
   seoGamesBlurb:
-    "子ども向けクルアーン学習ゲーム：意味クイズ、マッチング、節当て、つなげる、蛇と梯子。",
+    "子ども向けクルアーン学習ゲーム：意味クイズ、マッチング、節当て、つなげる、蛇と梯子、農園、バーガー屋さん。",
   homeSectionTitle: "子ども向けオンラインクルアーン学習",
   navHome: "ホーム",
   navSurah: "クルアーン",
@@ -23,6 +23,7 @@ export const ja: Strings = {
   navConnect: "節をつなぐ",
   navSnakeLadder: "蛇と梯子",
   navFarming: "ブロック農家",
+  navBurger: "バーガー屋さん",
   navHistory: "履歴",
   navTheme: "テーマ",
   navIqra: "イクラ",
@@ -33,7 +34,7 @@ export const ja: Strings = {
   cardSurahTitle: "クルアーン",
   cardSurahDesc: "アラビア語とインドネシア語訳を読もう。",
   cardGamesTitle: "ゲーム",
-  cardGamesDesc: "クイズ、マッチング、節ゲームなど楽しい学習。",
+  cardGamesDesc: "クイズ、マッチング、節ゲーム、バーガー屋さんなど楽しい学習。",
   gamesIntro: "好きなゲームを選んで遊びながら学ぼう！",
   cardQuizTitle: "スーラの意味クイズ",
   cardQuizDesc: "スーラ名の意味を当てて星をゲット！",
@@ -48,6 +49,9 @@ export const ja: Strings = {
   cardFarmingTitle: "クルアーンブロック農園",
   cardFarmingDesc:
     "3×3の農園！問題に答えて、マスを選び、ネズミ退治・種まき・水やり・にんじん収穫。",
+  cardBurgerTitle: "バーガー屋さん",
+  cardBurgerDesc:
+    "10問、10回のチャンス。正解したら料理して提供。不正解はお料理なし！",
   cardHistoryTitle: "スコア履歴",
   cardHistoryDesc: "プレイ記録と正解・不正解を見よう。",
   cardIqraTitle: "イクラ",
@@ -64,6 +68,8 @@ export const ja: Strings = {
     "サイコロを振ってクルアーンの問題に答え、梯子で上がるか蛇で下がろう。不正解は戻ります。",
   farmingPageDesc:
     "ハーベストムーン風3×3農園。クルアーンの問題に答え、好きなマスへ移動。ネズミ退治・種まき・水やり・にんじん3本で勝利。",
+  burgerPageDesc:
+    "10問、10回のチャンス。正解するとキッチンが開いて料理して提供。不正解はお料理なし。最終スコアは 8/10 のような形。",
   loadingLabel: "節を読み込み中...",
   errorLabel: "ごめんね、エラーが出ました。もう一度試してね。",
   retry: "もう一度",
@@ -187,6 +193,15 @@ export const ja: Strings = {
   farmActionTree: "木からにんじんを取る",
   farmSkipAction: "スキップ",
   farmFinishTitle: "収穫の時！にんじん3本ゲット！",
+  burgerKitchenTitle: "バーガーキッチン",
+  burgerChanceLabel: "チャンス {current}/{total}",
+  burgerCookHint: "すごい！まず料理しよう...",
+  burgerServeHint: "できた！お客さんに出そう...",
+  burgerServedHint: "提供できた！お客さんはよろこんでいるよ。",
+  burgerNoCook: "惜しい。今回はお料理できないよ。",
+  burgerSkipAnim: "スキップ",
+  burgerFinishTitle: "シフト終了！",
+  burgerOrdersUnit: "問正解",
   gameLabels: {
     kuis: "意味クイズ",
     cocokkan: "マッチング",
@@ -194,5 +209,6 @@ export const ja: Strings = {
     sambung: "節をつなぐ",
     "ular-tangga": "蛇と梯子",
     berkebun: "ブロック農家",
+    "tukang-burger": "バーガー屋さん",
   },
 };
