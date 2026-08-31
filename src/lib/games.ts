@@ -48,4 +48,18 @@ export const GAME_CARD_DEFS = [
     bg: "from-amber-400 to-orange-600",
     emoji: "🍔",
   },
+  {
+    href: "/kotak-rahasia",
+    titleKey: "cardKotakTitle" as const,
+    descKey: "cardKotakDesc" as const,
+    bg: "from-violet-400 to-fuchsia-600",
+    emoji: "💎",
+  },
+  {
+    href: "/tic-tac-toe",
+    titleKey: "cardTttTitle" as const,
+    descKey: "cardTttDesc" as const,
+    bg: "from-sky-400 to-violet-500",
+    emoji: "⭕",
+  },
 ] as const;

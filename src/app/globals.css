@@ -131,6 +131,7 @@ body {
   100% { transform: scale(1); }
 }
 .pop-in { animation: pop-in 350ms cubic-bezier(0.34, 1.56, 0.64, 1); }
+.dice-pop { animation: pop-in 280ms cubic-bezier(0.34, 1.56, 0.64, 1); }
 
 @keyframes shake {
   0%, 100% { transform: translateX(0); }
@@ -345,6 +346,112 @@ body {
   border: 4px solid #7c2d12;
   box-shadow: inset 0 0 18px rgba(124, 45, 18, 0.18);
   background: #fff7ed;
+}
+
+/* Treasure vault for Kotak Rahasia — pastel, no browns */
+.treasure-scene-panel {
+  background: linear-gradient(180deg, #ede9fe 0%, #fce7f3 45%, #e0f2fe 100%);
+  border: 4px solid #c4b5fd;
+  box-shadow: inset 0 0 0 3px #f5d0fe;
+}
+.treasure-wood-panel {
+  background: linear-gradient(180deg, #fdf4ff 0%, #fce7f3 50%, #ede9fe 100%);
+  border: 4px solid #e9d5ff;
+  box-shadow:
+    inset 0 2px 0 rgba(255, 255, 255, 0.55),
+    0 6px 0 #ddd6fe;
+}
+.treasure-board {
+  background: #f5f3ff;
+  border: 4px solid #ddd6fe;
+  box-shadow: inset 0 0 18px rgba(167, 139, 250, 0.18);
+}
+.treasure-chest {
+  position: relative;
+  overflow: hidden;
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #f5d0fe 0%, #e9d5ff 100%);
+  border: 3px solid #d8b4fe;
+  color: #6b21a8;
+  font-size: 2rem;
+  font-weight: 800;
+  box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.55);
+}
+.treasure-chest-label {
+  position: relative;
+  z-index: 1;
+}
+.treasure-chest-gem {
+  display: block;
+  font-size: 2.4rem;
+  line-height: 1;
+}
+.treasure-chest--ready {
+  outline: 3px solid #f9a8d4;
+  outline-offset: -2px;
+  cursor: pointer;
+}
+.treasure-chest-light {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+}
+.treasure-chest--open {
+  color: #6b21a8;
+}
+.treasure-chest--diamond {
+  background: linear-gradient(180deg, #a5f3fc 0%, #bae6fd 100%);
+  border-color: #7dd3fc;
+}
+.treasure-chest--empty {
+  background: linear-gradient(180deg, #e9d5ff 0%, #ddd6fe 100%);
+  border-color: #c4b5fd;
+}
+.treasure-chest--picked {
+  outline: 3px solid #c4b5fd;
+  outline-offset: -2px;
+}
+.treasure-window {
+  position: relative;
+  border: 4px solid #ddd6fe;
+  box-shadow: inset 0 0 18px rgba(196, 181, 253, 0.25);
+  background: #faf5ff;
+}
+
+.ttt-board {
+  background: linear-gradient(180deg, #e0f2fe 0%, #ede9fe 100%);
+  border: 4px solid #93c5fd;
+  box-shadow: inset 0 0 18px rgba(147, 197, 253, 0.35);
+}
+.ttt-cell {
+  display: grid;
+  place-items: center;
+  background: linear-gradient(180deg, #ffffff 0%, #f5f3ff 100%);
+  border: 4px solid #c4b5fd;
+  color: #312e81;
+  transition: background 160ms ease, border-color 160ms ease;
+}
+.ttt-cell.is-ready {
+  background: linear-gradient(180deg, #fef9c3 0%, #e0f2fe 100%);
+  border-color: #7dd3fc;
+  box-shadow: inset 0 0 12px rgba(125, 211, 252, 0.45);
+}
+.ttt-cell.is-win {
+  background: linear-gradient(180deg, #bbf7d0 0%, #a5f3fc 100%);
+  border-color: #34d399;
+}
+.ttt-mark {
+  font-size: clamp(2rem, 12vw, 4rem);
+  font-weight: 900;
+  line-height: 1;
+}
+.ttt-mark--X {
+  color: #db2777;
+}
+.ttt-mark--O {
+  color: #7c3aed;
 }
 
 /* Print / Save as PDF */

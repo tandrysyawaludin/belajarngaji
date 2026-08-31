@@ -64,6 +64,28 @@ const GAME_THEME: Record<HistoryEntry["gameId"], { bg: string; text: string; rin
     emoji: "🍔",
     href: "/tukang-burger",
   },
+  "kotak-rahasia": {
+    bg: "bg-violet-100",
+    text: "text-violet-900",
+    ring: "ring-violet-200",
+    emoji: "💎",
+    href: "/kotak-rahasia",
+  },
+  "tic-tac-toe": {
+    bg: "bg-sky-100",
+    text: "text-sky-900",
+    ring: "ring-sky-200",
+    emoji: "⭕",
+    href: "/tic-tac-toe",
+  },
+};
+
+const FALLBACK_THEME = {
+  bg: "bg-slate-100",
+  text: "text-slate-900",
+  ring: "ring-slate-200",
+  emoji: "🎮",
+  href: "/games",
 };
 
 function useHistory(): HistoryEntry[] {
@@ -183,7 +205,7 @@ export function HistoryList() {
 
       <ul className="flex flex-col gap-3">
         {entries.map((entry) => {
-          const t = GAME_THEME[entry.gameId];
+          const t = GAME_THEME[entry.gameId] ?? FALLBACK_THEME;
           const open = openId === entry.id;
           const pct = entry.total ? Math.round((entry.score / entry.total) * 100) : 0;
           return (

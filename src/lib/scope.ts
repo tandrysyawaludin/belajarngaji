@@ -9,7 +9,9 @@ export type GameId =
   | "sambung"
   | "ular-tangga"
   | "berkebun"
-  | "tukang-burger";
+  | "tukang-burger"
+  | "kotak-rahasia"
+  | "tic-tac-toe";
 
 const STORAGE_PREFIX = "belajarngaji:scope:";
 
