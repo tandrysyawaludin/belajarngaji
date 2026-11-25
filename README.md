@@ -1,7 +1,11 @@
 # Belajar Ngaji
 
-Aplikasi belajar Al-Qur'an interaktif untuk anak-anak, bertema *kawaii* pastel.
-Antarmuka sepenuhnya dalam Bahasa Indonesia.
+Aplikasi belajar Al-Qur'an interaktif untuk anak-anak, bertema **Dreamy Sky**:
+langit biru lembut, awan putih, dan pink pastel yang fluffy dan membulat.
+Maskot barunya adalah **Awan**, anak anjing awan putih orisinal berambut
+panjang dengan pita biru langit dan pipi pink (SVG inline di
+`src/components/CloudPuppy.tsx` — karya orisinal, bukan karakter pihak ketiga).
+Antarmuka tersedia dalam Bahasa Indonesia, Inggris, dan Jepang.
 
 ## Fitur
 
@@ -15,6 +19,9 @@ Antarmuka sepenuhnya dalam Bahasa Indonesia.
 | `/tebak-ayat` | Tebak jumlah ayat dari sebuah surah |
 | `/sambung` | Sambung ayat — pilih ayat lanjutan dari surah juz 30 (latih hafalan) |
 | `/ular-tangga` | Ular tangga Qur'an — lempar dadu, jawab soal acak, naik tangga atau turun ular |
+| `/dekorasi` | **Dekorasi Kamar Ngaji** — hias kamar bebas gaya Toca Boca: ganti warna dinding & karpet, pasang sajjadah, lampu bulan, rak buku; barang spesial terbuka lewat satu soal bintang |
+| `/salon` | **Salon Hijab Cantik** — salon dandan & dress-up: warna hijab, baju, blush, lipstik, eyeshadow, dan aksesori; warna bintang terbuka lewat soal |
+| `/bangun-masjid` | **Bangun Masjid Blok** — bangun bebas gaya LEGO di papan 10×8 dengan kubah, bulan sabit, pintu, jendela, dan menara; jawab soal untuk +5 blok |
 
 ## Tech Stack
 
@@ -58,9 +65,15 @@ Build menggunakan `generateStaticParams` untuk pre-render semua 114 halaman sura
 ## Lisensi
 
 MIT — silakan dipakai dan dikembangkan untuk kebaikan.
-Karakter maskot adalah pixel art orisinal (6 karakter: Nadia, Sinta, Maya,
-Rian, Dimas, Bayu — tiga gaya tutup kepala: hijab/peci, topi, dan topi koboi
-untuk anak perempuan dan laki-laki) yang digambar sebagai inline SVG di
-`src/components/PixelMascot.tsx` — bebas lisensi, tanpa file gambar eksternal
-dan bukan karakter pihak ketiga. Seluruh antarmuka memakai gaya sudut kotak
-(pixel art).
+Karakter maskot adalah karya orisinal: **Awan** si anak anjing awan
+(`src/components/CloudPuppy.tsx`, tema *Dreamy Sky* — tema default) serta
+pixel art orisinal 6 karakter (Nadia, Sinta, Maya, Rian, Dimas, Bayu) di
+`src/components/PixelMascot.tsx` sebagai tema alternatif — bebas lisensi,
+tanpa file gambar eksternal dan bukan karakter pihak ketiga. Seluruh
+antarmuka kini memakai gaya lembut, membulat, dan fluffy.
+
+> **Catatan menu game:** menu Games kini hanya menampilkan 3 game kreatif
+> baru (`/dekorasi`, `/salon`, `/bangun-masjid`). Game lama (kuis, cocokkan,
+> tebak ayat, sambung, ular tangga, berkebun, tukang burger, kotak rahasia,
+> tic tac toe) **masih bisa dibuka lewat URL langsung** — file rutenya sengaja
+> tidak dihapus agar tautan & riwayat lama tidak rusak.

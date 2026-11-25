@@ -7,7 +7,7 @@ import { ThemedMascot } from "./ThemedMascot";
 import { ThemeBadge } from "./ThemeBadge";
 
 const nav = [
-  { href: "/", key: "navHome" as const, color: "bg-pink-200 text-pink-900 hover:bg-pink-300" },
+  { href: "/", key: "navHome" as const, color: "bg-sky-200 text-sky-900 hover:bg-sky-300" },
   { href: "/surah", key: "navSurah" as const, color: "bg-sky-200 text-sky-900 hover:bg-sky-300" },
   { href: "/iqra", key: "navIqra" as const, color: "bg-lime-200 text-lime-900 hover:bg-lime-300" },
   { href: "/games", key: "navGames" as const, color: "bg-yellow-200 text-yellow-900 hover:bg-yellow-300" },
@@ -29,10 +29,10 @@ export function Shell({ children }: { children: React.ReactNode }) {
               <ThemedMascot size={56} mood="happy" />
             </span>
             <span>
-              <span className="block text-2xl font-extrabold leading-tight text-pink-600">
+              <span className="block text-2xl font-extrabold leading-tight text-sky-600">
                 {strings.siteTitle}
               </span>
-              <span className="block text-xs font-semibold text-pink-400">
+              <span className="block text-xs font-semibold text-sky-400">
                 {strings.siteTagline}
               </span>
             </span>
@@ -55,7 +55,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
         </nav>
       </header>
       <main className="flex-1">{children}</main>
-      <footer className="rounded-2xl bg-pink-50/80 p-4 text-center text-sm font-semibold text-pink-700 ring-2 ring-pink-100">
+      <footer className="rounded-full bg-white/80 p-4 text-center text-sm font-semibold text-sky-700 ring-4 ring-sky-100">
         {strings.footerNote}
       </footer>
     </div>

@@ -19,6 +19,9 @@ export type Strings = {
   navBurger: string;
   navKotak: string;
   navTtt: string;
+  navDecorate: string;
+  navSalon: string;
+  navBuild: string;
   navHistory: string;
   navTheme: string;
   navIqra: string;
@@ -48,6 +51,12 @@ export type Strings = {
   cardKotakDesc: string;
   cardTttTitle: string;
   cardTttDesc: string;
+  cardDecorateTitle: string;
+  cardDecorateDesc: string;
+  cardSalonTitle: string;
+  cardSalonDesc: string;
+  cardBuildTitle: string;
+  cardBuildDesc: string;
   cardHistoryTitle: string;
   cardHistoryDesc: string;
   cardIqraTitle: string;
@@ -61,6 +70,9 @@ export type Strings = {
   burgerPageDesc: string;
   kotakPageDesc: string;
   tttPageDesc: string;
+  decoratePageDesc: string;
+  salonPageDesc: string;
+  buildPageDesc: string;
   loadingLabel: string;
   errorLabel: string;
   retry: string;

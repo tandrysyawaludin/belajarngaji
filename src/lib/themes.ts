@@ -37,6 +37,21 @@ export interface ThemeDef {
 
 export const THEMES: readonly ThemeDef[] = [
   {
+    id: "awan",
+    name: "Dreamy Sky",
+    tagline: "Langit biru, awan lembut, dan hati yang ceria",
+    gender: "girl",
+    hat: "muslim",
+    palette: {
+      primary: "#5EB2F2",
+      primaryDeep: "#2F7FC4",
+      primarySoft: "#D6F0FF",
+      accent: "#FFB7D5",
+      bgStops: ["#AEE3FF", "#EFF9FF", "#FFE3F0"],
+      bgBase: "#EFF9FF",
+    },
+  },
+  {
     id: "nadia",
     name: "Pinky",
     tagline: "Anak perempuan berhijab pink",
@@ -128,7 +143,7 @@ export const THEMES: readonly ThemeDef[] = [
   },
 ] as const;
 
-export const DEFAULT_THEME_ID = "nadia";
+export const DEFAULT_THEME_ID = "awan";
 
 export function getTheme(id: string | null | undefined): ThemeDef {
   if (!id) return THEMES[0];

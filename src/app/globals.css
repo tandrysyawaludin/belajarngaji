@@ -1,24 +1,28 @@
 @import "tailwindcss";
 
-/* Pixel-art look: square corners everywhere, no rounding. */
-*,
-*::before,
-*::after {
-  border-radius: 0 !important;
+:root {
+  /* Defaults — Dreamy Sky theme so SSR matches the post-paint look. */
+  --background: #eff9ff;
+  --foreground: #23405e;
+  --theme-primary: #5eb2f2;
+  --theme-primary-deep: #2f7fc4;
+  --theme-primary-soft: #d6f0ff;
+  --theme-accent: #ffb7d5;
+  --theme-bg-1: #aee3ff;
+  --theme-bg-2: #eff9ff;
+  --theme-bg-3: #ffe3f0;
+  --theme-bg-base: #eff9ff;
 }
 
-:root {
-  /* Defaults — match the "Pinky" theme so SSR matches the post-paint look. */
-  --background: #fff0f5;
-  --foreground: #2c1a3f;
-  --theme-primary: #fb6f92;
-  --theme-primary-deep: #c81e5b;
-  --theme-primary-soft: #ffd6e2;
-  --theme-accent: #ffa9c4;
-  --theme-bg-1: #ffe4ee;
-  --theme-bg-2: #ffd6e6;
-  --theme-bg-3: #fff3d6;
-  --theme-bg-base: #fff0f5;
+html[data-theme="awan"] {
+  --theme-primary: #5eb2f2;
+  --theme-primary-deep: #2f7fc4;
+  --theme-primary-soft: #d6f0ff;
+  --theme-accent: #ffb7d5;
+  --theme-bg-1: #aee3ff;
+  --theme-bg-2: #eff9ff;
+  --theme-bg-3: #ffe3f0;
+  --theme-bg-base: #eff9ff;
 }
 
 /* Per-theme palette overrides. The values are mirrored from
@@ -97,10 +101,15 @@ html[data-theme="bayu"] {
 html,
 body {
   background:
-    radial-gradient(circle at 10% 10%, var(--theme-bg-1) 0%, transparent 40%),
+    radial-gradient(ellipse 220px 70px at 12% 8%, rgba(255, 255, 255, 0.9) 0%, transparent 70%),
+    radial-gradient(ellipse 280px 84px at 86% 14%, rgba(255, 255, 255, 0.85) 0%, transparent 70%),
+    radial-gradient(ellipse 200px 64px at 70% 88%, rgba(255, 255, 255, 0.7) 0%, transparent 70%),
+    radial-gradient(circle at 10% 10%, var(--theme-bg-1) 0%, transparent 42%),
     radial-gradient(circle at 90% 0%, var(--theme-bg-2) 0%, transparent 45%),
     radial-gradient(circle at 80% 90%, var(--theme-bg-3) 0%, transparent 50%),
+    radial-gradient(rgba(255, 255, 255, 0.55) 1.5px, transparent 1.5px),
     var(--theme-bg-base);
+  background-size: auto, auto, auto, auto, auto, auto, 26px 26px, auto;
   background-attachment: fixed;
   color: var(--foreground);
   transition: background-color 350ms ease;
@@ -453,6 +462,31 @@ body {
 .ttt-mark--O {
   color: #7c3aed;
 }
+
+/* Dreamy Sky animations */
+@keyframes floaty {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-10px); }
+}
+.floaty { animation: floaty 3.2s ease-in-out infinite; }
+
+@keyframes sparkle {
+  0%, 100% { opacity: 0.25; transform: scale(0.8) rotate(0deg); }
+  50% { opacity: 1; transform: scale(1.2) rotate(20deg); }
+}
+.sparkle { animation: sparkle 1.8s ease-in-out infinite; }
+
+@keyframes bounce-soft {
+  0%, 100% { transform: translateY(0) scale(1); }
+  50% { transform: translateY(-6px) scale(1.04); }
+}
+.bounce-soft { animation: bounce-soft 1.6s ease-in-out infinite; }
+
+@keyframes wiggle {
+  0%, 100% { transform: rotate(-3deg); }
+  50% { transform: rotate(3deg); }
+}
+.wiggle { animation: wiggle 1.2s ease-in-out infinite; transform-origin: center bottom; }
 
 /* Print / Save as PDF */
 @media print {

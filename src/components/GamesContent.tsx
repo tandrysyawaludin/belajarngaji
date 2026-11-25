@@ -3,15 +3,19 @@
 import Link from "next/link";
 import { useStrings } from "@/components/LocaleProvider";
 import { GAME_CARD_DEFS } from "@/lib/games";
+import { CloudPuppy } from "@/components/CloudPuppy";
 
 export function GamesContent() {
   const strings = useStrings();
 
   return (
     <div className="flex flex-col gap-5">
-      <section className="rounded-3xl bg-white/90 p-5 shadow-md ring-2 ring-pink-100">
-        <h1 className="text-2xl font-extrabold text-pink-600 sm:text-3xl">{strings.navGames}</h1>
-        <p className="mt-1 text-base font-semibold text-pink-900/70">{strings.seoGamesBlurb}</p>
+      <section className="flex items-center gap-4 rounded-[2rem] bg-white/90 p-5 shadow-md ring-4 ring-sky-100">
+        <span className="floaty shrink-0"><CloudPuppy size={76} /></span>
+        <div>
+          <h1 className="text-2xl font-extrabold text-sky-600 sm:text-3xl">{strings.navGames}</h1>
+          <p className="mt-1 text-base font-semibold text-sky-900/70">{strings.gamesIntro}</p>
+        </div>
       </section>
 
       <div className="grid gap-4 sm:grid-cols-2">
@@ -19,7 +23,7 @@ export function GamesContent() {
           <Link
             key={c.href}
             href={c.href}
-            className={`group relative overflow-hidden rounded-3xl bg-gradient-to-br p-6 text-white shadow-xl ring-4 ring-white/50 transition hover:scale-[1.02] active:scale-95 ${c.bg}`}
+            className={`group relative overflow-hidden rounded-[2rem] bg-gradient-to-br p-6 text-white shadow-xl ring-4 ring-white/50 transition hover:scale-[1.02] active:scale-95 ${c.bg}`}
           >
             <div className="dotted absolute inset-0 opacity-30" aria-hidden="true" />
             <div className="relative flex items-start gap-4">
