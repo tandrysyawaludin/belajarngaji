@@ -47,7 +47,7 @@ export const THEMES: readonly ThemeDef[] = [
       primaryDeep: "#2F7FC4",
       primarySoft: "#D6F0FF",
       accent: "#FFB7D5",
-      bgStops: ["#AEE3FF", "#EFF9FF", "#FFE3F0"],
+      bgStops: ["#AEE3FF", "#EFF9FF", "#FFF3D6"],
       bgBase: "#EFF9FF",
     },
   },

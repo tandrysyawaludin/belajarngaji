@@ -10,7 +10,7 @@
   --theme-accent: #ffb7d5;
   --theme-bg-1: #aee3ff;
   --theme-bg-2: #eff9ff;
-  --theme-bg-3: #ffe3f0;
+  --theme-bg-3: #fff3d6;
   --theme-bg-base: #eff9ff;
 }
 
@@ -21,7 +21,7 @@ html[data-theme="awan"] {
   --theme-accent: #ffb7d5;
   --theme-bg-1: #aee3ff;
   --theme-bg-2: #eff9ff;
-  --theme-bg-3: #ffe3f0;
+  --theme-bg-3: #fff3d6;
   --theme-bg-base: #eff9ff;
 }
 

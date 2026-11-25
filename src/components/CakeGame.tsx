@@ -186,7 +186,7 @@ export function CakeGame() {
         </div>
       </div>
 
-      <EarnSheet open={earnOpen} rewardLabel="+1 Token Bintang" onEarn={() => setTokens((v) => v + 1)} onClose={() => setEarnOpen(false)} />
+      <EarnSheet open={earnOpen} rewardLabel="+1 Token Bintang" onEarn={() => { setTokens((v) => v + 1); setHint("Token didapat! Yuk hias kuenya."); }} onClose={() => setEarnOpen(false)} />
     </div>
   );
 }
