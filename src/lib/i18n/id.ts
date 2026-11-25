@@ -12,7 +12,7 @@ export const id: Strings = {
   seoIqraBlurb:
     "Belajar Iqra online gratis jilid 1 sampai 6. Latihan membaca huruf hijaiyah dan tajwid untuk anak-anak pemula.",
   seoGamesBlurb:
-    "Game belajar Al-Qur'an untuk anak: kuis arti surah, cocokkan, tebak ayat, sambung ayat, ular tangga, tic tac toe, petani blok, tukang burger, dan kotak rahasia.",
+    "Game kreatif belajar Al-Qur'an untuk anak: dekorasi kamar ngaji, salon hijab cantik, dan bangun masjid blok 3D. Jawab soal dulu, dapatkan token, lalu berkreasi!",
   homeSectionTitle: "Belajar Ngaji Online untuk Anak",
   navHome: "Beranda",
   navSurah: "Al Quran",

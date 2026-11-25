@@ -51,11 +51,11 @@ export function FeedbackOverlay({
       {kind === "wrong" && (
         <div className="absolute inset-0 bg-red-500/10" />
       )}
-      <div className="pop-in flex flex-col items-center gap-2 rounded-3xl bg-white/95 px-6 py-5 shadow-2xl ring-4 ring-pink-200">
+      <div className="pop-in flex flex-col items-center gap-2 rounded-3xl bg-white/95 px-6 py-5 shadow-2xl ring-4 ring-sky-200">
         {kind === "correct" ? (
           <>
             <ThemedMascot size={88} mood="excited" />
-            <p className="text-xl font-extrabold text-pink-600">
+            <p className="text-xl font-extrabold text-sky-600">
               {strings.correct}
             </p>
           </>

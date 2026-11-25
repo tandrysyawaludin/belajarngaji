@@ -82,21 +82,21 @@ export function SurahScopePicker({
       aria-modal="true"
       aria-label={strings.scopePickerTitle}
     >
-      <div className="pop-in flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl ring-4 ring-pink-200">
-        <header className="border-b-2 border-pink-100 bg-gradient-to-br from-pink-100 to-yellow-100 px-5 py-4">
+      <div className="pop-in flex max-h-[92vh] w-full max-w-3xl flex-col overflow-hidden rounded-3xl bg-white shadow-2xl ring-4 ring-sky-200">
+        <header className="border-b-2 border-sky-100 bg-gradient-to-br from-sky-100 to-yellow-100 px-5 py-4">
           <div className="flex items-start justify-between gap-3">
             <div>
-              <h2 className="text-xl font-extrabold text-pink-700 sm:text-2xl">
+              <h2 className="text-xl font-extrabold text-sky-700 sm:text-2xl">
                 🎯 {strings.scopePickerTitle}
               </h2>
-              <p className="mt-1 text-sm font-semibold text-pink-900/80">
+              <p className="mt-1 text-sm font-semibold text-sky-900/80">
                 {restrictedNote ?? strings.scopePickerSubtitle}
               </p>
             </div>
             <button
               type="button"
               onClick={onCancel}
-              className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-xl font-extrabold text-pink-700 shadow-md ring-2 ring-pink-200 transition hover:bg-pink-50 active:scale-95"
+              className="grid h-10 w-10 shrink-0 place-items-center rounded-full bg-white text-xl font-extrabold text-sky-700 shadow-md ring-2 ring-sky-200 transition hover:bg-sky-50 active:scale-95"
               aria-label={strings.scopeCancel}
             >
               ✕
@@ -104,20 +104,20 @@ export function SurahScopePicker({
           </div>
         </header>
 
-        <div className="flex flex-wrap items-center gap-2 border-b border-pink-100 bg-pink-50/60 px-4 py-3">
+        <div className="flex flex-wrap items-center gap-2 border-b border-sky-100 bg-sky-50/60 px-4 py-3">
           <input
             type="search"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
             placeholder={strings.scopeSearchPlaceholder}
-            className="min-w-0 flex-1 rounded-full bg-white px-4 py-2 text-sm font-semibold text-pink-900 shadow-inner ring-2 ring-pink-200 placeholder:text-pink-300 focus:outline-none focus:ring-pink-400"
+            className="min-w-0 flex-1 rounded-full bg-white px-4 py-2 text-sm font-semibold text-sky-900 shadow-inner ring-2 ring-sky-200 placeholder:text-sky-300 focus:outline-none focus:ring-sky-400"
           />
           <PresetButtons available={available} onPick={setAll} />
         </div>
 
         <div className="grid flex-1 grid-cols-2 gap-2 overflow-y-auto p-4 sm:grid-cols-3 lg:grid-cols-4">
           {filtered.length === 0 && (
-            <p className="col-span-full py-10 text-center text-sm font-bold text-pink-400">
+            <p className="col-span-full py-10 text-center text-sm font-bold text-sky-400">
               Tidak ada surah yang cocok.
             </p>
           )}
@@ -128,21 +128,21 @@ export function SurahScopePicker({
                 key={s.number}
                 className={`flex cursor-pointer items-center gap-2 rounded-2xl p-2 shadow-sm ring-2 transition active:scale-[0.99] ${
                   checked
-                    ? "bg-pink-100 ring-pink-300"
-                    : "bg-white ring-pink-100 hover:bg-pink-50 hover:ring-pink-200"
+                    ? "bg-sky-100 ring-sky-300"
+                    : "bg-white ring-sky-100 hover:bg-sky-50 hover:ring-sky-200"
                 }`}
               >
                 <input
                   type="checkbox"
                   checked={checked}
                   onChange={() => toggle(s.number)}
-                  className="h-5 w-5 shrink-0 accent-pink-500"
+                  className="h-5 w-5 shrink-0 accent-sky-500"
                 />
                 <div className="min-w-0 flex-1">
-                  <p className="truncate text-sm font-extrabold text-pink-900">
+                  <p className="truncate text-sm font-extrabold text-sky-900">
                     {s.number}. {s.name}
                   </p>
-                  <p className="truncate text-xs font-semibold text-pink-700/70">
+                  <p className="truncate text-xs font-semibold text-sky-700/70">
                     {s.meaning} • {s.verses} ayat
                   </p>
                 </div>
@@ -151,18 +151,18 @@ export function SurahScopePicker({
           })}
         </div>
 
-        <footer className="flex flex-col gap-2 border-t-2 border-pink-100 bg-pink-50/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
-          <p className="text-sm font-bold text-pink-800">
+        <footer className="flex flex-col gap-2 border-t-2 border-sky-100 bg-sky-50/80 px-4 py-3 sm:flex-row sm:items-center sm:justify-between">
+          <p className="text-sm font-bold text-sky-800">
             <span
               className={
-                canConfirm ? "text-emerald-600" : "text-pink-500"
+                canConfirm ? "text-emerald-600" : "text-sky-500"
               }
             >
               {selected.size}
             </span>{" "}
             {strings.scopeCount}
             {!canConfirm && (
-              <span className="ml-2 text-xs font-semibold text-pink-500">
+              <span className="ml-2 text-xs font-semibold text-sky-500">
                 ({strings.scopeMinHint.replace("{n}", String(minimum))})
               </span>
             )}
@@ -171,7 +171,7 @@ export function SurahScopePicker({
             <button
               type="button"
               onClick={onCancel}
-              className="rounded-full bg-white px-5 py-2 text-sm font-bold text-pink-700 ring-2 ring-pink-200 transition hover:bg-pink-100"
+              className="rounded-full bg-white px-5 py-2 text-sm font-bold text-sky-700 ring-2 ring-sky-200 transition hover:bg-sky-100"
             >
               {strings.scopeCancel}
             </button>
@@ -182,7 +182,7 @@ export function SurahScopePicker({
                 canConfirm &&
                 onConfirm(Array.from(selected).sort((a, b) => a - b))
               }
-              className="rounded-full bg-pink-500 px-6 py-2 text-sm font-extrabold text-white shadow-md transition hover:bg-pink-600 active:scale-95 disabled:cursor-not-allowed disabled:bg-pink-200 disabled:text-pink-400"
+              className="rounded-full bg-sky-500 px-6 py-2 text-sm font-extrabold text-white shadow-md transition hover:bg-sky-600 active:scale-95 disabled:cursor-not-allowed disabled:bg-sky-200 disabled:text-sky-400"
             >
               {strings.scopeStart} →
             </button>
@@ -254,7 +254,7 @@ const CHIP_STYLES: Record<ChipColor, string> = {
   emerald: "bg-emerald-100 text-emerald-800 ring-emerald-200 hover:bg-emerald-200",
   violet: "bg-violet-100 text-violet-800 ring-violet-200 hover:bg-violet-200",
   sky: "bg-sky-100 text-sky-800 ring-sky-200 hover:bg-sky-200",
-  pink: "bg-pink-100 text-pink-800 ring-pink-200 hover:bg-pink-200",
+  pink: "bg-sky-100 text-sky-800 ring-sky-200 hover:bg-sky-200",
   gray: "bg-gray-100 text-gray-700 ring-gray-200 hover:bg-gray-200",
 };
 

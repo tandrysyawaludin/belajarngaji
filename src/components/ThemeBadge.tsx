@@ -1,31 +1,15 @@
 "use client";
 
 import { useStrings } from "@/components/LocaleProvider";
-import { useTheme } from "./ThemeProvider";
+import { CloudPuppy } from "./CloudPuppy";
 
-/**
- * Small header-tile that shows the active theme and opens the picker on click.
- * Renders as a client component so it can read the active theme from context.
- */
+/** Static Dreamy Sky badge in the header (v2 has a single house theme). */
 export function ThemeBadge() {
   const strings = useStrings();
-  const { theme, openPicker } = useTheme();
   return (
-    <button
-      type="button"
-      onClick={openPicker}
-      className="flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-extrabold shadow-sm ring-2 transition hover:brightness-95 active:scale-95"
-      style={{
-        backgroundColor: "var(--theme-primary-soft)",
-        color: "var(--theme-primary-deep)",
-        borderColor: "var(--theme-primary)",
-      }}
-      aria-label={`${strings.themeChangeButton}: ${theme.name}`}
-    >
-      <span aria-hidden="true">🎨</span>
-      <span>
-        {strings.navTheme}: {theme.name}
-      </span>
-    </button>
+    <span className="flex min-h-11 items-center gap-2 rounded-full bg-sky-100 py-1.5 pl-1.5 pr-4 text-sm font-extrabold text-sky-800 shadow-[0_3px_0_#D6F0FF] ring-2 ring-white">
+      <CloudPuppy size={30} />
+      {strings.navTheme}: Dreamy Sky
+    </span>
   );
 }

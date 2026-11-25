@@ -18,13 +18,13 @@ export function PageHeader({
 }) {
   const strings = useStrings();
   return (
-    <section className="rounded-3xl bg-white/90 p-5 shadow-md ring-2 ring-pink-100">
-      <h1 className="text-2xl font-extrabold text-pink-600 sm:text-3xl">
+    <section className="card-cloud p-5">
+      <h1 className="text-2xl font-extrabold text-sky-600 sm:text-3xl">
         {emoji ? `${emoji} ` : ""}
         {strings[titleKey]}
       </h1>
       {descriptionKey && (
-        <p className="mt-1 text-base font-semibold text-pink-900/70">
+        <p className="mt-1 text-base font-semibold text-sky-900/70">
           {strings[descriptionKey]}
         </p>
       )}

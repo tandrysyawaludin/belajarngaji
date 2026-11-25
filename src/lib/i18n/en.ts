@@ -12,7 +12,7 @@ export const en: Strings = {
   seoIqraBlurb:
     "Free online Iqra lessons volumes 1–6. Practice Arabic letters and reading basics for young learners.",
   seoGamesBlurb:
-    "Qur'an learning games for kids: meaning quizzes, matching, verse guessing, connect-the-verse, snake & ladder, tic tac toe, farm, burger chef, and secret boxes.",
+    "Creative Qur'an games for kids: decorate a prayer room, pretty hijab salon, and a 3D mosque block builder. Answer first, earn tokens, then create!",
   homeSectionTitle: "Online Qur'an Learning for Kids",
   navHome: "Home",
   navSurah: "Qur'an",

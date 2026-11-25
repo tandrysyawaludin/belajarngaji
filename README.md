@@ -19,9 +19,9 @@ Antarmuka tersedia dalam Bahasa Indonesia, Inggris, dan Jepang.
 | `/tebak-ayat` | Tebak jumlah ayat dari sebuah surah |
 | `/sambung` | Sambung ayat — pilih ayat lanjutan dari surah juz 30 (latih hafalan) |
 | `/ular-tangga` | Ular tangga Qur'an — lempar dadu, jawab soal acak, naik tangga atau turun ular |
-| `/dekorasi` | **Dekorasi Kamar Ngaji** — hias kamar bebas gaya Toca Boca: ganti warna dinding & karpet, pasang sajjadah, lampu bulan, rak buku; barang spesial terbuka lewat satu soal bintang |
-| `/salon` | **Salon Hijab Cantik** — salon dandan & dress-up: warna hijab, baju, blush, lipstik, eyeshadow, dan aksesori; warna bintang terbuka lewat soal |
-| `/bangun-masjid` | **Bangun Masjid Blok** — bangun bebas gaya LEGO di papan 10×8 dengan kubah, bulan sabit, pintu, jendela, dan menara; jawab soal untuk +5 blok |
+| `/dekorasi` | **Dekorasi Kamar Ngaji** — kamar perspektif dengan perabot SVG gambar tangan: jawab soal dulu untuk +1 token, ketuk untuk menaruh barang lalu SERET untuk memindah (seret ke awan sampah untuk membuang); ganti warna dinding juga memakai token |
+| `/salon` | **Salon Hijab Cantik** — salon alat-dandan: pilih alat & warna lalu KETUK bagian tubuhnya (pipi/bibir/kelopak/hijab/baju); tiap pemakaian 1 token dari menjawab soal; ada Acak Cantik dan Foto Cantikku |
+| `/bangun-masjid` | **Bangun Masjid Blok** — bangun ISOMETRIK 3D di papan 8×6: kubus SVG 3 sisi yang bisa DITUMPUK, kubah, menara, pintu, jendela, bulan sabit; jawab soal untuk +5 blok, kubus 1 blok / istimewa 2–3 blok; tantangan kubah + 2 menara + pintu |
 
 ## Tech Stack
 
@@ -77,3 +77,15 @@ antarmuka kini memakai gaya lembut, membulat, dan fluffy.
 > tebak ayat, sambung, ular tangga, berkebun, tukang burger, kotak rahasia,
 > tic tac toe) **masih bisa dibuka lewat URL langsung** — file rutenya sengaja
 > tidak dihapus agar tautan & riwayat lama tidak rusak.
+
+## Tema v2 — Dreamy Sky (satu tema rumah)
+
+v2 memakai SATU tema rumah "Dreamy Sky" untuk semua perangkat (pemilih tema
+lama dihapus; kunci penyimpanan tema diganti ke `belajarngaji:theme:v2`
+agar tema lama di browser anak tidak menimpa tampilan baru). Semua komponen
+memakai bahasa desain yang sama: biru langit + putih + pink bayi, tombol
+pil `.btn-candy`, kartu awan `.card-cloud`, maskot anjing awan orisinal
+"Awan". Semua game v2 memakai pola **jawab-dulu**: soal lembut (arti surah,
+jumlah ayat, hijaiyah) memberi token/blok, baru anak beraksi. Tanpa emoji
+sebagai aset game — semua visual SVG gambar tangan. Tata letak mobile-first
+(kontrol ≥48px, baki alat bisa digeser horizontal, kanvas SVG skala %).

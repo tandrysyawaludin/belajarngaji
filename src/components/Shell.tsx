@@ -3,15 +3,15 @@
 import Link from "next/link";
 import { LanguageBadge } from "@/components/LanguageBadge";
 import { useStrings } from "@/components/LocaleProvider";
-import { ThemedMascot } from "./ThemedMascot";
+import { CloudPuppy } from "./CloudPuppy";
 import { ThemeBadge } from "./ThemeBadge";
 
 const nav = [
-  { href: "/", key: "navHome" as const, color: "bg-sky-200 text-sky-900 hover:bg-sky-300" },
-  { href: "/surah", key: "navSurah" as const, color: "bg-sky-200 text-sky-900 hover:bg-sky-300" },
-  { href: "/iqra", key: "navIqra" as const, color: "bg-lime-200 text-lime-900 hover:bg-lime-300" },
-  { href: "/games", key: "navGames" as const, color: "bg-yellow-200 text-yellow-900 hover:bg-yellow-300" },
-  { href: "/riwayat", key: "navHistory" as const, color: "bg-rose-200 text-rose-900 hover:bg-rose-300" },
+  { href: "/", key: "navHome" as const, color: "bg-white/90 text-sky-800 ring-2 ring-sky-100 hover:bg-sky-100 shadow-[0_3px_0_#D6F0FF]" },
+  { href: "/surah", key: "navSurah" as const, color: "bg-white/90 text-sky-800 ring-2 ring-sky-100 hover:bg-sky-100 shadow-[0_3px_0_#D6F0FF]" },
+  { href: "/iqra", key: "navIqra" as const, color: "bg-white/90 text-sky-800 ring-2 ring-sky-100 hover:bg-sky-100 shadow-[0_3px_0_#D6F0FF]" },
+  { href: "/games", key: "navGames" as const, color: "bg-white/90 text-sky-800 ring-2 ring-sky-100 hover:bg-sky-100 shadow-[0_3px_0_#D6F0FF]" },
+  { href: "/riwayat", key: "navHistory" as const, color: "bg-white/90 text-sky-800 ring-2 ring-sky-100 hover:bg-sky-100 shadow-[0_3px_0_#D6F0FF]" },
 ] as const;
 
 export function Shell({ children }: { children: React.ReactNode }) {
@@ -20,13 +20,13 @@ export function Shell({ children }: { children: React.ReactNode }) {
   return (
     <div className="mx-auto flex min-h-full w-full max-w-6xl flex-col gap-5 px-4 py-6">
       <header
-        className="rounded-[2rem] bg-white/85 p-4 shadow-lg ring-4 backdrop-blur"
+        className="card-cloud p-4"
         style={{ borderColor: "var(--theme-primary-soft)" }}
       >
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link href="/" className="flex items-center gap-3">
-            <span className="wobble">
-              <ThemedMascot size={56} mood="happy" />
+            <span className="floaty shrink-0">
+              <CloudPuppy size={60} />
             </span>
             <span>
               <span className="block text-2xl font-extrabold leading-tight text-sky-600">
@@ -47,7 +47,7 @@ export function Shell({ children }: { children: React.ReactNode }) {
             <Link
               key={item.href}
               href={item.href}
-              className={`rounded-full px-4 py-2 text-sm font-bold shadow-sm transition active:scale-95 ${item.color}`}
+              className={`flex min-h-12 items-center rounded-full px-4 py-2 text-base font-extrabold transition active:scale-95 ${item.color}`}
             >
               {strings[item.key]}
             </Link>

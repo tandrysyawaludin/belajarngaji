@@ -27,7 +27,7 @@ export function GamesContent() {
           >
             <div className="dotted absolute inset-0 opacity-30" aria-hidden="true" />
             <div className="relative flex items-start gap-4">
-              <span className="text-5xl drop-shadow-md transition group-hover:scale-110">{c.emoji}</span>
+              <span className="grid h-16 w-16 shrink-0 place-items-center rounded-full bg-white/90 shadow-inner ring-2 ring-white transition group-hover:scale-110"><GameIcon href={c.href} /></span>
               <div>
                 <h2 className="text-2xl font-extrabold drop-shadow-sm">{strings[c.titleKey]}</h2>
                 <p className="mt-2 text-base font-semibold leading-snug text-white/95">{strings[c.descKey]}</p>
@@ -38,4 +38,10 @@ export function GamesContent() {
       </div>
     </div>
   );
+}
+
+function GameIcon({ href }: { href: string }) {
+  if (href === "/dekorasi") return (<svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden="true"><path d="M6 22 L24 8 L42 22" fill="none" stroke="#F08BB8" strokeWidth="5" strokeLinecap="round" /><rect x="12" y="22" width="24" height="16" rx="3" fill="#7EC8F7" /><rect x="20" y="28" width="8" height="10" rx="2" fill="#fff" /><path d="M24 12 l1.8 3.8 3.8 1.8 -3.8 1.8 -1.8 3.8 -1.8 -3.8 -3.8 -1.8 3.8 -1.8Z" fill="#FFD66E" /></svg>);
+  if (href === "/salon") return (<svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden="true"><path d="M24 24 L8 12 Q2 24 8 36 Z" fill="#FF8FBF" stroke="#E7548F" strokeWidth="2.6" strokeLinejoin="round" /><path d="M24 24 L40 12 Q46 24 40 36 Z" fill="#FF8FBF" stroke="#E7548F" strokeWidth="2.6" strokeLinejoin="round" /><circle cx="24" cy="24" r="7" fill="#E7548F" /><circle cx="24" cy="24" r="2.8" fill="#FFD3E8" /><circle cx="14" cy="40" r="4" fill="#FFD66E" /><circle cx="34" cy="40" r="4" fill="#7EC8F7" /></svg>);
+  return (<svg viewBox="0 0 48 48" className="h-10 w-10" aria-hidden="true"><path d="M10 40 V26 a14 12 0 0 1 28 0 V40 Z" fill="#3FBFB2" /><rect x="6" y="38" width="36" height="5" rx="2" fill="#2F7FC4" /><path d="M27 8 a5.5 5.5 0 1 0 3.4 9.4 A4.4 4.4 0 1 1 27 8Z" fill="#FFD66E" /><rect x="20" y="30" width="8" height="9" rx="4" fill="#fff" /></svg>);
 }

@@ -1,6 +1,6 @@
 // Active theme persistence. Two pieces of state:
 //
-//   localStorage["belajarngaji:theme"]   — the kid's chosen theme id (sticky)
+//   localStorage["belajarngaji:theme:v2"]   — the kid's chosen theme id (sticky)
 //   sessionStorage["belajarngaji:theme:shown"] — "1" once she's seen the picker
 //   in *this* browser session, so we know whether to show it on app open.
 //
@@ -9,7 +9,7 @@
 
 import { isThemeId, type ThemeDef } from "./themes";
 
-const STORAGE_KEY = "belajarngaji:theme";
+const STORAGE_KEY = "belajarngaji:theme:v2";
 const SESSION_KEY = "belajarngaji:theme:shown";
 
 let snapshot: { raw: string | null; value: string | null } | null = null;

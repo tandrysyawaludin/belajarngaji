@@ -16,10 +16,10 @@ export function TurnBanner({
   const unit = scoreUnit ?? strings.scoreLabel;
   const current = players[currentIndex];
   return (
-    <div className="flex flex-col gap-3 rounded-2xl bg-white/90 p-3 shadow ring-2 ring-pink-100">
-      <p className="text-center text-base font-extrabold text-pink-700">
+    <div className="flex flex-col gap-3 rounded-2xl bg-white/90 p-3 shadow ring-2 ring-sky-100">
+      <p className="text-center text-base font-extrabold text-sky-700">
         {strings.turnLabel}:{" "}
-        <span className="text-pink-900">
+        <span className="text-sky-900">
           {playerTheme(currentIndex).token} {current?.name}
         </span>
       </p>
@@ -33,14 +33,14 @@ export function TurnBanner({
               className={`flex items-center gap-1.5 rounded-full px-3 py-1 text-sm font-extrabold shadow-sm ring-2 ${
                 isActive
                   ? "bg-red-500 text-white ring-red-300"
-                  : "bg-white text-pink-900 ring-pink-100"
+                  : "bg-white text-sky-900 ring-sky-100"
               }`}
             >
               <span aria-hidden="true">{theme.token}</span>
               {player.name}
               <span
                 className={`ml-0.5 rounded-full px-1.5 text-xs ${
-                  isActive ? "bg-white/30" : "bg-pink-100"
+                  isActive ? "bg-white/30" : "bg-sky-100"
                 }`}
               >
                 {player.score}
