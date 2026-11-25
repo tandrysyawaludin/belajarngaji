@@ -183,19 +183,19 @@ export function IqraWorkbookPage({ page }: IqraWorkbookPageProps) {
 
   return (
     <div className="printable-root flex flex-col gap-6">
-      <div className="rounded-[2rem] bg-white/85 p-5 shadow-lg ring-4 ring-lime-100 print-hide">
+      <div className="rounded-[2rem] bg-white/85 p-5 shadow-lg ring-4 ring-sky-lime00 print-hide">
         <div className="flex flex-wrap items-center justify-between gap-3">
           <Link
             href={`/iqra/jilid-${page.jilid}`}
-            className="rounded-full bg-lime-100 px-4 py-2 text-sm font-extrabold text-lime-900 transition hover:bg-lime-200 active:scale-95"
+            className="rounded-full bg-sky-lime00 px-4 py-2 text-sm font-extrabold text-sky-lime00 transition hover:bg-sky-lime00 active:scale-95"
           >
             ← {strings.iqraBackToJilid} {page.jilid}
           </Link>
           <div className="flex flex-wrap items-center gap-2">
-            <p className="rounded-full bg-white px-4 py-2 text-sm font-extrabold text-emerald-700 shadow-sm ring-2 ring-emerald-100">
+            <p className="rounded-full bg-white px-4 py-2 text-sm font-extrabold text-sky-emerald00 shadow-sm ring-2 ring-sky-emerald00">
               {strings.iqraJilid} {page.jilid} · {strings.iqraPage} {page.page}
             </p>
-            <PrintButton className="rounded-full bg-emerald-50 text-emerald-800 ring-2 ring-emerald-100" />
+            <PrintButton className="rounded-full bg-sky-emerald0 text-sky-emerald00 ring-2 ring-sky-emerald00" />
           </div>
         </div>
       </div>

@@ -13,14 +13,14 @@ export function IqraJilidMenu({ jilid, pages }: IqraJilidMenuProps) {
   const strings = useStrings();
   return (
     <div className="flex flex-col gap-6">
-      <div className="rounded-[2rem] bg-white/85 p-6 shadow-lg ring-4 ring-lime-100">
+      <div className="rounded-[2rem] bg-white/85 p-6 shadow-lg ring-4 ring-sky-lime00">
         <Link
           href="/iqra"
-          className="inline-flex rounded-full bg-lime-100 px-4 py-2 text-sm font-extrabold text-lime-900 transition hover:bg-lime-200 active:scale-95"
+          className="inline-flex rounded-full bg-sky-lime00 px-4 py-2 text-sm font-extrabold text-sky-lime00 transition hover:bg-sky-lime00 active:scale-95"
         >
           ← {strings.iqraBackToIqra}
         </Link>
-        <h1 className="mt-4 text-3xl font-extrabold text-emerald-800 sm:text-4xl">
+        <h1 className="mt-4 text-3xl font-extrabold text-sky-emerald00 sm:text-4xl">
           {strings.iqraJilid} {jilid}
         </h1>
         <p className="mt-2 text-base font-semibold text-slate-700">
@@ -33,12 +33,12 @@ export function IqraJilidMenu({ jilid, pages }: IqraJilidMenuProps) {
           <Link
             key={page.page}
             href={`/iqra/jilid-${jilid}/halaman-${page.page}`}
-            className="group rounded-3xl bg-gradient-to-br from-white via-lime-50 to-yellow-100 p-6 shadow-xl ring-4 ring-white/70 transition hover:scale-[1.02] active:scale-95"
+            className="group rounded-3xl bg-gradient-to-br from-white via-sky-lime0 to-sky-yellow00 p-6 shadow-xl ring-4 ring-white/70 transition hover:scale-[1.02] active:scale-95"
           >
-            <p className="text-sm font-extrabold uppercase tracking-wide text-emerald-600">
+            <p className="text-sm font-extrabold uppercase tracking-wide text-sky-emerald00">
               {strings.iqraJilid} {jilid}
             </p>
-            <h2 className="mt-2 text-3xl font-extrabold text-emerald-800">
+            <h2 className="mt-2 text-3xl font-extrabold text-sky-emerald00">
               {strings.iqraPage} {page.page}
             </h2>
             <p className="mt-3 text-base font-semibold text-slate-700">

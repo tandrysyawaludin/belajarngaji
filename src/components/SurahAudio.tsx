@@ -25,7 +25,7 @@ export function SurahAudio({ src }: { src: string }) {
       <button
         type="button"
         onClick={toggle}
-        className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-extrabold text-pink-700 shadow-md ring-2 ring-pink-200 transition active:scale-95 hover:bg-pink-50"
+        className="inline-flex items-center gap-2 rounded-full bg-white px-5 py-2 text-sm font-extrabold text-sky-pink00 shadow-md ring-2 ring-sky-pink00 transition active:scale-95 hover:bg-sky-pink0"
       >
         <span className="text-lg">{playing ? "⏸️" : "▶️"}</span>
         {strings.listenLabel}

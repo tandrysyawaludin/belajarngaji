@@ -22,6 +22,9 @@ Antarmuka tersedia dalam Bahasa Indonesia, Inggris, dan Jepang.
 | `/dekorasi` | **Dekorasi Kamar Ngaji** — kamar perspektif dengan perabot SVG gambar tangan: jawab soal dulu untuk +1 token, ketuk untuk menaruh barang lalu SERET untuk memindah (seret ke awan sampah untuk membuang); ganti warna dinding juga memakai token |
 | `/salon` | **Salon Hijab Cantik** — salon alat-dandan: pilih alat & warna lalu KETUK bagian tubuhnya (pipi/bibir/kelopak/hijab/baju); tiap pemakaian 1 token dari menjawab soal; ada Acak Cantik dan Foto Cantikku |
 | `/bangun-masjid` | **Bangun Masjid Blok** — bangun ISOMETRIK 3D di papan 8×6: kubus SVG 3 sisi yang bisa DITUMPUK, kubah, menara, pintu, jendela, bulan sabit; jawab soal untuk +5 blok, kubus 1 blok / istimewa 2–3 blok; tantangan kubah + 2 menara + pintu |
+| `/kue` | **Dekorasi Kue Cantik** — studio kue lapis: jawab soal untuk token, ketuk lapisan untuk memberi krim warna / siraman cokelat, taruh topping gambar tangan (stroberi, ceri, lilin, bunga gula); Foto Kueku untuk merayakan |
+| `/huruf-awan` | **Tangkap Awan Hijaiyah** — game arcade awan melayang membawa huruf hijaiyah (18 huruf): ketuk awan dengan huruf yang dicari; tiap 5 tangkapan benar jawab 1 soal surah untuk bintang + naik level (awan makin cepat); skor terbaik tersimpan |
+| `/puzzle` | **Puzzle Masjid Cantik** — puzzle gambar 3×3 masjid saat matahari terbenam (SVG) di atas bayangan gambar utuh: ketuk dua potongan untuk menukar (1 token tukar per tukar, didapat dari menjawab soal); selesai = perayaan + catatan tukar tersedikit |
 
 ## Tech Stack
 

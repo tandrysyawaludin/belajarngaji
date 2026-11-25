@@ -16,23 +16,23 @@ import { ThemedMascot } from "./ThemedMascot";
 // summary view — we'll dedupe and just show counts/colors per game.
 const GAME_THEME: Record<HistoryEntry["gameId"], { bg: string; text: string; ring: string; emoji: string; href: string }> = {
   kuis: {
-    bg: "bg-yellow-100",
-    text: "text-yellow-900",
-    ring: "ring-yellow-200",
+    bg: "bg-sky-yellow00",
+    text: "text-sky-yellow00",
+    ring: "ring-sky-yellow00",
     emoji: "⭐",
     href: "/kuis",
   },
   cocokkan: {
-    bg: "bg-emerald-100",
-    text: "text-emerald-900",
-    ring: "ring-emerald-200",
+    bg: "bg-sky-emerald00",
+    text: "text-sky-emerald00",
+    ring: "ring-sky-emerald00",
     emoji: "🎯",
     href: "/cocokkan",
   },
   "tebak-ayat": {
-    bg: "bg-violet-100",
-    text: "text-violet-900",
-    ring: "ring-violet-200",
+    bg: "bg-sky-violet00",
+    text: "text-sky-violet00",
+    ring: "ring-sky-violet00",
     emoji: "🔢",
     href: "/tebak-ayat",
   },
@@ -44,9 +44,9 @@ const GAME_THEME: Record<HistoryEntry["gameId"], { bg: string; text: string; rin
     href: "/sambung",
   },
   "ular-tangga": {
-    bg: "bg-lime-100",
-    text: "text-lime-900",
-    ring: "ring-lime-200",
+    bg: "bg-sky-lime00",
+    text: "text-sky-lime00",
+    ring: "ring-sky-lime00",
     emoji: "🎲",
     href: "/ular-tangga",
   },
@@ -58,16 +58,16 @@ const GAME_THEME: Record<HistoryEntry["gameId"], { bg: string; text: string; rin
     href: "/berkebun",
   },
   "tukang-burger": {
-    bg: "bg-amber-100",
-    text: "text-amber-900",
-    ring: "ring-amber-200",
+    bg: "bg-sky-amber00",
+    text: "text-sky-amber00",
+    ring: "ring-sky-amber00",
     emoji: "🍔",
     href: "/tukang-burger",
   },
   "kotak-rahasia": {
-    bg: "bg-violet-100",
-    text: "text-violet-900",
-    ring: "ring-violet-200",
+    bg: "bg-sky-violet00",
+    text: "text-sky-violet00",
+    ring: "ring-sky-violet00",
     emoji: "💎",
     href: "/kotak-rahasia",
   },
@@ -136,12 +136,12 @@ export function HistoryList() {
 
   if (entries.length === 0) {
     return (
-      <article className="flex flex-col items-center gap-4 rounded-3xl bg-white/90 p-10 text-center shadow ring-2 ring-pink-100">
+      <article className="flex flex-col items-center gap-4 rounded-3xl bg-white/90 p-10 text-center shadow ring-2 ring-sky-pink00">
         <ThemedMascot size={120} mood="happy" />
-        <p className="text-lg font-extrabold text-pink-700">
+        <p className="text-lg font-extrabold text-sky-pink00">
           {strings.historyEmpty}
         </p>
-        <p className="text-sm font-semibold text-pink-600/80">
+        <p className="text-sm font-semibold text-sky-pink00/80">
           {strings.historyEmptyHint}
         </p>
         <div className="mt-2 flex flex-wrap justify-center gap-2">
@@ -225,7 +225,7 @@ export function HistoryList() {
                     <p className={`text-base font-extrabold ${t.text}`}>
                       {strings.gameLabels[entry.gameId] ?? entry.gameLabel}
                     </p>
-                    <p className="text-xs font-semibold text-pink-700/70">
+                    <p className="text-xs font-semibold text-sky-pink00/70">
                       {formatTimestamp(entry.timestamp)}
                       {entry.scopeNumbers && entry.scopeNumbers.length > 0 && (
                         <>
@@ -240,16 +240,16 @@ export function HistoryList() {
                   </div>
                 </div>
                 <div className="flex items-center gap-3">
-                  <span className="rounded-full bg-pink-50 px-3 py-1.5 text-sm font-extrabold text-pink-700 ring-2 ring-pink-100">
+                  <span className="rounded-full bg-sky-pink0 px-3 py-1.5 text-sm font-extrabold text-sky-pink00 ring-2 ring-sky-pink00">
                     {entry.score}/{entry.total}{" "}
-                    <span className="text-xs font-bold text-pink-400">
+                    <span className="text-xs font-bold text-sky-pink00">
                       ({pct}%)
                     </span>
                   </span>
                   <button
                     type="button"
                     onClick={() => setOpenId(open ? null : entry.id)}
-                    className="rounded-full bg-pink-500 px-4 py-1.5 text-xs font-extrabold text-white shadow-sm transition hover:bg-pink-600 active:scale-95"
+                    className="rounded-full bg-sky-pink00 px-4 py-1.5 text-xs font-extrabold text-white shadow-sm transition hover:bg-sky-pink00 active:scale-95"
                     aria-expanded={open}
                   >
                     {open ? strings.historyDetailHide : strings.historyDetailToggle}
@@ -258,9 +258,9 @@ export function HistoryList() {
               </div>
 
               {open && (
-                <div className="mt-4 border-t border-pink-100 pt-4">
+                <div className="mt-4 border-t border-sky-pink00 pt-4">
                   {entry.answers.length === 0 ? (
-                    <p className="text-sm font-semibold text-pink-700/70">
+                    <p className="text-sm font-semibold text-sky-pink00/70">
                       Tidak ada detail jawaban.
                     </p>
                   ) : (
@@ -270,31 +270,31 @@ export function HistoryList() {
                           key={i}
                           className={`rounded-2xl p-3 ring-2 ${
                             ans.correct
-                              ? "bg-emerald-50 ring-emerald-200"
+                              ? "bg-sky-emerald0 ring-sky-emerald00"
                               : "bg-red-50 ring-red-200"
                           }`}
                         >
                           <p className="flex items-start gap-2 text-sm font-extrabold">
                             <span
                               className={
-                                ans.correct ? "text-emerald-700" : "text-red-700"
+                                ans.correct ? "text-sky-emerald00" : "text-red-700"
                               }
                               aria-hidden="true"
                             >
                               {ans.correct ? "✅" : "❌"}
                             </span>
-                            <span className="text-pink-900">
+                            <span className="text-sky-pink00">
                               {i + 1}. {ans.prompt}
                             </span>
                           </p>
-                          <p className="mt-1 text-sm font-semibold text-pink-900/80">
-                            <span className="text-pink-500">
+                          <p className="mt-1 text-sm font-semibold text-sky-pink00/80">
+                            <span className="text-sky-pink00">
                               {strings.historyYourAnswer}:{" "}
                             </span>
                             <span
                               className={
                                 ans.correct
-                                  ? "text-emerald-800"
+                                  ? "text-sky-emerald00"
                                   : "text-red-800 line-through decoration-2"
                               }
                             >
@@ -302,8 +302,8 @@ export function HistoryList() {
                             </span>
                           </p>
                           {!ans.correct && (
-                            <p className="mt-0.5 text-sm font-semibold text-emerald-800">
-                              <span className="text-emerald-600">
+                            <p className="mt-0.5 text-sm font-semibold text-sky-emerald00">
+                              <span className="text-sky-emerald00">
                                 {strings.historyCorrectAnswer}:{" "}
                               </span>
                               {ans.correctAnswer}
@@ -317,7 +317,7 @@ export function HistoryList() {
                     <button
                       type="button"
                       onClick={() => deleteEntry(entry.id)}
-                      className="rounded-full bg-white px-3 py-1 text-xs font-bold text-pink-500 ring-2 ring-pink-100 transition hover:bg-pink-50 hover:text-pink-700"
+                      className="rounded-full bg-white px-3 py-1 text-xs font-bold text-sky-pink00 ring-2 ring-sky-pink00 transition hover:bg-sky-pink0 hover:text-sky-pink00"
                     >
                       Hapus catatan ini
                     </button>
@@ -333,7 +333,7 @@ export function HistoryList() {
         <button
           type="button"
           onClick={handleClear}
-          className="rounded-full bg-white px-5 py-2 text-sm font-bold text-pink-600 ring-2 ring-pink-200 transition hover:bg-pink-100"
+          className="rounded-full bg-white px-5 py-2 text-sm font-bold text-sky-pink00 ring-2 ring-sky-pink00 transition hover:bg-sky-pink00"
         >
           🧹 {strings.historyClearAll}
         </button>

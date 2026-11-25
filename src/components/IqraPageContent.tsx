@@ -10,16 +10,16 @@ export function IqraPageContent() {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-lime-200 via-emerald-100 to-sky-100 p-6 shadow-lg ring-4 ring-white/60 sm:p-8">
+      <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-sky-lime00 via-sky-emerald00 to-sky-100 p-6 shadow-lg ring-4 ring-white/60 sm:p-8">
         <div className="dotted absolute inset-0 opacity-45" aria-hidden="true" />
         <div className="relative flex flex-col items-center gap-4 sm:flex-row">
           <div className="wobble">
             <ThemedMascot size={120} mood="happy" />
           </div>
           <div className="text-center sm:text-left">
-            <p className="text-base font-bold text-emerald-600">{strings.cardIqraDesc}</p>
-            <h1 className="mt-1 text-3xl font-extrabold text-emerald-800 sm:text-4xl">{strings.iqraTitle}</h1>
-            <p className="mt-2 text-lg font-semibold text-emerald-950/80">{strings.iqraSubtitle}</p>
+            <p className="text-base font-bold text-sky-emerald00">{strings.cardIqraDesc}</p>
+            <h1 className="mt-1 text-3xl font-extrabold text-sky-emerald00 sm:text-4xl">{strings.iqraTitle}</h1>
+            <p className="mt-2 text-lg font-semibold text-sky-emerald50/80">{strings.iqraSubtitle}</p>
           </div>
         </div>
       </section>
@@ -32,7 +32,7 @@ export function IqraPageContent() {
             aria-disabled={!jilid.available}
             className={`relative overflow-hidden rounded-3xl p-5 shadow-lg ring-4 ring-white/60 transition ${
               jilid.available
-                ? "bg-gradient-to-br from-lime-300 to-emerald-400 hover:scale-[1.02] active:scale-95"
+                ? "bg-gradient-to-br from-sky-lime00 to-sky-emerald00 hover:scale-[1.02] active:scale-95"
                 : "cursor-not-allowed bg-slate-200 opacity-70"
             }`}
           >

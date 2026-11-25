@@ -60,16 +60,16 @@ export function SurahVerses({
         <article
           key={v.verse}
           id={`verse-${v.verse}`}
-          className="print-verse scroll-mt-24 rounded-2xl bg-white/95 p-4 shadow-md ring-2 ring-pink-100"
+          className="print-verse scroll-mt-24 rounded-2xl bg-white/95 p-4 shadow-md ring-2 ring-sky-pink00"
         >
           <div className="flex items-center justify-between gap-3">
-            <span className="grid h-9 w-9 place-items-center rounded-full bg-pink-500 text-sm font-extrabold text-white shadow">
+            <span className="grid h-9 w-9 place-items-center rounded-full bg-sky-pink00 text-sm font-extrabold text-white shadow">
               {v.verse}
             </span>
-            <p className="arabic flex-1 text-right text-pink-900">{v.arabic}</p>
+            <p className="arabic flex-1 text-right text-sky-pink00">{v.arabic}</p>
           </div>
           {v.translation && (
-            <p className="mt-3 border-t border-pink-100 pt-3 text-base font-semibold leading-relaxed text-slate-700">
+            <p className="mt-3 border-t border-sky-pink00 pt-3 text-base font-semibold leading-relaxed text-slate-700">
               {v.translation}
             </p>
           )}

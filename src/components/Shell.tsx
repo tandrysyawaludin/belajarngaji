@@ -4,7 +4,6 @@ import Link from "next/link";
 import { LanguageBadge } from "@/components/LanguageBadge";
 import { useStrings } from "@/components/LocaleProvider";
 import { CloudPuppy } from "./CloudPuppy";
-import { ThemeBadge } from "./ThemeBadge";
 
 const nav = [
   { href: "/", key: "navHome" as const, color: "bg-white/90 text-sky-800 ring-2 ring-sky-100 hover:bg-sky-100 shadow-[0_3px_0_#D6F0FF]" },
@@ -39,7 +38,6 @@ export function Shell({ children }: { children: React.ReactNode }) {
           </Link>
           <div className="flex flex-wrap items-center gap-2">
             <LanguageBadge />
-            <ThemeBadge />
           </div>
         </div>
         <nav className="mt-3 flex flex-wrap gap-2">

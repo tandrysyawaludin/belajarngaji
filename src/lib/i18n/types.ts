@@ -57,6 +57,12 @@ export type Strings = {
   cardSalonDesc: string;
   cardBuildTitle: string;
   cardBuildDesc: string;
+  cardCakeTitle: string;
+  cardCakeDesc: string;
+  cardCloudTitle: string;
+  cardCloudDesc: string;
+  cardPuzzleTitle: string;
+  cardPuzzleDesc: string;
   cardHistoryTitle: string;
   cardHistoryDesc: string;
   cardIqraTitle: string;
@@ -71,6 +77,9 @@ export type Strings = {
   kotakPageDesc: string;
   tttPageDesc: string;
   decoratePageDesc: string;
+  cakePageDesc: string;
+  cloudPageDesc: string;
+  puzzlePageDesc: string;
   salonPageDesc: string;
   buildPageDesc: string;
   loadingLabel: string;
