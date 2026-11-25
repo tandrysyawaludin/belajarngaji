@@ -201,6 +201,7 @@ export function SalonGame() {
 
       {/* STUDIO */}
       <div className={`card-cloud overflow-hidden p-2 ${photo ? "ring-8 ring-white" : ""}`}>
+        <div className="mx-auto w-full max-w-[420px]">
         <svg viewBox="0 0 400 540" className="block h-auto w-full select-none" role="application" aria-label="Studio salon dan sahabat untuk didandani">
           <defs>
             <linearGradient id="studioBg" x1="0" y1="0" x2="0" y2="1">
@@ -317,6 +318,7 @@ export function SalonGame() {
           <path d="M52,70 l3,7 7,3 -7,3 -3,7 -3,-7 -7,-3 7,-3 Z" fill="#FFD66E" className="sparkle" />
           <path d="M348,120 l2.4,5.6 5.6,2.4 -5.6,2.4 -2.4,5.6 -2.4,-5.6 -5.6,-2.4 5.6,-2.4 Z" fill="#FFB7D5" className="sparkle" />
         </svg>
+        </div>
         {photo && <p className="pb-3 text-center text-xl font-extrabold text-pink-500">Masya Allah, cantik sekali!</p>}
       </div>
 
