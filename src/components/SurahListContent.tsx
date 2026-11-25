@@ -11,7 +11,7 @@ const PALETTES = [
   "from-sky-100 to-blue-100 text-sky-700 ring-sky-200",
   "from-sky-100 to-blue-100 text-sky-700 ring-sky-200",
   "from-sky-100 to-blue-100 text-sky-700 ring-sky-200",
-  "from-orange-200 to-blue-100 text-orange-900 ring-orange-200",
+  "from-sky-50 to-sky-100 text-sky-800 ring-sky-100",
 ];
 
 export function SurahListContent({ surahs }: { surahs: Surah[] }) {

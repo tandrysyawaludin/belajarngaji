@@ -7,7 +7,7 @@ import { CloudPuppy } from "@/components/CloudPuppy";
 const cards = [
   { href: "/surah", titleKey: "cardSurahTitle" as const, descKey: "cardSurahDesc" as const, bg: "from-sky-300 to-blue-400", emoji: "📖" },
   { href: "/iqra", titleKey: "cardIqraTitle" as const, descKey: "cardIqraDesc" as const, bg: "from-teal-300 to-sky-400", emoji: "🕌" },
-  { href: "/games", titleKey: "cardGamesTitle" as const, descKey: "cardGamesDesc" as const, bg: "from-pink-300 to-rose-300", emoji: "🎮" },
+  { href: "/games", titleKey: "cardGamesTitle" as const, descKey: "cardGamesDesc" as const, bg: "from-pink-200 to-rose-200", emoji: "🎮" },
   { href: "/riwayat", titleKey: "cardHistoryTitle" as const, descKey: "cardHistoryDesc" as const, bg: "from-violet-300 to-sky-300", emoji: "📊" },
 ] as const;
 
@@ -16,7 +16,7 @@ export function HomeContent() {
 
   return (
     <div className="flex flex-col gap-6">
-      <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-sky-200 via-white to-pink-100 p-6 shadow-lg ring-4 ring-white/70 sm:p-8">
+      <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-sky-200 via-white to-amber-50 p-6 shadow-lg ring-4 ring-white/70 sm:p-8">
         <div className="dotted absolute inset-0 opacity-50" aria-hidden="true" />
         <div className="relative flex flex-col items-center gap-4 sm:flex-row">
           <div className="floaty">
