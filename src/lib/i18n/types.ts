@@ -63,6 +63,14 @@ export type Strings = {
   cardCloudDesc: string;
   cardPuzzleTitle: string;
   cardPuzzleDesc: string;
+  cardMemoryTitle: string;
+  cardMemoryDesc: string;
+  cardLinkTitle: string;
+  cardLinkDesc: string;
+  cardColorTitle: string;
+  cardColorDesc: string;
+  cardSimonTitle: string;
+  cardSimonDesc: string;
   cardHistoryTitle: string;
   cardHistoryDesc: string;
   cardIqraTitle: string;
@@ -80,6 +88,10 @@ export type Strings = {
   cakePageDesc: string;
   cloudPageDesc: string;
   puzzlePageDesc: string;
+  memoryPageDesc: string;
+  linkPageDesc: string;
+  colorPageDesc: string;
+  simonPageDesc: string;
   salonPageDesc: string;
   buildPageDesc: string;
   loadingLabel: string;

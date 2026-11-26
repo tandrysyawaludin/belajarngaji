@@ -19,6 +19,10 @@ Antarmuka tersedia dalam Bahasa Indonesia, Inggris, dan Jepang.
 | `/tebak-ayat` | Tebak jumlah ayat dari sebuah surah |
 | `/sambung` | Sambung ayat — pilih ayat lanjutan dari surah juz 30 (latih hafalan) |
 | `/ular-tangga` | Ular tangga Qur'an — lempar dadu, jawab soal acak, naik tangga atau turun ular |
+| `/memori` | **Kartu Pasangan Hijaiyah** — klon mekanik memory pairs ("Pasangan Lucu Anak-Anak" di games.co.id): balik kartu awan, temukan pasangan huruf hijaiyah yang sama; mulai 6 pasang (4×3), menang naik level 8 pasang (4×4); bintang dari jumlah percobaan, rekor tersimpan |
+| `/hubungkan` | **Sambung Huruf Sama** — klon mekanik connect pairs versi anak ("Butterfly Kyodai 2"): ketuk dua ubin berhuruf hijaiyah sama (15 pasang, papan 6×5) dan keduanya hilang — tanpa aturan jalur; bersihkan papan = perayaan + waktu |
+| `/mewarnai` | **Mewarnai Masjid** — klon mekanik buku mewarnai ("Buku Mewarnai Mandala"): pilih krayon lalu ketuk wilayah besar gambar masjid (kubah, menara, pintu, langit, matahari, pohon…) untuk mengisi warna; palet dasar GRATIS, 3 warna istimewa (emas/pelangi/kilau) 1 token via jawab soal; hasil tersimpan |
+| `/simon` | **Ikuti Bintang** — klon mekanik Simon ("Simon Musik"): 4 bantalan bentuk (bintang ا, bulan ب, awan ت, hati ث) menyala berurutan dengan nada WebAudio; ketuk ulang urutannya, tiap ronde +1 langkah; salah = urutan yang sama diulang, tanpa game over; ronde terbaik tersimpan |
 | `/dekorasi` | **Dekorasi Kamar Ngaji** — kamar perspektif dengan perabot SVG gambar tangan: jawab soal dulu untuk +1 token, ketuk untuk menaruh barang lalu SERET untuk memindah (seret ke awan sampah untuk membuang); ganti warna dinding juga memakai token |
 | `/salon` | **Salon Hijab Cantik** — salon alat-dandan: pilih alat & warna lalu KETUK bagian tubuhnya (pipi/bibir/kelopak/hijab/baju); tiap pemakaian 1 token dari menjawab soal; ada Acak Cantik dan Foto Cantikku |
 | `/bangun-masjid` | **Bangun Masjid Blok** — bangun ISOMETRIK 3D di papan 8×6: kubus SVG 3 sisi yang bisa DITUMPUK, kubah, menara, pintu, jendela, bulan sabit; jawab soal untuk +5 blok, kubus 1 blok / istimewa 2–3 blok; tantangan kubah + 2 menara + pintu |
@@ -75,8 +79,10 @@ pixel art orisinal 6 karakter (Nadia, Sinta, Maya, Rian, Dimas, Bayu) di
 tanpa file gambar eksternal dan bukan karakter pihak ketiga. Seluruh
 antarmuka kini memakai gaya lembut, membulat, dan fluffy.
 
-> **Catatan menu game:** menu Games kini hanya menampilkan 3 game kreatif
-> baru (`/dekorasi`, `/salon`, `/bangun-masjid`). Game lama (kuis, cocokkan,
+> **Catatan menu game:** menu Games menampilkan 4 game sederhana baru paling
+> depan (`/memori`, `/hubungkan`, `/mewarnai`, `/simon` — mekanik klasik
+> satu-ketukan), diikuti 6 game kreatif (`/dekorasi`, `/salon`, `/kue`,
+> `/huruf-awan`, `/puzzle`, `/bangun-masjid`). Game lama (kuis, cocokkan,
 > tebak ayat, sambung, ular tangga, berkebun, tukang burger, kotak rahasia,
 > tic tac toe) **masih bisa dibuka lewat URL langsung** — file rutenya sengaja
 > tidak dihapus agar tautan & riwayat lama tidak rusak.

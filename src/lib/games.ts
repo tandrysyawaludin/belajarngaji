@@ -1,5 +1,33 @@
 export const GAME_CARD_DEFS = [
   {
+    href: "/memori",
+    titleKey: "cardMemoryTitle" as const,
+    descKey: "cardMemoryDesc" as const,
+    bg: "from-sky-300 to-cyan-400",
+    emoji: "🃏",
+  },
+  {
+    href: "/hubungkan",
+    titleKey: "cardLinkTitle" as const,
+    descKey: "cardLinkDesc" as const,
+    bg: "from-cyan-300 to-teal-400",
+    emoji: "🔗",
+  },
+  {
+    href: "/mewarnai",
+    titleKey: "cardColorTitle" as const,
+    descKey: "cardColorDesc" as const,
+    bg: "from-fuchsia-300 to-pink-400",
+    emoji: "🖍️",
+  },
+  {
+    href: "/simon",
+    titleKey: "cardSimonTitle" as const,
+    descKey: "cardSimonDesc" as const,
+    bg: "from-indigo-300 to-sky-400",
+    emoji: "⭐",
+  },
+  {
     href: "/dekorasi",
     titleKey: "cardDecorateTitle" as const,
     descKey: "cardDecorateDesc" as const,
