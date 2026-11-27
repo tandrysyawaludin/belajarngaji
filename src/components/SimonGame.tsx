@@ -41,7 +41,7 @@ const PADS: Pad[] = [
   },
 ];
 
-type Phase = "idle" | "showing" | "input";
+type Phase = "idle" | "showing" | "wait" | "input";
 
 function PadShape({ pad }: { pad: Pad }) {
   const c = pad.shape;
@@ -78,7 +78,7 @@ export function SimonGame() {
   const [best, setBest] = useState(0);
   const [muted, setMuted] = useState(false);
   const [hint, setHint] = useState("Tekan Mulai, lalu perhatikan bentuk yang menyala!");
-  const progress = useRef(0);
+  const [prog, setProg] = useState(0);
   const timers = useRef<number[]>([]);
   const audio = useRef<AudioContext | null>(null);
   const mutedRef = useRef(false);
@@ -131,17 +131,20 @@ export function SimonGame() {
     later(() => setLit(null), ms);
   };
 
+  /* Playback pace: ~650ms flash + ~280ms gap between pads (step = 930ms),
+     slow enough for a young child to follow each light. */
   const showSequence = (s: number[], delay = 700) => {
     setPhase("showing");
+    setProg(0);
     setHint("Lihat ya… ingat urutannya!");
     s.forEach((padIdx, i) => {
-      later(() => flash(padIdx, 520), delay + i * 780);
+      later(() => flash(padIdx, 650), delay + i * 930);
     });
     later(() => {
-      progress.current = 0;
+      setProg(0);
       setPhase("input");
       setHint("Giliranmu! Ketuk dengan urutan yang sama.");
-    }, delay + s.length * 780 + 150);
+    }, delay + (s.length - 1) * 930 + 650 + 250);
   };
 
   const startGame = () => {
@@ -154,9 +157,10 @@ export function SimonGame() {
   const tapPad = (padIdx: number) => {
     if (phase !== "input") return;
     flash(padIdx, 320);
-    if (padIdx === seq[progress.current]) {
-      progress.current += 1;
-      if (progress.current === seq.length) {
+    if (padIdx === seq[prog]) {
+      const np = prog + 1;
+      setProg(np);
+      if (np === seq.length) {
         const finishedRound = round;
         setBest((prev) => {
           const nb = Math.max(prev, finishedRound);
@@ -173,18 +177,21 @@ export function SimonGame() {
           origin: { y: 0.55 },
           colors: ["#7EC8F7", "#FFB7D5", "#FFD66E", "#3FBFB2", "#ffffff"],
         });
-        setPhase("showing");
-        setHint("Hebat! Satu lagi ditambah… perhatikan ya!");
+        setPhase("wait");
+        setHint("Hebat! Siap-siap… satu lagi ditambah ya!");
         const next = [...seq, Math.floor(Math.random() * 4)];
         later(() => {
           setSeq(next);
           setRound(finishedRound + 1);
           showSequence(next, 350);
-        }, 1100);
+        }, 1200);
       }
     } else {
-      setPhase("showing");
-      setHint("Hampir! Coba lagi — urutannya diulang ya.");
+      // Mistake: a clear "Siap-siap…" beat first, then the same sequence
+      // replays — never a game over.
+      setPhase("wait");
+      setProg(0);
+      setHint("Hampir! Siap-siap… urutannya diulang ya.");
       later(() => showSequence(seq, 400), 1000);
     }
   };
@@ -217,6 +224,30 @@ export function SimonGame() {
       </div>
 
       <div className="card-cloud mx-auto w-full max-w-[430px] p-3">
+        {/* Whose turn it is — VISUAL, not text-only: a big banner pill.
+            Playback/wait: pads dim and taps are ignored (buttons disabled).
+            Input: pads full-bright with a glowing ring + progress dots. */}
+        {phase !== "idle" && (
+          <div
+            className={`mb-3 flex items-center justify-center gap-3 rounded-full px-5 py-3 text-center text-xl font-extrabold shadow ${
+              phase === "input"
+                ? "bg-pink-400 text-white"
+                : phase === "wait"
+                  ? "bg-amber-300 text-amber-900"
+                  : "bg-sky-500 text-white"
+            }`}
+            aria-live="polite"
+          >
+            <span>{phase === "input" ? "👆 Giliranmu!" : phase === "wait" ? "Siap-siap…" : "👀 Lihat ya…"}</span>
+            {phase === "input" && seq.length > 0 && (
+              <span className="flex gap-1.5" aria-label={`Sudah ${prog} dari ${seq.length}`}>
+                {seq.map((_, i) => (
+                  <span key={i} className={`h-3.5 w-3.5 rounded-full ring-2 ring-white ${i < prog ? "bg-white" : "bg-white/30"}`} />
+                ))}
+              </span>
+            )}
+          </div>
+        )}
         <div className="grid grid-cols-2 gap-3">
           {PADS.map((pad, i) => (
             <button
@@ -227,9 +258,11 @@ export function SimonGame() {
               aria-label={`${pad.name}, huruf ${pad.letterName}`}
               className={`relative grid aspect-square min-h-24 place-items-center rounded-[2rem] shadow ring-4 transition-all duration-150 ${
                 lit === i
-                  ? `${pad.bgLit} ${pad.ring} scale-[1.04] brightness-110`
+                  ? `${pad.bgLit} ${pad.ring} scale-[1.04] brightness-110 opacity-100 saturate-100`
                   : `${pad.bg} ring-white`
-              } ${phase === "input" ? "active:scale-95" : ""}`}
+              } ${phase === "input" ? "shadow-[0_0_20px_rgba(126,200,247,0.85)] ring-sky-300 active:scale-95" : ""} ${
+                phase !== "input" && phase !== "idle" && lit !== i ? "opacity-50 saturate-[.55]" : ""
+              }`}
             >
               <PadShape pad={pad} />
               <span
@@ -263,6 +296,7 @@ export function SimonGame() {
             timers.current = [];
             setLit(null);
             setPhase("idle");
+            setProg(0);
             setRound(0);
             setSeq([]);
             setHint("Tekan Mulai, lalu perhatikan bentuk yang menyala!");

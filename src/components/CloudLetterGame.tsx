@@ -15,12 +15,56 @@ const LETTERS = [
 ];
 const KEY = "belajarngaji:v2:huruf-awan";
 
-interface Cloud { id: number; letter: number; x: number; y: number; speed: number; wrong: boolean }
+interface Cloud { id: number; letter: number; x: number; y: number; vx: number; vy: number; wrong: boolean }
+
+/* Clouds live in % coordinates of the sky box. The cloud button is 128x100,
+   so these bounds keep every cloud FULLY inside the sky at phone size:
+   x: 0..64 (128px ≈ 33% of a 390px sky), y: 2..52 (100px ≈ 44% of the
+   shortest sky height). They bounce inside these bounds — never off-screen. */
+const MIN_X = 0, MAX_X = 64, MIN_Y = 2, MAX_Y = 52;
 
 function shuffleIdx(except: number): number[] {
   const pool = LETTERS.map((_, i) => i).filter((i) => i !== except);
   for (let i = pool.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [pool[i], pool[j]] = [pool[j], pool[i]]; }
   return pool;
+}
+
+const speedFor = (lvl: number) => 0.16 + Math.random() * 0.12 + (lvl - 1) * 0.045;
+
+/** Build a fresh set of clouds, all fully inside the sky, exactly one
+    carrying the target letter. */
+function makeClouds(tgt: number, lvl: number, nextId: () => number): Cloud[] {
+  const distract = shuffleIdx(tgt).slice(0, 3);
+  const letters = [tgt, ...distract];
+  for (let i = letters.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [letters[i], letters[j]] = [letters[j], letters[i]]; }
+  const spots: [number, number][] = [
+    [4 + Math.random() * 6, 4 + Math.random() * 8],
+    [36 + Math.random() * 8, 26 + Math.random() * 10],
+    [16 + Math.random() * 8, 38 + Math.random() * 8],
+    [46 + Math.random() * 8, 6 + Math.random() * 8],
+  ];
+  return letters.map((letter, i) => {
+    const sp = speedFor(lvl);
+    return {
+      id: nextId(), letter,
+      x: spots[i][0], y: spots[i][1],
+      vx: (i % 2 === 0 ? 1 : -1) * sp,
+      vy: (i % 3 === 0 ? -1 : 1) * sp * 0.35,
+      wrong: false,
+    };
+  });
+}
+
+/** Guarantee the target letter is on exactly ONE currently-visible cloud:
+    assign it to a random cloud and scrub it from all the others. */
+function assignTarget(cs: Cloud[], tgt: number): Cloud[] {
+  if (cs.length === 0) return cs;
+  const pick = Math.floor(Math.random() * cs.length);
+  return cs.map((c, i) => {
+    if (i === pick) return { ...c, letter: tgt };
+    if (c.letter === tgt) return { ...c, letter: (tgt + 5 + i) % LETTERS.length };
+    return c;
+  });
 }
 
 export function CloudLetterGame() {
@@ -35,35 +79,28 @@ export function CloudLetterGame() {
   const [popId, setPopId] = useState<number | null>(null);
   const [msg, setMsg] = useState("Ketuk awan yang membawa huruf yang dicari!");
   const idRef = useRef(1);
-  const stateRef = useRef({ target, level });
-  stateRef.current = { target, level };
 
   const spawn = useCallback((tgt: number, lvl: number) => {
-    const distract = shuffleIdx(tgt).slice(0, 3);
-    const all = [tgt, ...distract];
-    for (let i = all.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [all[i], all[j]] = [all[j], all[i]]; }
-    setClouds(all.map((letter, i) => ({
-      id: idRef.current++, letter, x: -22 - i * 26, y: 6 + ((i * 23 + Math.random() * 8) % 62),
-      speed: (0.14 + Math.random() * 0.1) * (1 + (lvl - 1) * 0.22), wrong: false,
-    })));
+    setClouds(makeClouds(tgt, lvl, () => idRef.current++));
   }, []);
 
   useEffect(() => { spawn(target, 1); }, []); // eslint-disable-line react-hooks/exhaustive-deps
   useEffect(() => { try { setBest(Number(localStorage.getItem(KEY) ?? 0) || 0); } catch { /* ignore */ } }, []);
 
-  // drift loop
+  // drift loop — clouds BOUNCE inside the sky bounds, so every cloud (and
+  // therefore the target letter) is always fully visible. Nothing ever
+  // crosses off-screen or needs recycling.
   useEffect(() => {
     const iv = window.setInterval(() => {
       setClouds((cs) => cs.map((c) => {
-        const nx = c.x + c.speed;
-        if (nx > 112) {
-          // recycle with a fresh random letter (never a second target)
-          const { target: tgt } = stateRef.current;
-          let letter = Math.floor(Math.random() * LETTERS.length);
-          if (letter === tgt && cs.some((o) => o.id !== c.id && o.letter === tgt)) letter = (letter + 3) % LETTERS.length;
-          return { ...c, x: -22, y: 6 + Math.random() * 62, letter, wrong: false };
-        }
-        return { ...c, x: nx };
+        let { x, y, vx, vy } = c;
+        x += vx;
+        y += vy;
+        if (x < MIN_X) { x = MIN_X; vx = Math.abs(vx); }
+        if (x > MAX_X) { x = MAX_X; vx = -Math.abs(vx); }
+        if (y < MIN_Y) { y = MIN_Y; vy = Math.abs(vy); }
+        if (y > MAX_Y) { y = MAX_Y; vy = -Math.abs(vy); }
+        return { ...c, x, y, vx, vy };
       }));
     }, 50);
     return () => window.clearInterval(iv);
@@ -81,9 +118,12 @@ export function CloudLetterGame() {
         setMsg("Hebat! 5 tangkapan benar — jawab 1 soal surah untuk dapat bintang dan naik level!");
         setEarnOpen(true);
       } else {
+        // New target: assign it to one of the clouds that is on screen
+        // RIGHT NOW (they all are — they bounce inside), so there is
+        // never a wait for the target to drift in.
         const nt = Math.floor(Math.random() * LETTERS.length);
         setTarget(nt); setMsg(`Betul! Sekarang tangkap huruf ${LETTERS[nt].name}!`);
-        spawn(nt, level);
+        setClouds((cs) => assignTarget(cs, nt));
       }
     } else {
       setClouds((cs) => cs.map((o) => (o.id === c.id ? { ...o, wrong: true } : o)));
@@ -99,7 +139,11 @@ export function CloudLetterGame() {
     const nt = Math.floor(Math.random() * LETTERS.length);
     setTarget(nt);
     setMsg(`Level ${nl}! Awan bergerak lebih cepat. Tangkap huruf ${LETTERS[nt].name}!`);
-    spawn(nt, nl);
+    // Speed the existing clouds up and put the new target on a visible one.
+    setClouds((cs) => assignTarget(cs.map((c) => {
+      const sp = speedFor(nl);
+      return { ...c, vx: Math.sign(c.vx || 1) * sp, vy: Math.sign(c.vy || 1) * sp * 0.35 };
+    }), nt));
   };
 
   return (
@@ -135,8 +179,10 @@ export function CloudLetterGame() {
         {clouds.map((c) => (
           <button key={c.id} type="button" onClick={() => tapCloud(c)} aria-label={`Awan huruf ${LETTERS[c.letter].name}`}
             className={`absolute grid place-items-center transition-transform ${c.wrong ? "shake-x opacity-60" : ""} ${popId === c.id ? "scale-150 opacity-0" : ""}`}
-            style={{ left: `${c.x}%`, top: `${c.y}%`, width: 104, height: 76, minHeight: 48, transform: popId === c.id ? "scale(1.5)" : undefined }}>
-            <svg viewBox="0 0 120 84" className="absolute inset-0 h-full w-full drop-shadow-[0_6px_8px_rgba(47,127,196,0.25)]" aria-hidden="true">
+            style={{ left: `${c.x}%`, top: `${c.y}%`, width: 128, height: 100, minHeight: 48, transform: popId === c.id ? "scale(1.5)" : undefined }}>
+            {/* hit-area is the full 128x100 button; the drawn cloud sits
+                centred inside it with padding on every side */}
+            <svg viewBox="0 0 120 84" className="absolute inset-0 m-auto h-[76px] w-[104px] drop-shadow-[0_6px_8px_rgba(47,127,196,0.25)]" aria-hidden="true">
               <path d="M26,66 a15,15 0 1 1 3,-29 a20,20 0 0 1 38,-8 a17,17 0 0 1 27,10 a14,14 0 1 1 0,27 Z" fill={c.letter === target ? "#FFFFFF" : "#F4FAFF"} stroke="#7EC8F7" strokeWidth="3" />
             </svg>
             <span className="arabic relative font-bold text-sky-800" style={{ fontSize: "2rem", lineHeight: 1 }}>{LETTERS[c.letter].arabic}</span>

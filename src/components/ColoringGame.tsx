@@ -69,6 +69,9 @@ export function ColoringGame() {
   const [earnOpen, setEarnOpen] = useState(false);
   const [photo, setPhoto] = useState(false);
   const [spark, setSpark] = useState<{ r: Region; k: number } | null>(null);
+  /* One-step history: snapshot of fills before the last Acak / Mulai Ulang,
+     so "Urungkan" can always bring the child's own work back. */
+  const [history, setHistory] = useState<Record<Region, string> | null>(null);
   const [hint, setHint] = useState("Pilih warna krayon, lalu ketuk bagian gambar untuk mewarnainya!");
 
   useEffect(() => {
@@ -116,18 +119,34 @@ export function ColoringGame() {
   };
 
   const randomAll = () => {
-    const next = blankFills();
-    for (const r of REGIONS) next[r] = PALETTE[Math.floor(Math.random() * PALETTE.length)].hex;
+    // Only fill regions that are still blank — never erase the child's work.
+    const blank = REGIONS.filter((r) => fills[r] === "#FFFFFF");
+    if (blank.length === 0) {
+      setHint("Semua bagian sudah berwarna! Hebat!");
+      return;
+    }
+    setHistory(fills);
+    const next = { ...fills };
+    for (const r of blank) next[r] = PALETTE[Math.floor(Math.random() * PALETTE.length)].hex;
     setFills(next);
     setPhoto(false);
-    setHint("Taraaa! Semua warna diacak. Cantik ya!");
+    setHint("Taraaa! Bagian yang kosong diwarnai acak. Karyamu tetap aman!");
   };
 
   const resetAll = () => {
+    setHistory(fills);
     setFills(blankFills());
     setArmed(null);
     setPhoto(false);
-    setHint("Gambar kosong lagi. Yuk warnai dari awal!");
+    setHint("Gambar kosong lagi. Kalau berubah pikiran, ketuk Urungkan ya!");
+  };
+
+  const undo = () => {
+    if (!history) return;
+    setFills(history);
+    setHistory(null);
+    setPhoto(false);
+    setHint("Berhasil diurungkan! Karyamu kembali seperti semula.");
   };
 
   const takePhoto = () => {
@@ -290,6 +309,13 @@ export function ColoringGame() {
             </g>
           ))}
 
+          {/* Enlarged invisible hit-areas for the small/hard-to-hit regions
+              (clouds + sun), rendered ABOVE the sky so taps land on them,
+              not on the sky behind. ~60px+ at display size. */}
+          <circle cx={56} cy={54} r={32} fill="transparent" className="cursor-pointer" onClick={() => tapRegion("sun")} />
+          <circle cx={294} cy={52} r={31} fill="transparent" className="cursor-pointer" onClick={() => tapRegion("cloud1")} />
+          <circle cx={122} cy={30} r={29} fill="transparent" className="cursor-pointer" onClick={() => tapRegion("cloud2")} />
+
           {spark && (
             <g key={spark.k} transform={`translate(${SPOT[spark.r][0]} ${SPOT[spark.r][1]})`} className="pop-place" pointerEvents="none">
               <path d="M0,-16 l4,10 10,4 -10,4 -4,10 -4,-10 -10,-4 10,-4Z" fill="#FFD66E" stroke="#fff" strokeWidth={1.6} />
@@ -339,6 +365,7 @@ export function ColoringGame() {
 
       <div className="flex flex-wrap justify-center gap-2">
         <button type="button" className="btn-candy min-h-12 px-5" onClick={randomAll}>Acak Warna</button>
+        <button type="button" className="btn-candy btn-candy-white min-h-12 px-5 disabled:cursor-not-allowed disabled:opacity-40" onClick={undo} disabled={!history}>Urungkan</button>
         <button type="button" className="btn-candy btn-candy-white min-h-12 px-5" onClick={resetAll}>Mulai Ulang</button>
         <button type="button" className="btn-candy btn-candy-pink min-h-12 px-5" onClick={takePhoto}>Foto</button>
       </div>

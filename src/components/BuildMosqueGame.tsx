@@ -15,9 +15,36 @@ interface Piece { type: PieceType; color: string }
 const COLS = 8, ROWS = 6;
 const TW = 58, TH = 29, CH = 26;
 const OX = 320, OY = 148;
-const MAX_H = 140;
 
-const HEIGHT: Record<PieceType, number> = { cube: CH, door: CH, window: CH, dome: CH + 34, minaret: 58, crescent: 20 };
+/* Stacking geometry — derived from how Cube actually draws. A cube's top
+   face centre sits CH above its bottomY, and the NEXT piece's bottom face
+   centre sits FACE_H/2 above its own bottomY (FACE_H = its top-face
+   diamond height = its width / 2). So the next piece's bottomY must be:
+     prevBottomY - TOP_OFF[prev] + FACE_H[next] / 2
+   The old code stepped by the full drawn height (CH) instead, leaving a
+   FACE_H/2 = TH/2 (14.5px) sky gap between stacked cubes — they floated.
+   TOP_OFF = distance from a piece's bottomY to the centre of the surface
+   the next piece rests on. */
+const TOP_OFF: Record<PieceType, number> = { cube: CH, door: CH, window: CH, dome: CH + 34, minaret: 58, crescent: 12 };
+const FACE_H: Record<PieceType, number> = { cube: TW / 2, door: TW / 2, window: TW / 2, dome: TW / 2, crescent: TW / 2, minaret: 16 };
+const MAX_TOP = 150;
+
+/** Cumulative bottomY offsets (from the tile centre) for a stack. */
+function stackOffsets(stack: Piece[]): number[] {
+  const out: number[] = [];
+  let cur = 0;
+  stack.forEach((p, i) => {
+    if (i > 0) cur += TOP_OFF[stack[i - 1].type] - FACE_H[p.type] / 2;
+    out.push(cur);
+  });
+  return out;
+}
+/** Height of the stack's resting surface (top face centre) above the tile. */
+function stackTop(stack: Piece[]): number {
+  if (stack.length === 0) return 0;
+  const offs = stackOffsets(stack);
+  return offs[offs.length - 1] + TOP_OFF[stack[stack.length - 1].type];
+}
 const COST: Record<PieceType, number> = { cube: 1, door: 2, window: 2, dome: 3, minaret: 3, crescent: 2 };
 const COLORS = ["#7EC8F7", "#FFB7D5", "#7ED8B2", "#B79CFF", "#FFD66E", "#FFFFFF"];
 const SPECIALS: { type: PieceType; name: string; color: string }[] = [
@@ -147,8 +174,8 @@ export function BuildMosqueGame() {
       setHint("Potongan teratas dihapus");
       return;
     }
-    const usedH = stack.reduce((a, p) => a + HEIGHT[p.type], 0);
-    if (stack.length >= 6 || usedH + HEIGHT[sel.type] > MAX_H) { setHint("Sudah tinggi sekali! Coba ubin lain ya"); return; }
+    const nextStack = [...stack, { type: sel.type, color: sel.color }];
+    if (stack.length >= 6 || stackTop(nextStack) > MAX_TOP) { setHint("Sudah tinggi sekali! Coba ubin lain ya"); return; }
     if (sel.type === "crescent" && stack.length === 0) { setHint("Bulan sabit ditaruh di atas bangunan — bangun dulu di bawahnya ya"); return; }
     const cost = COST[sel.type];
     if (blocks < cost) { setEarnOpen(true); setHint(`Blok kurang! Potongan ini butuh ${cost} blok — jawab soal dulu yuk`); return; }
@@ -174,7 +201,10 @@ export function BuildMosqueGame() {
 
       <TokenBar balance={blocks} unit="Blok" earnLabel="Jawab untuk dapat +5 Blok" onEarnClick={() => setEarnOpen(true)} />
 
-      {/* challenge checklist */}
+      {/* challenge — the goal, stated in one sentence before playing */}
+      <p className="text-center text-lg font-extrabold text-sky-800">
+        Tantangan: bangun 1 kubah, 2 menara, dan 1 pintu!
+      </p>
       <div className="flex flex-wrap gap-2">
         <ChallengePill done={counts.dome >= 1} label="Kubah" />
         <ChallengePill done={counts.minaret >= 2} label={`Menara ${Math.min(2, counts.minaret)}/2`} />
@@ -210,18 +240,17 @@ export function BuildMosqueGame() {
             return (<polygon key={`t${x}-${y}`} points={`${px},${py - TH / 2} ${px + TW / 2},${py} ${px},${py + TH / 2} ${px - TW / 2},${py}`} fill={(x + y) % 2 === 0 ? "#FFF3D6" : "#FFE9BC"} stroke="#EBCB8B" strokeWidth="1" />);
           })}
 
-          {/* stacks back-to-front */}
+          {/* stacks back-to-front — each level's bottomY comes from
+              stackOffsets, so every piece sits exactly on the one below */}
           {tiles.map(({ x, y }) => {
             const stack = stacks[key(x, y)] ?? [];
             const { px, py } = proj(x, y);
-            let cum = 0;
+            const offs = stackOffsets(stack);
             return (
               <g key={`s${x}-${y}`}>
-                {stack.map((piece, i) => {
-                  const bottomY = py - cum;
-                  cum += HEIGHT[piece.type];
-                  return <g key={i} className="pop-place"><PieceArt piece={piece} cx={px} bottomY={bottomY} /></g>;
-                })}
+                {stack.map((piece, i) => (
+                  <g key={i} className="pop-place"><PieceArt piece={piece} cx={px} bottomY={py - offs[i]} /></g>
+                ))}
               </g>
             );
           })}
@@ -230,8 +259,7 @@ export function BuildMosqueGame() {
           {tiles.map(({ x, y }) => {
             const stack = stacks[key(x, y)] ?? [];
             const { px, py } = proj(x, y);
-            const topOff = stack.reduce((a, p) => a + HEIGHT[p.type], 0);
-            const cy = py - topOff;
+            const cy = py - stackTop(stack);
             return (
               <polygon key={`c${x}-${y}`} points={`${px},${cy - TH / 2} ${px + TW / 2},${cy} ${px},${cy + TH / 2} ${px - TW / 2},${cy}`}
                 fill="transparent" style={{ cursor: "pointer" }} onClick={() => tapTile(x, y)}>

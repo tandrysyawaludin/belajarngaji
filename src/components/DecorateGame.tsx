@@ -40,6 +40,35 @@ const STARTER: Placed[] = [
   { uid: 3, kind: "cushion", x: 640, y: 500 },
 ];
 
+/* How far each item's art reaches from its floor-contact origin (unscaled
+   SVG units): l/r = sideways, t = above origin, b = below origin. Used to
+   clamp positions so the WHOLE item always stays inside the room. */
+const ART: Record<Kind, { l: number; r: number; t: number; b: number }> = {
+  sajjadah: { l: 78, r: 78, t: 30, b: 2 },
+  rehal: { l: 44, r: 44, t: 56, b: 2 },
+  lamp: { l: 54, r: 54, t: 148, b: 7 },
+  shelf: { l: 52, r: 52, t: 149, b: 2 },
+  frame: { l: 56, r: 56, t: 114, b: 0 },
+  plant: { l: 40, r: 40, t: 96, b: 2 },
+  teddy: { l: 39, r: 39, t: 99, b: 2 },
+  cushion: { l: 66, r: 66, t: 54, b: 8 },
+  table: { l: 52, r: 52, t: 96, b: 2 },
+  lights: { l: 90, r: 90, t: 78, b: 0 },
+};
+
+const ROOM_W = 800, ROOM_H = 560;
+/** Trash zone (SVG coords) — the labelled cloud bin, bottom-right. */
+const TRASH = { x1: 636, y1: 424, x2: 800, y2: 560 };
+
+function clampPos(kind: Kind, x: number, y: number): { x: number; y: number } {
+  const s = ITEMS.find((d) => d.kind === kind)?.s ?? 1;
+  const a = ART[kind];
+  return {
+    x: Math.max(a.l * s + 4, Math.min(ROOM_W - a.r * s - 4, x)),
+    y: Math.max(a.t * s + 4, Math.min(ROOM_H - a.b * s - 4, y)),
+  };
+}
+
 const SAVE_KEY = "belajarngaji:v2:room";
 let uidSeq = 100;
 
@@ -179,10 +208,17 @@ export function DecorateGame() {
   const [earnOpen, setEarnOpen] = useState(false);
   const [armed, setArmed] = useState<Kind | null>(null);
   const [dragUid, setDragUid] = useState<number | null>(null);
+  const [selectedUid, setSelectedUid] = useState<number | null>(null);
+  const [poof, setPoof] = useState<{ x: number; y: number; k: number } | null>(null);
   const [done, setDone] = useState(false);
   const [hint, setHint] = useState("");
   const svgRef = useRef<SVGSVGElement>(null);
-  const dragRef = useRef<{ uid: number; dx: number; dy: number } | null>(null);
+  const dragRef = useRef<{ uid: number; dx: number; dy: number; downX: number; downY: number; moved: boolean } | null>(null);
+  /* Guards so ONE tray tap can never produce TWO items: a room tap only
+     places if the item was armed by an earlier, separate tap, and only
+     once per arming. */
+  const armedAt = useRef(0);
+  const placeLock = useRef(0);
   const loaded = useRef(false);
 
   useEffect(() => {
@@ -209,16 +245,25 @@ export function DecorateGame() {
   };
 
   const tapTray = (kind: Kind) => {
+    // Selecting ONLY arms the item — nothing is placed and no token is
+    // spent until she taps the room (see onRoomDown).
     if (tokens < 1) { setEarnOpen(true); setHint("Jawab dulu untuk dapat token ya!"); return; }
+    armedAt.current = Date.now();
     setArmed(kind);
+    setSelectedUid(null);
     setHint("Sekarang ketuk tempat di kamar untuk menaruhnya");
   };
 
   const onRoomDown = (e: React.PointerEvent) => {
     if (!armed) return;
-    const pt = toSvg(e);
-    const y = Math.max(120, Math.min(540, pt.y));
-    setItems((it) => [...it, { uid: ++uidSeq, kind: armed, x: Math.max(60, Math.min(740, pt.x)), y }]);
+    const now = Date.now();
+    // Ignore the tail of the same tap that armed the item, and any repeat
+    // fire right after a placement — one arming = one item = one token.
+    if (now - armedAt.current < 200 || now - placeLock.current < 400) return;
+    placeLock.current = now;
+    const kind = armed;
+    const pt = clampPos(kind, toSvg(e).x, toSvg(e).y);
+    setItems((it) => [...it, { uid: ++uidSeq, kind, x: pt.x, y: pt.y }]);
     setTokens((t) => t - 1);
     setArmed(null);
     setHint("Cantik! Seret barangnya kalau mau dipindah");
@@ -227,7 +272,7 @@ export function DecorateGame() {
   const onItemDown = (e: React.PointerEvent, it: Placed) => {
     e.stopPropagation();
     const pt = toSvg(e);
-    dragRef.current = { uid: it.uid, dx: pt.x - it.x, dy: pt.y - it.y };
+    dragRef.current = { uid: it.uid, dx: pt.x - it.x, dy: pt.y - it.y, downX: pt.x, downY: pt.y, moved: false };
     setDragUid(it.uid);
   };
 
@@ -235,16 +280,37 @@ export function DecorateGame() {
     const d = dragRef.current;
     if (!d) return;
     const pt = toSvg(e);
-    setItems((arr) => arr.map((it) => (it.uid === d.uid ? { ...it, x: Math.max(40, Math.min(760, pt.x - d.dx)), y: Math.max(90, Math.min(548, pt.y - d.dy)) } : it)));
+    if (Math.abs(pt.x - d.downX) + Math.abs(pt.y - d.downY) > 8) d.moved = true;
+    setItems((arr) => arr.map((it) => {
+      if (it.uid !== d.uid) return it;
+      const p = clampPos(it.kind, pt.x - d.dx, pt.y - d.dy);
+      return { ...it, x: p.x, y: p.y };
+    }));
   };
 
-  const onUp = (e: React.PointerEvent) => {
+  const deleteItem = (uid: number, at?: { x: number; y: number }) => {
+    const it = items.find((i) => i.uid === uid);
+    setItems((arr) => arr.filter((i) => i.uid !== uid));
+    if (selectedUid === uid) setSelectedUid(null);
+    if (it) {
+      setPoof({ x: at?.x ?? it.x, y: (at?.y ?? it.y) - 40, k: Date.now() });
+      window.setTimeout(() => setPoof(null), 550);
+    }
+    setHint("Sudah dibuang");
+  };
+
+  const onUp = () => {
     const d = dragRef.current;
     if (d) {
-      const pt = toSvg(e);
-      if (pt.x > 668 && pt.y > 452) {
-        setItems((arr) => arr.filter((it) => it.uid !== d.uid));
-        setHint("Barang dibuang ke tempat sampah awan");
+      // Drop detection uses the ITEM's centre (its origin), not the raw
+      // pointer, so it matches what she sees under her finger.
+      const it = items.find((i) => i.uid === d.uid);
+      if (it && d.moved && it.x >= TRASH.x1 && it.x <= TRASH.x2 && it.y >= TRASH.y1 && it.y <= TRASH.y2) {
+        deleteItem(d.uid, { x: it.x, y: it.y });
+      } else if (it && !d.moved) {
+        // A simple tap on an item selects it (shows the Buang button).
+        setSelectedUid(d.uid);
+        setHint("Barang dipilih. Ketuk Buang untuk membuangnya, atau seret untuk memindah.");
       }
     }
     dragRef.current = null;
@@ -336,17 +402,30 @@ export function DecorateGame() {
                 onPointerDown={(e) => onItemDown(e, it)}
               >
                 <ellipse cx="0" cy="2" rx="46" ry="8" fill="#00000018" />
+                {selectedUid === it.uid && (
+                  <ellipse cx="0" cy="-52" rx="72" ry="86" fill="none" stroke="#FF8FBF" strokeWidth="4" strokeDasharray="10 8" />
+                )}
                 <ItemArt kind={it.kind} />
                 <rect x="-60" y="-150" width="120" height="155" fill="transparent" />
               </g>
             );
           })}
 
-          {dragUid !== null && (
-            <g transform="translate(716 496)">
-              <circle r="38" fill="#FFE3F0" stroke="#FF8FBF" strokeWidth="3" strokeDasharray="7 6" />
-              <path d="M-14,-6 h28 M-9,-6 v16 a5,5 0 0,0 5,5 h8 a5,5 0 0,0 5,-5 v-16 M-4,-12 h8 v4 h-8 Z" fill="none" stroke="#E7548F" strokeWidth="3" strokeLinecap="round" />
-              <text y="30" textAnchor="middle" fontSize="12" fontWeight="800" fill="#E7548F">Buang</text>
+          {/* Trash cloud — ALWAYS visible and clearly labelled. Drop a
+              dragged item here (its centre inside the zone) to delete it,
+              or tap an item and use the Buang button below the room. */}
+          <g transform="translate(716 478)">
+            <rect x={TRASH.x1 - 716} y={TRASH.y1 - 478} width={TRASH.x2 - TRASH.x1} height={TRASH.y2 - TRASH.y1} fill={dragUid !== null ? "#FF8FBF" : "transparent"} opacity="0.10" rx="18" />
+            <circle r="40" fill="#FFE3F0" stroke="#FF8FBF" strokeWidth="3" strokeDasharray="7 6" />
+            <path d="M-15,-14 h30 M-10,-14 v18 a6,6 0 0,0 6,6 h8 a6,6 0 0,0 6,-6 v-18 M-5,-21 h10 v5 h-10 Z M-5,-6 v12 M5,-6 v12" fill="none" stroke="#E7548F" strokeWidth="3.2" strokeLinecap="round" strokeLinejoin="round" />
+            <text y="62" textAnchor="middle" fontSize="19" fontWeight="800" fill="#E7548F">🗑 Buang</text>
+          </g>
+          {poof && (
+            <g key={poof.k} transform={`translate(${poof.x} ${poof.y})`} className="pop-place" pointerEvents="none">
+              <circle r="26" fill="#FFE3F0" opacity="0.85" />
+              <circle cx="-24" cy="-10" r="10" fill="#FFE3F0" opacity="0.7" />
+              <circle cx="24" cy="-8" r="12" fill="#FFE3F0" opacity="0.7" />
+              <path d="M0,-24 l3.4,7.6 7.6,3.4 -7.6,3.4 -3.4,7.6 -3.4,-7.6 -7.6,-3.4 7.6,-3.4Z" fill="#FFD66E" />
             </g>
           )}
           {armed && (
@@ -356,6 +435,21 @@ export function DecorateGame() {
           )}
         </svg>
       </div>
+
+      {selectedUid !== null && (
+        <div className="flex flex-wrap items-center justify-center gap-2">
+          <span className="text-base font-extrabold text-sky-800">
+            {ITEMS.find((d) => d.kind === items.find((i) => i.uid === selectedUid)?.kind)?.name} dipilih
+          </span>
+          <button type="button" className="btn-candy min-h-12 px-6" style={{ background: "#FF8FBF" }}
+            onClick={() => deleteItem(selectedUid)}>
+            🗑 Buang
+          </button>
+          <button type="button" className="btn-candy btn-candy-white min-h-12 px-5" onClick={() => setSelectedUid(null)}>
+            Selesai
+          </button>
+        </div>
+      )}
 
       {hint && <p className="text-center text-base font-bold text-sky-700" aria-live="polite">{hint}</p>}
 

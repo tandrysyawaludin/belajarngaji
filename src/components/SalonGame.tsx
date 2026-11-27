@@ -163,6 +163,19 @@ export function SalonGame() {
     setHint("Berhasil dipakai! Cantik sekali");
   };
 
+  /* The head is one shared zone for two tools: it resolves to the ACTIVE
+     tool — Hijab when the hijab tool is active, Aksesori when the
+     accessory tool is active. With any other tool active it just explains
+     (or, via tapZone, points her to the right body part). */
+  const tapHead = (x: number, y: number) => {
+    if (tool === "hijab" || tool === "acc") { tapZone(tool, x, y); return; }
+    if (pending === null) { setHint("Bagian kepala untuk alat Hijab atau Aksesori — pilih salah satu alat itu dulu ya"); return; }
+    // Another tool is armed: route through tapZone with a deliberately
+    // different zone so she gets the "ketuk <bagian yang benar>" hint
+    // instead of applying makeup to the wrong place.
+    tapZone("hijab", x, y);
+  };
+
   const randomize = () => {
     if (tokens < 2) { setEarnOpen(true); setHint("Acak Cantik butuh 2 token — jawab dua soal dulu yuk!"); return; }
     setTokens((t) => t - 2);
@@ -296,18 +309,7 @@ export function SalonGame() {
           </g>
           <path d="M182,282 q18,10 36,0" stroke="#C97B5A" strokeWidth="3" fill="none" strokeLinecap="round" opacity="0.6" />
 
-          {/* accessory + tap zones */}
           <Accessory id={look.acc} />
-          {/* hijab ring zone (donut: blob minus face) */}
-          <path fillRule="evenodd" className={zoneCls} onClick={() => tapZone("hijab", 200, 92)}
-            d="M200,50 C114,50 90,128 94,212 C97,276 82,320 62,358 C112,386 288,386 338,358 C318,320 303,276 306,212 C310,128 286,50 200,50 Z M200,106 C246,106 276,146 276,196 C276,248 242,286 200,286 C158,286 124,248 124,196 C124,146 154,106 200,106 Z"
-            {...(tool === "hijab" ? pulse : { fill: "transparent" })} />
-          <ellipse cx="162" cy="180" rx="30" ry="18" className={zoneCls} onClick={() => tapZone("shadow", 162, 178)} {...(tool === "shadow" ? pulse : { fill: "transparent" })} />
-          <ellipse cx="238" cy="180" rx="30" ry="18" className={zoneCls} onClick={() => tapZone("shadow", 238, 178)} {...(tool === "shadow" ? pulse : { fill: "transparent" })} />
-          <circle cx="140" cy="232" r="24" className={zoneCls} onClick={() => tapZone("blush", 140, 232)} {...(tool === "blush" ? pulse : { fill: "transparent" })} />
-          <circle cx="260" cy="232" r="24" className={zoneCls} onClick={() => tapZone("blush", 260, 232)} {...(tool === "blush" ? pulse : { fill: "transparent" })} />
-          <ellipse cx="200" cy="255" rx="30" ry="18" className={zoneCls} onClick={() => tapZone("lip", 200, 255)} {...(tool === "lip" ? pulse : { fill: "transparent" })} />
-          <rect x="120" y="30" width="160" height="60" className={zoneCls} onClick={() => tapZone("acc", 200, 60)} {...(tool === "acc" ? pulse : { fill: "transparent" })} />
 
           {spark && (
             <g key={spark.k} transform={`translate(${spark.x} ${spark.y})`} className="pop-place">
@@ -317,6 +319,36 @@ export function SalonGame() {
           )}
           <path d="M52,70 l3,7 7,3 -7,3 -3,7 -3,-7 -7,-3 7,-3 Z" fill="#FFD66E" className="sparkle" />
           <path d="M348,120 l2.4,5.6 5.6,2.4 -5.6,2.4 -2.4,5.6 -2.4,-5.6 -5.6,-2.4 5.6,-2.4 Z" fill="#FFB7D5" className="sparkle" />
+
+          {/* TAP ZONES — rendered LAST (topmost in the SVG) so nothing in
+              the artwork can ever cover them. Each zone declares which
+              tools it serves, and a tap is resolved against the ACTIVE
+              tool's zones only. The head area is ONE zone serving both
+              Hijab and Aksesori: it resolves to whichever of those tools
+              is active. Eyelid zones are generous ellipses over each eye. */}
+          <path d="M148,540 L166,368 Q200,344 234,368 L252,540 Z" className={zoneCls} onClick={() => tapZone("dress", 200, 470)}
+            {...(tool === "dress" ? pulse : { fill: "transparent" })} />
+          <path fillRule="evenodd" className={zoneCls} onClick={() => tapHead(200, 92)}
+            d="M200,50 C114,50 90,128 94,212 C97,276 82,320 62,358 C112,386 288,386 338,358 C318,320 303,276 306,212 C310,128 286,50 200,50 Z M200,106 C246,106 276,146 276,196 C276,248 242,286 200,286 C158,286 124,248 124,196 C124,146 154,106 200,106 Z"
+            {...(tool === "hijab" || tool === "acc" ? pulse : { fill: "transparent" })} />
+          <rect x="112" y="24" width="176" height="66" className={zoneCls} onClick={() => tapHead(200, 57)}
+            {...(tool === "hijab" || tool === "acc" ? pulse : { fill: "transparent" })} />
+          <ellipse cx="162" cy="184" rx="38" ry="26" className={zoneCls} onClick={() => tapZone("shadow", 162, 180)} {...(tool === "shadow" ? pulse : { fill: "transparent" })} />
+          <ellipse cx="238" cy="184" rx="38" ry="26" className={zoneCls} onClick={() => tapZone("shadow", 238, 180)} {...(tool === "shadow" ? pulse : { fill: "transparent" })} />
+          <circle cx="140" cy="232" r="26" className={zoneCls} onClick={() => tapZone("blush", 140, 232)} {...(tool === "blush" ? pulse : { fill: "transparent" })} />
+          <circle cx="260" cy="232" r="26" className={zoneCls} onClick={() => tapZone("blush", 260, 232)} {...(tool === "blush" ? pulse : { fill: "transparent" })} />
+          <ellipse cx="200" cy="255" rx="32" ry="20" className={zoneCls} onClick={() => tapZone("lip", 200, 255)} {...(tool === "lip" ? pulse : { fill: "transparent" })} />
+
+          {/* PHOTO — unmissable polaroid frame INSIDE the scene itself,
+              with the caption bar across the bottom of the picture. */}
+          {photo && (
+            <g pointerEvents="none">
+              <rect x="7" y="7" width="386" height="526" fill="none" stroke="#FFFFFF" strokeWidth="14" />
+              <rect x="7" y="440" width="386" height="93" fill="#FFFFFF" />
+              <text x="200" y="482" textAnchor="middle" fontSize="19" fontWeight="800" fill="#E7548F">Masya Allah, cantik sekali! 📸</text>
+              <text x="200" y="512" textAnchor="middle" fontSize="14" fontWeight="700" fill="#7EC8F7">— Salon Hijab Cantik —</text>
+            </g>
+          )}
         </svg>
         </div>
         {photo && <p className="pb-3 text-center text-xl font-extrabold text-pink-500">Masya Allah, cantik sekali!</p>}

@@ -96,11 +96,14 @@ export function CakeGame() {
     const r = svgRef.current.getBoundingClientRect();
     const x = ((e.clientX - r.left) / r.width) * 400;
     const y = ((e.clientY - r.top) / r.height) * 460;
-    const li = LAYERS.findIndex((L) => y >= L.y - 16 && y <= L.y + 14 && x >= L.x && x <= L.x + L.w);
-    if (li < 0) { setHint("Ketuk tepat di atas lapisan kue untuk menaruh topping."); return; }
+    // Tapping ANYWHERE on a layer's full body places the topping on top of
+    // THAT layer — no more hunting for a thin strip above it. A tap that
+    // genuinely misses the cake always shows the hint (never silent).
+    const li = LAYERS.findIndex((L) => y >= L.y && y <= L.y + L.h && x >= L.x && x <= L.x + L.w);
+    if (li < 0) { setHint("Ups, itu di luar kue! Ketuk di badan lapisannya ya untuk menaruh topping."); return; }
     if (!spend(1)) return;
     const L = LAYERS[li];
-    setTops((ts) => [...ts, { id: idRef.current++, type: (arm as { type: TopId }).type, x: Math.max(L.x + 14, Math.min(L.x + L.w - 14, x)), y: L.y - 4 }]);
+    setTops((ts) => [...ts, { id: idRef.current++, type: (arm as { type: TopId }).type, x: Math.max(L.x + 26, Math.min(L.x + L.w - 26, x)), y: L.y - 6 }]);
     setHint("Topping terpasang! Kuenya makin cantik.");
   };
 
@@ -145,7 +148,7 @@ export function CakeGame() {
                 <rect x={L.x} y={L.y + L.h - 12} width={L.w} height="7" rx="3.5" fill="rgba(255,255,255,0.4)" />
               </g>
             ))}
-            {tops.map((t) => (<g key={t.id} transform={`translate(${t.x} ${t.y})`} className="pop-place"><ToppingArt type={t.type} /></g>))}
+            {tops.map((t) => (<g key={t.id} transform={`translate(${t.x} ${t.y}) scale(1.6)`} className="pop-place"><ToppingArt type={t.type} /></g>))}
           </svg>
         </div>
         {photo && <p className="pb-3 text-center text-xl font-extrabold text-pink-500">Masya Allah, kuenya cantik sekali!</p>}
@@ -173,7 +176,7 @@ export function CakeGame() {
             {TOPS.map((t) => (
               <button key={t.id} type="button" onClick={() => setArm({ kind: "top", type: t.id })}
                 className={`flex min-h-14 shrink-0 flex-col items-center gap-1 rounded-3xl border-[3px] px-4 py-2 shadow transition active:scale-95 ${arm?.kind === "top" && arm.type === t.id ? "border-pink-400 bg-pink-50" : "border-white bg-sky-50"}`}>
-                <svg viewBox="-18 -20 36 36" className="h-9 w-9"><ToppingArt type={t.id} /></svg>
+                <svg viewBox="-29 -32 58 58" className="h-11 w-11"><g transform="scale(1.6)"><ToppingArt type={t.id} /></g></svg>
                 <span className="text-xs font-extrabold text-sky-800">{t.name}</span>
               </button>
             ))}

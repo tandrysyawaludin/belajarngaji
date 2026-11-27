@@ -72,7 +72,8 @@ export function ConnectGame() {
   const [cleared, setCleared] = useState<boolean[]>([]);
   const [sel, setSel] = useState<number | null>(null);
   const [popped, setPopped] = useState<number[]>([]);
-  const [shakeIdx, setShakeIdx] = useState<number | null>(null);
+  const [shakePair, setShakePair] = useState<number[]>([]);
+  const [status, setStatus] = useState("Ketuk satu ubin untuk mulai.");
   const [found, setFound] = useState(0);
   const [seconds, setSeconds] = useState(0);
   const [won, setWon] = useState(false);
@@ -91,6 +92,8 @@ export function ConnectGame() {
     setCleared(Array(PAIRS * 2).fill(false));
     setSel(null);
     setPopped([]);
+    setShakePair([]);
+    setStatus("Ketuk satu ubin untuk mulai.");
     setFound(0);
     setSeconds(0);
     setWon(false);
@@ -107,10 +110,12 @@ export function ConnectGame() {
     if (won || cleared[idx]) return;
     if (sel === null) {
       setSel(idx);
+      setStatus(`Huruf ${LETTERS[board[idx]].name} dipilih — cari kembarannya!`);
       return;
     }
     if (sel === idx) {
       setSel(null);
+      setStatus("Pilihan dibatalkan. Ketuk satu ubin untuk memilih huruf.");
       return;
     }
     if (board[sel] === board[idx]) {
@@ -123,6 +128,11 @@ export function ConnectGame() {
       setSel(null);
       const nf = found + 1;
       setFound(nf);
+      setStatus(
+        nf === PAIRS
+          ? "Semua pasangan ketemu!"
+          : `Betul! Pasangan huruf ${LETTERS[board[idx]].name} ketemu! Masih ${PAIRS - nf} pasangan lagi.`,
+      );
       if (nf === PAIRS) {
         setWon(true);
         stopTimer();
@@ -134,9 +144,14 @@ export function ConnectGame() {
         });
       }
     } else {
-      setShakeIdx(idx);
-      window.setTimeout(() => setShakeIdx(null), 450);
-      setSel(idx);
+      // Mismatch: shake BOTH tiles, explain, and clear the selection so the
+      // next tap starts a fresh pick (never silently swap the selection).
+      setShakePair([sel, idx]);
+      window.setTimeout(() => setShakePair([]), 480);
+      setStatus(
+        `Itu huruf ${LETTERS[board[idx]].name}, bukan pasangan ${LETTERS[board[sel]].name}. Coba cari yang sama!`,
+      );
+      setSel(null);
     }
   };
 
@@ -194,7 +209,7 @@ export function ConnectGame() {
                 aria-label={`Ubin huruf ${L.name}`}
                 className={`grid aspect-square place-items-center rounded-xl shadow-sm ring-2 transition active:scale-95 ${TILE_COLORS[letter]} ${
                   sel === idx ? "z-10 scale-110 ring-4 ring-sky-500" : ""
-                } ${shakeIdx === idx ? "shake" : ""} ${popped.includes(idx) ? "pop-place z-10 ring-amber-300" : ""}`}
+                } ${shakePair.includes(idx) ? "shake-x" : ""} ${popped.includes(idx) ? "pop-place z-10 ring-amber-300" : ""}`}
               >
                 <span
                   className="text-[26px] leading-none font-bold"
@@ -220,9 +235,7 @@ export function ConnectGame() {
         </div>
       ) : (
         <p className="text-center text-base font-bold text-sky-700" aria-live="polite">
-          {sel !== null
-            ? `Huruf ${LETTERS[board[sel]].name} dipilih — cari kembarannya!`
-            : "Ketuk satu ubin untuk mulai."}
+          {status}
         </p>
       )}
     </div>

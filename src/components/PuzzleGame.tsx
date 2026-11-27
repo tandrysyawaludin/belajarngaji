@@ -68,11 +68,19 @@ export function PuzzleGame() {
   const [won, setWon] = useState(false);
   const [earnOpen, setEarnOpen] = useState(false);
   const [hint, setHint] = useState("Ketuk satu potongan, lalu ketuk potongan lain untuk menukar tempatnya (1 token per tukar).");
+  /* The board must NEVER be seen solved: tiles render only after the
+     scramble has been applied on mount (ready gate). */
+  const [ready, setReady] = useState(false);
+  const [peek, setPeek] = useState(false);
+  const [sparkPos, setSparkPos] = useState<number[]>([]);
 
   useEffect(() => {
     setOrder(shuffled());
     try { const b = Number(localStorage.getItem(KEY)); if (b > 0) setBest(b); } catch { /* ignore */ }
+    setReady(true);
   }, []);
+
+  const correctCount = order.reduce((a, v, i) => a + (v === i ? 1 : 0), 0);
 
   const tapTile = (pos: number) => {
     if (won) return;
@@ -87,10 +95,18 @@ export function PuzzleGame() {
       setWon(true);
       confetti({ particleCount: 200, spread: 120, origin: { y: 0.4 }, colors: ["#FF8FBF", "#7EC8F7", "#FFD66E", "#3FBFB2", "#ffffff"] });
       if (best === null || ns < best) { setBest(ns); try { localStorage.setItem(KEY, String(ns)); } catch { /* ignore */ } }
-    } else setHint(`${ns} kali tukar. Teruskan sampai gambarnya utuh!`);
+    } else {
+      // Progress feedback: celebrate any tile this swap landed home.
+      const landed = [sel, pos].filter((p) => next[p] === p);
+      if (landed.length > 0) {
+        setSparkPos(landed);
+        window.setTimeout(() => setSparkPos([]), 800);
+        setHint(landed.length === 2 ? "Dua potongan pas! 🎉" : "Satu potongan pas! 🎉");
+      } else setHint(`${ns} kali tukar. Teruskan sampai gambarnya utuh!`);
+    }
   };
 
-  const again = () => { setOrder(shuffled()); setSel(null); setSwaps(0); setWon(false); setHint("Gambar diacak lagi! Yuk susun kembali."); };
+  const again = () => { setOrder(shuffled()); setSel(null); setSwaps(0); setWon(false); setSparkPos([]); setHint("Gambar diacak lagi! Yuk susun kembali."); };
 
   return (
     <div className="flex flex-col gap-4">
@@ -103,28 +119,58 @@ export function PuzzleGame() {
       </section>
 
       <TokenBar balance={tokens} unit="Token Tukar" earnLabel="Jawab untuk dapat Token" onEarnClick={() => setEarnOpen(true)} />
-      <div className="flex flex-wrap gap-2">
+      <div className="flex flex-wrap items-center gap-2">
         <span className="chip-token">Tukar: {swaps} kali</span>
+        <span className="chip-token">Potongan benar: {correctCount}/9</span>
         {best !== null && <span className="chip-token">Terbaik: {best} tukar</span>}
+        <button
+          type="button"
+          className="btn-candy btn-candy-white ml-auto min-h-12 touch-none px-5 select-none"
+          onPointerDown={() => setPeek(true)}
+          onPointerUp={() => setPeek(false)}
+          onPointerLeave={() => setPeek(false)}
+          onPointerCancel={() => setPeek(false)}
+          onContextMenu={(e) => e.preventDefault()}
+        >
+          Tahan untuk Lihat Gambar
+        </button>
       </div>
 
       <div className="card-cloud mx-auto w-full max-w-[430px] p-2">
-        <div className="relative overflow-hidden rounded-[1.6rem]">
-          <div className="absolute inset-0 opacity-25"><MosqueScene /></div>
-          <div className="relative grid grid-cols-3 gap-1.5 p-1.5">
-            {order.map((piece, pos) => {
-              const col = piece % 3, row = Math.floor(piece / 3);
-              return (
-                <button key={pos} type="button" onClick={() => tapTile(pos)} aria-label={`Potongan ${pos + 1}`}
-                  className={`relative aspect-square min-h-12 overflow-hidden rounded-2xl shadow transition active:scale-95 ${sel === pos ? "ring-4 ring-pink-400 scale-[1.03] z-10" : "ring-2 ring-white/80"}`}>
-                  <div className="absolute" style={{ width: "300%", height: "300%", left: `${-col * 100}%`, top: `${-row * 100}%` }}>
-                    <MosqueScene />
-                  </div>
-                </button>
-              );
-            })}
+        {!ready ? (
+          <div className="grid aspect-square place-items-center rounded-[1.6rem] bg-sky-50">
+            <p className="text-lg font-extrabold text-sky-600">Mengacak gambar… 🎲</p>
           </div>
-        </div>
+        ) : (
+          <div className="relative overflow-hidden rounded-[1.6rem]">
+            {/* ghost guide: the complete picture at 18% behind the tiles */}
+            <div className="absolute inset-0 opacity-[0.18]"><MosqueScene /></div>
+            <div className="relative grid grid-cols-3 gap-1.5 p-1.5">
+              {order.map((piece, pos) => {
+                const col = piece % 3, row = Math.floor(piece / 3);
+                return (
+                  <button key={pos} type="button" onClick={() => tapTile(pos)} aria-label={`Potongan ${pos + 1}`}
+                    className={`relative aspect-square min-h-12 overflow-hidden rounded-2xl shadow transition active:scale-95 ${sel === pos ? "ring-4 ring-pink-400 scale-[1.03] z-10" : "ring-2 ring-white/80"}`}>
+                    <div className="absolute" style={{ width: "300%", height: "300%", left: `${-col * 100}%`, top: `${-row * 100}%` }}>
+                      <MosqueScene />
+                    </div>
+                    {sparkPos.includes(pos) && (
+                      <span className="pop-place pointer-events-none absolute inset-0 z-10 grid place-items-center">
+                        <svg viewBox="0 0 24 24" className="h-10 w-10 drop-shadow"><path d="M12,1 l3.2,7.6 7.8,2.4 -7.8,2.4 L12,21 l-3.2,-7.6 L1,13.4 8.8,11 Z" fill="#FFD66E" stroke="#fff" strokeWidth="1.4" transform="rotate(90 12 12)" /></svg>
+                      </span>
+                    )}
+                  </button>
+                );
+              })}
+            </div>
+            {/* hold-to-peek: full picture at full opacity while pressed */}
+            {peek && (
+              <div className="pointer-events-none absolute inset-0 z-20">
+                <MosqueScene />
+              </div>
+            )}
+          </div>
+        )}
       </div>
 
       {won ? (
