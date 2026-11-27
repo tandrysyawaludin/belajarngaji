@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { CloudPuppy } from "@/components/CloudPuppy";
+import { GameGuide } from "@/components/GameGuide";
 import { HIJAIYAH } from "@/components/KidQuestion";
 
 /* Kartu Pasangan Hijaiyah — a memory-pairs clone (cf. "Pasangan Lucu
@@ -131,6 +132,7 @@ export function MemoryGame() {
 
   return (
     <div className="flex flex-col gap-4">
+      <GameGuide gameId="memori" title="Kartu Pasangan Hijaiyah" steps={[{ icon: "👆", text: "Ketuk kartu untuk membukanya" }, { icon: "🔍", text: "Cari dua kartu huruf yang sama" }, { icon: "🎉", text: "Kumpulkan semua pasangan!" }]} />
       <section className="card-cloud flex items-center gap-3 p-4">
         <span className="floaty shrink-0">
           <CloudPuppy size={64} />

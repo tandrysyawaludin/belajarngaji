@@ -3,6 +3,7 @@
 import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 import { CloudPuppy } from "@/components/CloudPuppy";
+import { GameGuide } from "@/components/GameGuide";
 import { EarnSheet, TokenBar } from "@/components/EarnSheet";
 
 /* Mewarnai Masjid — a coloring-book clone (cf. "Buku Mewarnai Mandala" on
@@ -170,6 +171,7 @@ export function ColoringGame() {
 
   return (
     <div className="flex flex-col gap-4">
+      <GameGuide gameId="mewarnai" title="Mewarnai Masjid" steps={[{ icon: "🎨", text: "Pilih warna di bawah" }, { icon: "🕌", text: "Ketuk bagian gambar untuk mewarnai" }, { icon: "⭐", text: "Warna spesial? Jawab soal dulu ya!" }]} />
       <section className="card-cloud flex items-center gap-3 p-4">
         <span className="floaty shrink-0">
           <CloudPuppy size={64} />

@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { CloudPuppy } from "@/components/CloudPuppy";
+import { GameGuide } from "@/components/GameGuide";
 
 /* Ikuti Bintang — a Simon clone (cf. "Simon Musik" on games.co.id): watch
    the shapes light up and sing, then tap them back in the same order.
@@ -198,6 +199,7 @@ export function SimonGame() {
 
   return (
     <div className="flex flex-col gap-4">
+      <GameGuide gameId="simon" title="Ikuti Bintang" steps={[{ icon: "👀", text: "Lihat bintang yang menyala, ingat urutannya" }, { icon: "👆", text: "Ketuk bintang dengan urutan yang sama" }, { icon: "🏆", text: "Makin panjang, makin hebat!" }]} />
       <section className="card-cloud flex items-center gap-3 p-4">
         <span className="floaty shrink-0">
           <CloudPuppy size={64} />

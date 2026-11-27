@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { EarnSheet, TokenBar } from "@/components/EarnSheet";
 import { CloudPuppy } from "@/components/CloudPuppy";
+import { GameGuide } from "@/components/GameGuide";
 
 /* Dekorasi Kamar Ngaji v2 — perspective room, hand-drawn SVG furniture,
    pointer-drag decorating. Answer-first: 1 token per new item / wallpaper. */
@@ -332,6 +333,7 @@ export function DecorateGame() {
 
   return (
     <div className="flex flex-col gap-4">
+      <GameGuide gameId="dekorasi" title="Dekorasi Kamar Ngaji" steps={[{ icon: "⭐", text: "Jawab soal untuk dapat token" }, { icon: "🛋️", text: "Pilih barang, lalu ketuk tempat di kamar" }, { icon: "🖐️", text: "Seret untuk memindah. Buang ke tempat sampah" }]} />
       <section className="card-cloud flex items-center gap-3 p-4">
         <span className="floaty shrink-0"><CloudPuppy size={64} /></span>
         <div>

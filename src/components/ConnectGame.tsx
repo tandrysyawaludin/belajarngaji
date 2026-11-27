@@ -3,6 +3,7 @@
 import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { CloudPuppy } from "@/components/CloudPuppy";
+import { GameGuide } from "@/components/GameGuide";
 
 /* Sambung Huruf Sama — a kid-simplified connect-pairs clone (cf. "Butterfly
    Kyodai 2" on games.co.id): tap one tile, tap another tile with the SAME
@@ -157,6 +158,7 @@ export function ConnectGame() {
 
   return (
     <div className="flex flex-col gap-4">
+      <GameGuide gameId="hubungkan" title="Sambung Huruf Sama" steps={[{ icon: "👆", text: "Ketuk satu ubin huruf" }, { icon: "👯", text: "Ketuk ubin dengan huruf yang sama" }, { icon: "✨", text: "Pasangannya hilang. Kumpulkan semua!" }]} />
       <section className="card-cloud flex items-center gap-3 p-4">
         <span className="floaty shrink-0">
           <CloudPuppy size={64} />
