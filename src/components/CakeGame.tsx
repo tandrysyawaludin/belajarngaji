@@ -103,7 +103,7 @@ export function CakeGame() {
     if (li < 0) { setHint("Ups, itu di luar kue! Ketuk di badan lapisannya ya untuk menaruh topping."); return; }
     if (!spend(1)) return;
     const L = LAYERS[li];
-    setTops((ts) => [...ts, { id: idRef.current++, type: (arm as { type: TopId }).type, x: Math.max(L.x + 26, Math.min(L.x + L.w - 26, x)), y: L.y - 6 }]);
+    setTops((ts) => [...ts, { id: idRef.current++, type: (arm as { type: TopId }).type, x: Math.max(L.x + 26, Math.min(L.x + L.w - 26, x)), y: Math.max(L.y + 16, Math.min(L.y + L.h - 8, y)) }]);
     setHint("Topping terpasang! Kuenya makin cantik.");
   };
 
@@ -124,7 +124,7 @@ export function CakeGame() {
 
       <TokenBar balance={tokens} unit="Token" earnLabel="Jawab untuk dapat Token" onEarnClick={() => setEarnOpen(true)} />
 
-      <div className={`card-cloud overflow-hidden p-2 ${photo ? "ring-8 ring-white" : ""}`}>
+      <div className={`card-cloud overflow-hidden p-2 ${photo ? "ring-8 ring-white" : ""}`} onPointerUp={(e) => { if (svgRef.current && svgRef.current.contains(e.target as Node)) return; tapCake(e); }}>
         <div className="mx-auto w-full max-w-[430px]">
           <svg ref={svgRef} viewBox="0 0 400 460" className="block h-auto w-full select-none" role="application" aria-label="Kue lapis untuk dihias" onPointerUp={tapCake}>
             <defs>

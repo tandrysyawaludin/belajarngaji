@@ -35,7 +35,7 @@ const ITEMS: { kind: Kind; name: string; s: number }[] = [
 ];
 
 const STARTER: Placed[] = [
-  { uid: 1, kind: "sajjadah", x: 400, y: 492 },
+  { uid: 1, kind: "teddy", x: 400, y: 500 },
   { uid: 2, kind: "plant", x: 96, y: 470 },
   { uid: 3, kind: "cushion", x: 640, y: 500 },
 ];
@@ -129,7 +129,7 @@ function ItemArt({ kind }: { kind: Kind }) {
     case "frame":
       return (
         <g>
-          <rect x="-46" y="-104" width="92" height="76" rx="10" fill="#FFFDF4" stroke="#E9B949" strokeWidth="7" />
+          <rect x="-46" y="-104" width="92" height="76" rx="10" fill="#FFE9A8" stroke="#B8860B" strokeWidth="7" />
           <rect x="-34" y="-92" width="68" height="52" rx="6" fill="#EFF9FF" />
           <text x="0" y="-52" textAnchor="middle" fontSize="34" fill="#2F7FC4" style={{ fontFamily: "var(--font-arabic), serif" }}>الله</text>
           <path d="M-46,-104 l10,-10 M46,-104 l-10,-10" stroke="#FFB7D5" strokeWidth="5" strokeLinecap="round" />
@@ -397,16 +397,15 @@ export function DecorateGame() {
               <g
                 key={it.uid}
                 transform={`translate(${it.x} ${it.y}) scale(${s})`}
-                className={dragUid === it.uid ? undefined : "pop-place"}
-                style={{ cursor: "grab", touchAction: "none" }}
+                                style={{ cursor: "grab", touchAction: "none", pointerEvents: armed ? "none" : "auto" }}
                 onPointerDown={(e) => onItemDown(e, it)}
               >
-                <ellipse cx="0" cy="2" rx="46" ry="8" fill="#00000018" />
+                <g className={dragUid === it.uid ? undefined : "pop-place"}><ellipse cx="0" cy="2" rx="46" ry="8" fill="#00000018" />
                 {selectedUid === it.uid && (
                   <ellipse cx="0" cy="-52" rx="72" ry="86" fill="none" stroke="#FF8FBF" strokeWidth="4" strokeDasharray="10 8" />
                 )}
                 <ItemArt kind={it.kind} />
-                <rect x="-60" y="-150" width="120" height="155" fill="transparent" />
+                <rect x="-60" y="-150" width="120" height="155" fill="transparent" /></g>
               </g>
             );
           })}

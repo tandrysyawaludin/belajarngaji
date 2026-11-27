@@ -122,6 +122,7 @@ export function PuzzleGame() {
       <div className="flex flex-wrap items-center gap-2">
         <span className="chip-token">Tukar: {swaps} kali</span>
         <span className="chip-token">Potongan benar: {correctCount}/9</span>
+        <span className="ml-auto flex items-center gap-2 text-xs font-extrabold text-sky-700">Contohnya:<span className="block w-16 overflow-hidden rounded-xl border-2 border-white shadow"><MosqueScene /></span></span>
         {best !== null && <span className="chip-token">Terbaik: {best} tukar</span>}
         <button
           type="button"
@@ -145,7 +146,7 @@ export function PuzzleGame() {
           <div className="relative overflow-hidden rounded-[1.6rem]">
             {/* ghost guide: the complete picture at 18% behind the tiles */}
             <div className="absolute inset-0 opacity-[0.18]"><MosqueScene /></div>
-            <div className="relative grid grid-cols-3 gap-1.5 p-1.5">
+            <div className="relative grid grid-cols-3 gap-2.5 p-2.5">
               {order.map((piece, pos) => {
                 const col = piece % 3, row = Math.floor(piece / 3);
                 return (
