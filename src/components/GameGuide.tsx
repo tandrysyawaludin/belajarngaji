@@ -57,6 +57,7 @@ export function GameGuide({ gameId, title, steps }: GameGuideProps) {
 
   const close = useCallback(() => {
     stopSpeech();
+    setSpeaking(false);
     setOpen(false);
     try {
       window.localStorage.setItem(storageKey, "1");
@@ -67,18 +68,22 @@ export function GameGuide({ gameId, title, steps }: GameGuideProps) {
 
   const reopen = useCallback(() => setOpen(true), []);
 
+  const [speaking, setSpeaking] = useState(false);
   const listen = useCallback(() => {
     if (!canSpeak) return;
     const synth = window.speechSynthesis;
+    if (speaking) { synth.cancel(); setSpeaking(false); return; }
     synth.cancel();
     const parts = [`Cara main ${title}.`, ...steps.map((s) => s.text)];
-    for (const part of parts) {
+    parts.forEach((part, i) => {
       const u = new SpeechSynthesisUtterance(part);
       u.lang = "id-ID";
       u.rate = 0.95;
+      if (i === parts.length - 1) { u.onend = () => setSpeaking(false); u.onerror = () => setSpeaking(false); }
       synth.speak(u);
-    }
-  }, [canSpeak, steps, title]);
+    });
+    setSpeaking(true);
+  }, [canSpeak, speaking, steps, title]);
 
   return (
     <>
@@ -116,7 +121,7 @@ export function GameGuide({ gameId, title, steps }: GameGuideProps) {
             </button>
 
             <div className="flex flex-col items-center text-center">
-              <span className="floaty">
+              <span className="floaty flex h-28 w-28 items-center justify-center rounded-full bg-sky-100 shadow-inner ring-4 ring-white">
                 <CloudPuppy size={92} />
               </span>
               <h2 className="mt-1 text-3xl font-extrabold text-sky-700">Cara Main</h2>
@@ -142,9 +147,9 @@ export function GameGuide({ gameId, title, steps }: GameGuideProps) {
                 <button
                   type="button"
                   onClick={listen}
-                  className="btn-candy btn-candy-white min-h-12 px-6 text-lg"
+                  className="btn-candy btn-candy-pink min-h-14 px-6 text-xl"
                 >
-                  🔊 Dengarkan
+                  {speaking ? "⏸ Sedang dibacakan… ketuk untuk berhenti" : "🔊 Dengarkan"}
                 </button>
               )}
               <button
