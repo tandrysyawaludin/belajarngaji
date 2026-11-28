@@ -4,6 +4,7 @@ import { useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { CloudPuppy } from "@/components/CloudPuppy";
 import { GameGuide } from "@/components/GameGuide";
+import { SurahGate } from "@/components/SurahGate";
 import { EarnSheet, TokenBar } from "@/components/EarnSheet";
 
 const KEY = "belajarngaji:v2:kue";
@@ -116,6 +117,7 @@ export function CakeGame() {
   return (
     <div className="flex flex-col gap-4">
       <GameGuide gameId="kue" title="Dekorasi Kue Cantik" steps={[{ icon: "⭐", text: "Jawab soal untuk dapat token" }, { icon: "🍰", text: "Pilih krim atau topping di bawah" }, { icon: "👆", text: "Ketuk lapisan kue untuk menghias" }]} />
+      <SurahGate gameId="kue" />
       <section className="card-cloud flex items-center gap-3 p-4">
         <span className="floaty shrink-0"><CloudPuppy size={64} /></span>
         <div>

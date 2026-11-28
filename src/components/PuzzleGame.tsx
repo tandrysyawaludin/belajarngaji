@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import confetti from "canvas-confetti";
 import { CloudPuppy } from "@/components/CloudPuppy";
 import { GameGuide } from "@/components/GameGuide";
+import { SurahGate } from "@/components/SurahGate";
 import { EarnSheet, TokenBar } from "@/components/EarnSheet";
 
 const KEY = "belajarngaji:v2:puzzle-best";
@@ -112,6 +113,7 @@ export function PuzzleGame() {
   return (
     <div className="flex flex-col gap-4">
       <GameGuide gameId="puzzle" title="Puzzle Masjid Cantik" steps={[{ icon: "⭐", text: "Jawab soal untuk dapat token tukar" }, { icon: "🧩", text: "Ketuk dua potongan untuk menukar tempatnya" }, { icon: "🖼️", text: "Lihat gambar Contohnya biar tahu hasilnya" }]} />
+      <SurahGate gameId="puzzle" />
       <section className="card-cloud flex items-center gap-3 p-4">
         <span className="floaty shrink-0"><CloudPuppy size={64} /></span>
         <div>

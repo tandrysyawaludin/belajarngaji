@@ -1,7 +1,6 @@
-// Theme registry. Each theme is one original pixel-art character (2 girls in a
-// hijab, 2 boys in a peci cap) with its own pastel palette. The artwork is
-// drawn as inline SVG in `src/components/PixelMascot.tsx` and tinted from the
-// palette below — no image files, no third-party characters.
+// Theme registry. Each theme pairs a pastel palette with the app's mascot
+// (Awan, the cloud puppy in `src/components/CloudPuppy.tsx`) — no image
+// files, no third-party characters.
 
 export interface ThemePalette {
   /** Strong primary color — used for nav highlights and accents. */
@@ -28,7 +27,7 @@ export interface ThemeDef {
   name: string;
   /** Short, kid-friendly tagline. */
   tagline: string;
-  /** Whether the pixel-art mascot is a girl or a boy. */
+  /** Legacy mascot descriptor (kept for theme data compatibility). */
   gender: Gender;
   /** Which headwear the mascot wears. */
   hat: HatKind;

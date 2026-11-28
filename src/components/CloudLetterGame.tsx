@@ -4,6 +4,7 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import confetti from "canvas-confetti";
 import { CloudPuppy } from "@/components/CloudPuppy";
 import { GameGuide } from "@/components/GameGuide";
+import { SurahGate } from "@/components/SurahGate";
 import { EarnSheet } from "@/components/EarnSheet";
 import { HIJAIYAH } from "@/components/KidQuestion";
 
@@ -150,6 +151,7 @@ export function CloudLetterGame() {
   return (
     <div className="flex flex-col gap-4">
       <GameGuide gameId="huruf-awan" title="Tangkap Awan Hijaiyah" steps={[{ icon: "🎯", text: "Baca huruf yang dicari di atas" }, { icon: "☁️", text: "Ketuk awan dengan huruf yang sama" }, { icon: "🔥", text: "5 kali benar berturut-turut ada soal bonus!" }]} />
+      <SurahGate gameId="huruf-awan" />
       <section className="card-cloud flex items-center gap-3 p-4">
         <span className="floaty shrink-0"><CloudPuppy size={64} /></span>
         <div>

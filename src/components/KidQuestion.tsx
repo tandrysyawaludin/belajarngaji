@@ -3,6 +3,7 @@
 import { useMemo, useState } from "react";
 import confetti from "canvas-confetti";
 import { SURAHS } from "@/data/surahs";
+import { getScopedSurahs } from "@/lib/surahScope";
 
 export const HIJAIYAH: { arabic: string; name: string }[] = [
   { arabic: "ا", name: "Alif" },
@@ -31,11 +32,10 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-const SHORT = SURAHS.filter((s) => s.number >= 103 || [1, 36, 67, 78, 93, 97].includes(s.number));
-
 export function makeQuestion(): KidQ {
   const kind = Math.floor(Math.random() * 3);
   if (kind === 2) {
+    // Hijaiyah-letter questions are never scoped.
     const letter = HIJAIYAH[Math.floor(Math.random() * HIJAIYAH.length)];
     const wrong = shuffle(HIJAIYAH.filter((h) => h.name !== letter.name)).slice(0, 2).map((h) => h.name);
     return {
@@ -45,7 +45,10 @@ export function makeQuestion(): KidQ {
       answer: letter.name,
     };
   }
-  const surah = SHORT[Math.floor(Math.random() * SHORT.length)];
+  // Surah-based questions only ever ask about surahs inside the child's
+  // chosen scope (intersected with the SHORT pool; see lib/surahScope).
+  const pool = getScopedSurahs();
+  const surah = pool[Math.floor(Math.random() * pool.length)];
   if (kind === 1) {
     const opts = new Set<number>([surah.verses]);
     while (opts.size < 3) opts.add(Math.max(1, surah.verses + Math.floor(Math.random() * 9) - 4));
@@ -55,7 +58,13 @@ export function makeQuestion(): KidQ {
       answer: String(surah.verses),
     };
   }
-  const wrong = shuffle(SURAHS.filter((s) => s.meaning !== surah.meaning)).slice(0, 2).map((s) => s.meaning);
+  // Meaning distractors prefer other in-scope surahs when there are enough
+  // of them; otherwise fall back to the general pool. The answer itself is
+  // always the in-scope surah's meaning.
+  const distractorPool = pool.length >= 3 ? pool : SURAHS;
+  const wrong = shuffle(
+    Array.from(new Set(distractorPool.filter((s) => s.meaning !== surah.meaning).map((s) => s.meaning))),
+  ).slice(0, 2);
   return {
     prompt: `Apa arti surah ${surah.name}?`,
     choices: shuffle([surah.meaning, ...wrong]),

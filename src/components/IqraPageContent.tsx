@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { IQRA_JILIDS } from "@/lib/iqra";
 import { useStrings } from "@/components/LocaleProvider";
-import { ThemedMascot } from "@/components/ThemedMascot";
+import { CloudPuppy } from "@/components/CloudPuppy";
 
 export function IqraPageContent() {
   const strings = useStrings();
@@ -14,7 +14,7 @@ export function IqraPageContent() {
         <div className="dotted absolute inset-0 opacity-45" aria-hidden="true" />
         <div className="relative flex flex-col items-center gap-4 sm:flex-row">
           <div className="wobble">
-            <ThemedMascot size={120} mood="happy" />
+            <CloudPuppy size={120} />
           </div>
           <div className="text-center sm:text-left">
             <p className="text-base font-bold text-sky-700">{strings.cardIqraDesc}</p>

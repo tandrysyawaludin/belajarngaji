@@ -6,7 +6,7 @@ import { useStrings } from "@/components/LocaleProvider";
 import { PrintButton } from "@/components/PrintButton";
 import { SurahAudio } from "@/components/SurahAudio";
 import { SurahVerses } from "@/components/SurahVerses";
-import { ThemedMascot } from "@/components/ThemedMascot";
+import { CloudPuppy } from "@/components/CloudPuppy";
 
 interface Verse {
   verse: number;
@@ -50,7 +50,7 @@ export function SurahReader({
       <section className="relative overflow-hidden rounded-[2rem] bg-gradient-to-br from-sky-100 via-sky-50 to-blue-100 p-6 shadow-lg ring-4 ring-white/60">
         <div className="dotted absolute inset-0 opacity-40 print:hidden" aria-hidden="true" />
         <div className="relative flex flex-col items-center gap-4 sm:flex-row sm:items-center sm:gap-6">
-          <ThemedMascot size={96} mood="happy" className="wobble print-hide" />
+          <CloudPuppy size={96} className="wobble print-hide" />
           <div className="flex-1 text-center sm:text-left">
             <p className="text-xs font-bold uppercase tracking-wider text-sky-700">
               {strings.surahNumberLabel} {surah.number}

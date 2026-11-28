@@ -5,6 +5,7 @@ import confetti from "canvas-confetti";
 import { EarnSheet, TokenBar } from "@/components/EarnSheet";
 import { CloudPuppy } from "@/components/CloudPuppy";
 import { GameGuide } from "@/components/GameGuide";
+import { SurahGate } from "@/components/SurahGate";
 
 /* Salon Hijab Cantik v2 — beauty studio, one large layered SVG girl,
    tool-based makeup: pick tool -> pick colour -> TAP the body part.
@@ -204,6 +205,7 @@ export function SalonGame() {
   return (
     <div className="flex flex-col gap-4">
       <GameGuide gameId="salon" title="Salon Hijab Cantik" steps={[{ icon: "⭐", text: "Jawab soal untuk dapat token" }, { icon: "💄", text: "Pilih alat dan warna di bawah" }, { icon: "👆", text: "Ketuk wajah atau bajunya untuk memakai" }]} />
+      <SurahGate gameId="salon" />
       <section className="card-cloud flex items-center gap-3 p-4">
         <span className="floaty shrink-0"><CloudPuppy size={64} /></span>
         <div>

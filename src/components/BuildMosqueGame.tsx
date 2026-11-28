@@ -5,6 +5,7 @@ import confetti from "canvas-confetti";
 import { EarnSheet, TokenBar } from "@/components/EarnSheet";
 import { CloudPuppy } from "@/components/CloudPuppy";
 import { GameGuide } from "@/components/GameGuide";
+import { SurahGate } from "@/components/SurahGate";
 
 /* Bangun Masjid Blok v2 — isometric 3D-style builder.
    SVG cubes with 3 shaded faces, stackable on an 8x6 baseplate.
@@ -193,6 +194,7 @@ export function BuildMosqueGame() {
   return (
     <div className="flex flex-col gap-4">
       <GameGuide gameId="bangun-masjid" title="Bangun Masjid Blok" steps={[{ icon: "⭐", text: "Jawab soal untuk dapat blok" }, { icon: "🧱", text: "Ketuk ubin untuk menaruh. Ketuk lagi untuk menumpuk" }, { icon: "🕌", text: "Selesaikan tantangan: kubah, menara, pintu!" }]} />
+      <SurahGate gameId="bangun-masjid" />
       <section className="card-cloud flex items-center gap-3 p-4">
         <span className="floaty shrink-0"><CloudPuppy size={64} /></span>
         <div>
