@@ -75,6 +75,10 @@ export type Strings = {
   cardHistoryDesc: string;
   cardIqraTitle: string;
   cardIqraDesc: string;
+  cardProphetsTitle: string;
+  cardProphetsDesc: string;
+  cardPrayerTitle: string;
+  cardPrayerDesc: string;
   quizPageDesc: string;
   matchPageDesc: string;
   guessPageDesc: string;

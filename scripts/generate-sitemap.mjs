@@ -23,6 +23,8 @@ const STATIC_PATHS = [
   "/huruf-awan",
   "/puzzle",
   "/riwayat",
+  "/kisah-nabi",
+  "/tuntunan-sholat",
   "/iqra/jilid-1",
   "/iqra/jilid-2",
   "/iqra/jilid-3",

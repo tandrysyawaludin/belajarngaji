@@ -88,6 +88,10 @@ export const id: Strings = {
   cardHistoryDesc: "Lihat catatan bermain & jawaban benar/salah-mu.",
   cardIqraTitle: "Iqra",
   cardIqraDesc: "Latihan membaca huruf hijaiyah dari Jilid 1 sampai 6.",
+  cardProphetsTitle: "Kisah Para Nabi",
+  cardProphetsDesc: "Cerita 25 nabi dari Adam sampai Muhammad, seru dan bisa didengarkan.",
+  cardPrayerTitle: "Tuntunan Sholat",
+  cardPrayerDesc: "Belajar lima waktu sholat, cara wudu, dan bacaan sholat pelan-pelan.",
   quizPageDesc:
     "Pilih arti yang benar. Kalau betul ada confetti, kalau salah ada bom!",
   matchPageDesc:

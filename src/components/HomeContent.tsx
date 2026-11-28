@@ -9,6 +9,8 @@ const cards = [
   { href: "/iqra", titleKey: "cardIqraTitle" as const, descKey: "cardIqraDesc" as const, bg: "from-teal-300 to-sky-400", emoji: "🕌" },
   { href: "/games", titleKey: "cardGamesTitle" as const, descKey: "cardGamesDesc" as const, bg: "from-pink-200 to-rose-200", emoji: "🎮" },
   { href: "/riwayat", titleKey: "cardHistoryTitle" as const, descKey: "cardHistoryDesc" as const, bg: "from-violet-300 to-sky-300", emoji: "📊" },
+  { href: "/kisah-nabi", titleKey: "cardProphetsTitle" as const, descKey: "cardProphetsDesc" as const, bg: "from-amber-300 to-orange-300", emoji: "📖" },
+  { href: "/tuntunan-sholat", titleKey: "cardPrayerTitle" as const, descKey: "cardPrayerDesc" as const, bg: "from-emerald-300 to-teal-400", emoji: "🕌" },
 ] as const;
 
 export function HomeContent() {

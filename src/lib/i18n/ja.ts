@@ -87,6 +87,10 @@ export const ja: Strings = {
   cardHistoryDesc: "プレイ記録と正解・不正解を見よう。",
   cardIqraTitle: "イクラ",
   cardIqraDesc: "1巻から6巻までアラビア文字の練習。",
+  cardProphetsTitle: "預言者ものがたり",
+  cardProphetsDesc: "アダムからムハンマドまで、25人の預言者のお話。読んで聞いて楽しもう。",
+  cardPrayerTitle: "お祈りガイド",
+  cardPrayerDesc: "5回のお祈り、ウドゥのしかた、お祈りの読み方をゆっくり学ぼう。",
   quizPageDesc:
     "正しい意味を選んでね。正解は紙吹雪、不正解はドカン！",
   matchPageDesc:

@@ -87,6 +87,10 @@ export const en: Strings = {
   cardHistoryDesc: "See your play records and right/wrong answers.",
   cardIqraTitle: "Iqra",
   cardIqraDesc: "Practice Arabic letters from Volume 1 to 6.",
+  cardProphetsTitle: "Stories of the Prophets",
+  cardProphetsDesc: "Stories of the 25 prophets from Adam to Muhammad — fun to read and listen to.",
+  cardPrayerTitle: "Prayer Guide",
+  cardPrayerDesc: "Learn the five daily prayers, how to make wudu, and the prayer readings step by step.",
   quizPageDesc:
     "Pick the correct meaning. Confetti when right, boom when wrong!",
   matchPageDesc:
